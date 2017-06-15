@@ -82,14 +82,46 @@ def insert(filename,docname):
     if filename.lower().endswith('.gdml'):
         processGDML(filename)
 
+def getRef(ptr,name) :
+    ref = ptr.get('ref')
+    print name + " : " + ref
+    return ref
+
+def parsePhysVol(ptr) :
+    print "ParsePhyVol"
+    for vr in ptr.findall("volumeref") :
+        ref = getRef(vr,"volumeref")
+        parseVolume(ref) 
+
+def parseVolume(name) :
+    print "ParseVolume : "+name
+    vol = root.find("structure/volume[@name='%s']" % name )
+    print vol.attrib
+    solid = vol.find('solidref')
+    ref = getRef(solid,'solidref')
+    for pv in vol.findall('physvol') : 
+        parsePhysVol(pv)
+    return
+
 
 def processGDML(filename):
-    global originFlg, doc, nodes
+    global doc
+    global root
 
-    originFlg = False
-    nodes = list()
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
+
+    import xml.etree.ElementTree as ET
+    tree = ET.parse(filename)
+    root = tree.getroot()
+ 
+    print root.tag
+    for setup in root.find('setup'):
+        print setup.attrib
+        ref = setup.get('ref')
+        print ref        
+        parseVolume(ref)
+
     # f = pythonopen(filename, 'r')
     #with pythonopen(filename,'rb') as f:
     #   while True:

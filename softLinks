@@ -5,3 +5,5 @@ tgt1="/usr/lib/freecad"
 tgt2="/usr/lib/freecad-daily"
 sudo rm -r $tgt1/Mod/GDML
 sudo ln -s $src/Mod $tgt1/Mod/GDML
+sudo rm -r $tgt2/Mod/GDML
+sudo ln -s $src/Mod $tgt2/Mod/GDML
