@@ -89,6 +89,20 @@ def getRef(ptr,name) :
 
 def parsePhysVol(ptr) :
     print "ParsePhyVol"
+    pr = ptr.find("positionref")
+    name = getRef(pr,"positionref")
+    pos = root.find("define/position[@name='%s']" % name )
+    print pos.attrib
+    x = pos.get('x')
+    y = pos.get('y')
+    z = pos.get('z')
+    rn = ptr.find("rotationref")
+    name = getRef(rn,"rotationref")
+    rot = root.find("define/rotation[@name='%s']" % name )
+    print rot.attrib
+    rx = rot.get('x')
+    ry = rot.get('y')
+    rz = rot.get('z')
     for vr in ptr.findall("volumeref") :
         ref = getRef(vr,"volumeref")
         parseVolume(ref) 
@@ -97,16 +111,35 @@ def parseVolume(name) :
     print "ParseVolume : "+name
     vol = root.find("structure/volume[@name='%s']" % name )
     print vol.attrib
-    solid = vol.find('solidref')
-    ref = getRef(solid,'solidref')
-    for pv in vol.findall('physvol') : 
-        parsePhysVol(pv)
+    solptr = vol.find('solidref')
+    name = getRef(solptr,'solidref')
+    solid = root.find("solids/*[@name='%s']" % name )
+    print solid.tag
+    print solid.attrib
+    if solid.tag in ["subtraction","union","intersection"] :
+       print "Boolean : "+solid.tag
+       base = solid.find('first')
+       name = getRef(base,'first')
+       base = root.find("solids/*[@name='%s']" % name )
+       print base.tag
+       print base.attrib
+       tool = solid.find('second')
+       name = getRef(tool,'second')
+       tool = root.find("solids/*[@name='%s']" % name )
+       print tool.tag
+       print tool.attrib
+
+    else :
+        for pv in vol.findall('physvol') : 
+            parsePhysVol(pv)
     return
 
 
 def processGDML(filename):
     global doc
     global root
+    global x,y,z
+    global rx,ry,rz
 
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
