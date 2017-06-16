@@ -82,62 +82,59 @@ def insert(filename,docname):
     if filename.lower().endswith('.gdml'):
         processGDML(filename)
 
-def getRef(ptr,name) :
+def getRef(ptr) :
     ref = ptr.get('ref')
-    print name + " : " + ref
+    print "ref : " + ref
     return ref
 
-def parsePhysVol(ptr) :
+def parseObject(root,ptr) :
+    print ptr.tag
+    print ptr.attrib
+    if ptr.tag in ["subtraction","union","intersection"] :
+       print "Boolean : "+ptr.tag
+       base = ptr.find('first')
+       name = getRef(base)
+       base = root.find("solids/*[@name='%s']" % name )
+       parseObject(root,base)
+       tool = ptr.find('second')
+       name = getRef(tool)
+       tool = root.find("solids/*[@name='%s']" % name )
+       parseObject(root,tool)
+
+def parsePhysVol(root,ptr) :
     print "ParsePhyVol"
     pr = ptr.find("positionref")
-    name = getRef(pr,"positionref")
+    name = getRef(pr)
     pos = root.find("define/position[@name='%s']" % name )
     print pos.attrib
     x = pos.get('x')
     y = pos.get('y')
     z = pos.get('z')
     rn = ptr.find("rotationref")
-    name = getRef(rn,"rotationref")
+    name = getRef(rn)
     rot = root.find("define/rotation[@name='%s']" % name )
     print rot.attrib
     rx = rot.get('x')
     ry = rot.get('y')
     rz = rot.get('z')
     for vr in ptr.findall("volumeref") :
-        ref = getRef(vr,"volumeref")
-        parseVolume(ref) 
+        ref = getRef(vr)
+        parseVolume(root,ref) 
 
-def parseVolume(name) :
+def parseVolume(root,name) :
     print "ParseVolume : "+name
     vol = root.find("structure/volume[@name='%s']" % name )
     print vol.attrib
     solptr = vol.find('solidref')
-    name = getRef(solptr,'solidref')
+    name = getRef(solptr)
     solid = root.find("solids/*[@name='%s']" % name )
-    print solid.tag
-    print solid.attrib
-    if solid.tag in ["subtraction","union","intersection"] :
-       print "Boolean : "+solid.tag
-       base = solid.find('first')
-       name = getRef(base,'first')
-       base = root.find("solids/*[@name='%s']" % name )
-       print base.tag
-       print base.attrib
-       tool = solid.find('second')
-       name = getRef(tool,'second')
-       tool = root.find("solids/*[@name='%s']" % name )
-       print tool.tag
-       print tool.attrib
-
-    else :
-        for pv in vol.findall('physvol') : 
-            parsePhysVol(pv)
+    parseObject(root,solid)
+    for pv in vol.findall('physvol') : 
+        parsePhysVol(root,pv)
     return
-
 
 def processGDML(filename):
     global doc
-    global root
     global x,y,z
     global rx,ry,rz
 
@@ -151,22 +148,9 @@ def processGDML(filename):
     print root.tag
     for setup in root.find('setup'):
         print setup.attrib
-        ref = setup.get('ref')
-        print ref        
-        parseVolume(ref)
+        ref = getRef(setup)
+        parseVolume(root,ref)
 
-    # f = pythonopen(filename, 'r')
-    #with pythonopen(filename,'rb') as f:
-    #   while True:
-    #      line=f.readline()
-    #      if not line: break
-    #      processLine(line)
-    #f.close()
-    #p = doc.addObject("Part::Polygon","GPS_Track")   
-    #p.Nodes=nodes
-    #v = doc.getObject("GPS_Track")
-    #print v.ShapeColor
-    #v.ShapeColor = (1.0,0,0)
     #doc.recompute()
     if printverbose:
         print('End ImportGDML')
