@@ -82,6 +82,35 @@ def insert(filename,docname):
     if filename.lower().endswith('.gdml'):
         processGDML(filename)
 
+class switch(object):
+    value = None
+    def __new__(class_, value):
+        class_.value = value
+        return True
+
+def case(*args):
+    return any((arg == switch.value for arg in args))
+
+
+def createBox(px,py,pz,rx,ry,rz) :
+    print "CreateBox : "
+
+def createTube(px,py,pz,rx,ry,rz) :
+    print "CreateBox : "
+
+
+def createSolid(solid,px,py,pz,rx,ry,rz) :
+    while switch(solid.tag):
+        if case('box'):
+           createBox(px,py,pz,rx,ry,rz) 
+           break
+        if case('tube'):
+           createTube(px,py,pz,rx,ry,rz) 
+           break
+        print "Solid : "+solid.tag+" Not yet supported"
+        break
+
+
 def getRef(ptr) :
     ref = ptr.get('ref')
     print "ref : " + ref
@@ -101,15 +130,24 @@ def parseObject(root,ptr) :
        tool = root.find("solids/*[@name='%s']" % name )
        parseObject(root,tool)
 
+def getVolSolid(root,name):
+    print "Get Volume Solid"
+    vol = root.find("structure/volume[@name='%s']" % name )
+    sr = vol.find("solidref")
+    print sr.attrib
+    name = getRef(sr)
+    solid = root.find("solids/*[@name='%s']" % name )
+    return solid
+
 def parsePhysVol(root,ptr) :
     print "ParsePhyVol"
     pr = ptr.find("positionref")
     name = getRef(pr)
     pos = root.find("define/position[@name='%s']" % name )
     print pos.attrib
-    x = pos.get('x')
-    y = pos.get('y')
-    z = pos.get('z')
+    px = pos.get('x')
+    py = pos.get('y')
+    pz = pos.get('z')
     rn = ptr.find("rotationref")
     name = getRef(rn)
     rot = root.find("define/rotation[@name='%s']" % name )
@@ -117,21 +155,19 @@ def parsePhysVol(root,ptr) :
     rx = rot.get('x')
     ry = rot.get('y')
     rz = rot.get('z')
-    for vr in ptr.findall("volumeref") :
-        ref = getRef(vr)
-        parseVolume(root,ref) 
+    vr = ptr.find("volumeref")
+    name = getRef(vr)
+    solid = getVolSolid(root,name)
+    createSolid(solid,px,py,pz,rx,ry,rz)
+    parseVolume(root,name)
 
+# ParseVolume 
 def parseVolume(root,name) :
     print "ParseVolume : "+name
     vol = root.find("structure/volume[@name='%s']" % name )
     print vol.attrib
-    solptr = vol.find('solidref')
-    name = getRef(solptr)
-    solid = root.find("solids/*[@name='%s']" % name )
-    parseObject(root,solid)
     for pv in vol.findall('physvol') : 
         parsePhysVol(root,pv)
-    return
 
 def processGDML(filename):
     global doc
