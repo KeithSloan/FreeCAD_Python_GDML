@@ -141,24 +141,33 @@ def getVolSolid(root,name):
 
 def parsePhysVol(root,ptr) :
     print "ParsePhyVol"
-    pr = ptr.find("positionref")
-    name = getRef(pr)
-    pos = root.find("define/position[@name='%s']" % name )
-    print pos.attrib
-    px = pos.get('x')
-    py = pos.get('y')
-    pz = pos.get('z')
-    rn = ptr.find("rotationref")
-    name = getRef(rn)
-    rot = root.find("define/rotation[@name='%s']" % name )
-    print rot.attrib
-    rx = rot.get('x')
-    ry = rot.get('y')
-    rz = rot.get('z')
+    pos = ptr.find("positionref")
+    if pos is not None :
+       name = getRef(pos)
+       pos = root.find("define/position[@name='%s']" % name )
+       print pos.attrib
+    else :
+       pos = ptr.find("position")
+    if pos is not None :
+       px = pos.get('x')
+       py = pos.get('y')
+       pz = pos.get('z')
+    rot = ptr.find("rotationref")
+    if rot is not None :
+       name = getRef(rot)
+       rot = root.find("define/rotation[@name='%s']" % name )
+       print rot.attrib
+    else :
+       rot = ptr.find("rotation")
+    if rot is not None :
+       rx = rot.get('x')
+       ry = rot.get('y')
+       rz = rot.get('z')
     vr = ptr.find("volumeref")
     name = getRef(vr)
     solid = getVolSolid(root,name)
-    createSolid(solid,px,py,pz,rx,ry,rz)
+    if ((pos is not None) and (rot is not None)) :
+       createSolid(solid,px,py,pz,rx,ry,rz)
     parseVolume(root,name)
 
 # ParseVolume 
