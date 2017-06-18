@@ -91,21 +91,39 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
+def myVector(x,y,z) :
+    base = FreeCAD.Vector(float(eval(x)),float(eval(y)),float(eval(z)))
+    return base
 
-def createBox(px,py,pz,rx,ry,rz) :
+def createBox(solid,pos,rot) :
     print "CreateBox : "
+    print solid.attrib
+    mycube=doc.addObject('Part::Box',solid.get('name'))
+    mycube.Length=solid.get('x')
+    mycube.Width=solid.get('y')
+    mycube.Height=solid.get('z')
+    print "Position : "
+    print pos.attrib
+    base = myVector(pos.get('x'),pos.get('y'),pos.get('z'))
+    print "Rotation : "
+    print rot.attrib
+    axis = FreeCAD.Vector(0,0,1)
+    angle = 0
+    place = FreeCAD.Placement(base,axis,angle)
+    print mycube.Placement.Rotation
+    mycube.Placement = place
 
-def createTube(px,py,pz,rx,ry,rz) :
-    print "CreateBox : "
+def createTube(solid,pos,rot) :
+    print "CreateTube : "
 
 
-def createSolid(solid,px,py,pz,rx,ry,rz) :
+def createSolid(solid,pos,rot) :
     while switch(solid.tag):
         if case('box'):
-           createBox(px,py,pz,rx,ry,rz) 
+           createBox(solid,pos,rot) 
            break
         if case('tube'):
-           createTube(px,py,pz,rx,ry,rz) 
+           createTube(solid,pos,rot) 
            break
         print "Solid : "+solid.tag+" Not yet supported"
         break
@@ -148,26 +166,17 @@ def parsePhysVol(root,ptr) :
        print pos.attrib
     else :
        pos = ptr.find("position")
-    if pos is not None :
-       px = pos.get('x')
-       py = pos.get('y')
-       pz = pos.get('z')
     rot = ptr.find("rotationref")
     if rot is not None :
        name = getRef(rot)
        rot = root.find("define/rotation[@name='%s']" % name )
-       print rot.attrib
     else :
        rot = ptr.find("rotation")
-    if rot is not None :
-       rx = rot.get('x')
-       ry = rot.get('y')
-       rz = rot.get('z')
     vr = ptr.find("volumeref")
     name = getRef(vr)
     solid = getVolSolid(root,name)
     if ((pos is not None) and (rot is not None)) :
-       createSolid(solid,px,py,pz,rx,ry,rz)
+       createSolid(solid,pos,rot)
     parseVolume(root,name)
 
 # ParseVolume 
@@ -179,10 +188,6 @@ def parseVolume(root,name) :
         parsePhysVol(root,pv)
 
 def processGDML(filename):
-    global doc
-    global x,y,z
-    global rx,ry,rz
-
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
 
@@ -190,7 +195,6 @@ def processGDML(filename):
     tree = ET.parse(filename)
     root = tree.getroot()
  
-    print root.tag
     for setup in root.find('setup'):
         print setup.attrib
         ref = getRef(setup)
@@ -200,19 +204,3 @@ def processGDML(filename):
     if printverbose:
         print('End ImportGDML')
     FreeCAD.Console.PrintMessage('End processing GDML file\n')
-
-#class switch(object):
-#    value = None
-#    def __new__(class_, value):
-#        class_.value = value
-#        return True
-
-#def case(*args):
-#    return any((arg == switch.value for arg in args))
-
-#def processLine(line):
-#    while switch(line[0]):
-#        if case('A'):
-#           processA(line) 
-#           break
-
