@@ -110,13 +110,42 @@ def createBox(solid,volref,pos,rot) :
     axis = FreeCAD.Vector(0,0,1)
     angle = 0
     place = FreeCAD.Placement(base,axis,angle)
-    print mycube.Placement.Rotation
     mycube.Placement = place
+    print mycube.Placement.Rotation
     mycube.ViewObject.DisplayMode = 'Wireframe'
+
+def makeCylinder(solid,r) :
+    mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
+    mycyl.Height = solid.get('z')
+    mycyl.Radius = r
+    if solid.get('aunit' == 'rad') :
+       mycyl.Angle = 180 * float(solid.get('deltaphi')) / math.pi
+    if solid.get('aunit' == 'degrees') :
+       mycyl.Angle = solid.get('deltaphi')
+    return mycyl
 
 def createTube(solid,volref,pos,rot) :
     print "CreateTube : "
     print solid.attrib
+    rmin = solid.get('rmin')
+    rmax = solid.get('rmax')
+    if ( rmin is None or rmin == 0 ) :
+       mytube = makeCylinder(solid,rmax)
+    else :
+       mytube = doc.addObject('Part::Cut','Tube_'+solid.get('name')+'_')
+       mytube.Base = makeCylinder(solid,rmax)
+       mytube.Tool = makeCylinder(solid,rmin)
+
+    print "Position : "
+    print pos.attrib
+    base = myVector(pos.get('x'),pos.get('y'),pos.get('z'))
+    print "Rotation : "
+    print rot.attrib
+    axis = FreeCAD.Vector(0,0,1)
+    angle = 0
+    place = FreeCAD.Placement(base,axis,angle)
+    mytube.Placement = place
+    print mytube.Placement.Rotation
 
 def createCone(solid,volref,pos,rot) :
     print "CreateCone : "
