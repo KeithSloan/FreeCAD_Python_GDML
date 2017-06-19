@@ -95,10 +95,10 @@ def myVector(x,y,z) :
     base = FreeCAD.Vector(float(eval(x)),float(eval(y)),float(eval(z)))
     return base
 
-def createBox(solid,pos,rot) :
+def createBox(solid,volref,pos,rot) :
     print "CreateBox : "
     print solid.attrib
-    mycube=doc.addObject('Part::Box',solid.get('name'))
+    mycube=doc.addObject('Part::Box',volref.get('ref')+'_'+solid.get('name')+'_')
     mycube.Length=solid.get('x')
     mycube.Width=solid.get('y')
     mycube.Height=solid.get('z')
@@ -112,18 +112,26 @@ def createBox(solid,pos,rot) :
     place = FreeCAD.Placement(base,axis,angle)
     print mycube.Placement.Rotation
     mycube.Placement = place
+    mycube.ViewObject.DisplayMode = 'Wireframe'
 
-def createTube(solid,pos,rot) :
+def createTube(solid,volref,pos,rot) :
     print "CreateTube : "
+    print solid.attrib
 
+def createCone(solid,volref,pos,rot) :
+    print "CreateCone : "
+    print solid.attrib
 
-def createSolid(solid,pos,rot) :
+def createSolid(solid,volref,pos,rot) :
     while switch(solid.tag):
         if case('box'):
-           createBox(solid,pos,rot) 
+           createBox(solid,volref,pos,rot) 
            break
         if case('tube'):
-           createTube(solid,pos,rot) 
+           createTube(solid,volref,pos,rot) 
+           break
+        if case('cone'):
+           createCone(solid,volref,pos,rot) 
            break
         print "Solid : "+solid.tag+" Not yet supported"
         break
@@ -172,11 +180,11 @@ def parsePhysVol(root,ptr) :
        rot = root.find("define/rotation[@name='%s']" % name )
     else :
        rot = ptr.find("rotation")
-    vr = ptr.find("volumeref")
-    name = getRef(vr)
+    volref = ptr.find("volumeref")
+    name = getRef(volref)
     solid = getVolSolid(root,name)
     if ((pos is not None) and (rot is not None)) :
-       createSolid(solid,pos,rot)
+       createSolid(solid,volref,pos,rot)
     parseVolume(root,name)
 
 # ParseVolume 
