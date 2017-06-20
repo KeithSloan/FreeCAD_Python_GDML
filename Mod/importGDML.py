@@ -91,17 +91,23 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
+def getVal(ptr,var) :
+    return float(eval(ptr.get(var)))
+
 def createBox(solid,volref,lx,ly,lz,rot) :
     print "CreateBox : "
     print solid.attrib
     mycube=doc.addObject('Part::Box',volref.get('ref')+'_'+solid.get('name')+'_')
-    mycube.Length=solid.get('x')
-    mycube.Width=solid.get('y')
-    mycube.Height=solid.get('z')
-    print "Position : "+str(lx)+','+str(ly)+','+str(lz)
+    x = getVal(solid,'x')
+    y = getVal(solid,'y')
+    z = getVal(solid,'z')
+    mycube.Length = x
+    mycube.Width = y
+    mycube.Height = z
+    print "Logical Position : "+str(lx)+','+str(ly)+','+str(lz)
+    base = FreeCAD.Vector(lx-x/2,ly-y/2,lz-z/2)
     print "Rotation : "
     print rot.attrib
-    base = FreeCAD.Vector(lx,ly,lz)
     axis = FreeCAD.Vector(0,0,1)
     angle = 0
     place = FreeCAD.Placement(base,axis,angle)
@@ -111,7 +117,7 @@ def createBox(solid,volref,lx,ly,lz,rot) :
 
 def makeCylinder(solid,r) :
     mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
-    mycyl.Height = solid.get('z')
+    mycyl.Height = getVal(solid,'z')
     mycyl.Radius = r
     if solid.get('aunit' == 'rad') :
        mycyl.Angle = 180 * float(solid.get('deltaphi')) / math.pi
@@ -122,8 +128,8 @@ def makeCylinder(solid,r) :
 def createTube(solid,volref,lx,ly,lz,rot) :
     print "CreateTube : "
     print solid.attrib
-    rmin = solid.get('rmin')
-    rmax = solid.get('rmax')
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
     if ( rmin is None or rmin == 0 ) :
        mytube = makeCylinder(solid,rmax)
     else :
@@ -135,8 +141,8 @@ def createTube(solid,volref,lx,ly,lz,rot) :
     base = FreeCAD.Vector(lx,ly,lz)
     print "Rotation : "
     print rot.attrib
-    axis = FreeCAD.Vector(0,0,1)
-    angle = 0
+    axis = FreeCAD.Vector(1,0,0)
+    angle = 0 
     place = FreeCAD.Placement(base,axis,angle)
     mytube.Placement = place
     print mytube.Placement.Rotation
@@ -234,7 +240,7 @@ def processGDML(filename):
         ref = getRef(setup)
         parseVolume(root,ref,0,0,0)
 
-    #doc.recompute()
+    doc.recompute()
     if printverbose:
         print('End ImportGDML')
     FreeCAD.Console.PrintMessage('End processing GDML file\n')
