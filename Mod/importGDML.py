@@ -94,6 +94,22 @@ def case(*args):
 def getVal(ptr,var) :
     return float(eval(ptr.get(var)))
 
+def processPlacement(base,rot) :
+    print "Rotation : "
+    print rot.attrib
+    if 'y' in rot.attrib :
+	axis = FreeCAD.Vector(0,1,0) 
+        angle = float(rot.attrib['y'])
+    if 'x' in rot.attrib :
+	axis = FreeCAD.Vector(1,0,0) 
+        angle = float(rot.attrib['x'])
+    if 'z' in rot.attrib :
+	axis = FreeCAD.Vector(0,0,1) 
+        angle = float(rot.attrib['z'])
+    print angle 
+    place = FreeCAD.Placement(base,axis,angle)
+    return place
+
 def createBox(solid,volref,lx,ly,lz,rot) :
     print "CreateBox : "
     print solid.attrib
@@ -106,12 +122,7 @@ def createBox(solid,volref,lx,ly,lz,rot) :
     mycube.Height = z
     print "Logical Position : "+str(lx)+','+str(ly)+','+str(lz)
     base = FreeCAD.Vector(lx-x/2,ly-y/2,lz-z/2)
-    print "Rotation : "
-    print rot.attrib
-    axis = FreeCAD.Vector(0,0,1)
-    angle = 0
-    place = FreeCAD.Placement(base,axis,angle)
-    mycube.Placement = place
+    mycube.Placement = processPlacement(base,rot)
     print mycube.Placement.Rotation
     mycube.ViewObject.DisplayMode = 'Wireframe'
 
@@ -128,8 +139,8 @@ def makeCylinder(solid,r) :
 def createTube(solid,volref,lx,ly,lz,rot) :
     print "CreateTube : "
     print solid.attrib
-    rmin = getVal(solid,'rmin')
     rmax = getVal(solid,'rmax')
+    rmin = solid.get('rmin')
     if ( rmin is None or rmin == 0 ) :
        mytube = makeCylinder(solid,rmax)
     else :
@@ -139,12 +150,7 @@ def createTube(solid,volref,lx,ly,lz,rot) :
 
     print "Position : "+str(lx)+','+str(ly)+','+str(lz)
     base = FreeCAD.Vector(lx,ly,lz)
-    print "Rotation : "
-    print rot.attrib
-    axis = FreeCAD.Vector(1,0,0)
-    angle = 0 
-    place = FreeCAD.Placement(base,axis,angle)
-    mytube.Placement = place
+    mytube.Placement = processPlacement(base,rot)
     print mytube.Placement.Rotation
 
 def createCone(solid,volref,lx,ly,lz,rot) :
