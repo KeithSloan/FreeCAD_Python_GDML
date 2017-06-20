@@ -91,22 +91,17 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
-def myVector(x,y,z) :
-    base = FreeCAD.Vector(float(eval(x)),float(eval(y)),float(eval(z)))
-    return base
-
-def createBox(solid,volref,pos,rot) :
+def createBox(solid,volref,lx,ly,lz,rot) :
     print "CreateBox : "
     print solid.attrib
     mycube=doc.addObject('Part::Box',volref.get('ref')+'_'+solid.get('name')+'_')
     mycube.Length=solid.get('x')
     mycube.Width=solid.get('y')
     mycube.Height=solid.get('z')
-    print "Position : "
-    print pos.attrib
-    base = myVector(pos.get('x'),pos.get('y'),pos.get('z'))
+    print "Position : "+str(lx)+','+str(ly)+','+str(lz)
     print "Rotation : "
     print rot.attrib
+    base = FreeCAD.Vector(lx,ly,lz)
     axis = FreeCAD.Vector(0,0,1)
     angle = 0
     place = FreeCAD.Placement(base,axis,angle)
@@ -124,7 +119,7 @@ def makeCylinder(solid,r) :
        mycyl.Angle = solid.get('deltaphi')
     return mycyl
 
-def createTube(solid,volref,pos,rot) :
+def createTube(solid,volref,lx,ly,lz,rot) :
     print "CreateTube : "
     print solid.attrib
     rmin = solid.get('rmin')
@@ -136,9 +131,8 @@ def createTube(solid,volref,pos,rot) :
        mytube.Base = makeCylinder(solid,rmax)
        mytube.Tool = makeCylinder(solid,rmin)
 
-    print "Position : "
-    print pos.attrib
-    base = myVector(pos.get('x'),pos.get('y'),pos.get('z'))
+    print "Position : "+str(lx)+','+str(ly)+','+str(lz)
+    base = FreeCAD.Vector(lx,ly,lz)
     print "Rotation : "
     print rot.attrib
     axis = FreeCAD.Vector(0,0,1)
@@ -147,20 +141,20 @@ def createTube(solid,volref,pos,rot) :
     mytube.Placement = place
     print mytube.Placement.Rotation
 
-def createCone(solid,volref,pos,rot) :
+def createCone(solid,volref,lx,ly,lz,rot) :
     print "CreateCone : "
     print solid.attrib
 
-def createSolid(solid,volref,pos,rot) :
+def createSolid(solid,volref,lx,ly,lz,rot) :
     while switch(solid.tag):
         if case('box'):
-           createBox(solid,volref,pos,rot) 
+           createBox(solid,volref,lx,ly,lz,rot) 
            break
         if case('tube'):
-           createTube(solid,volref,pos,rot) 
+           createTube(solid,volref,lx,ly,lz,rot) 
            break
         if case('cone'):
-           createCone(solid,volref,pos,rot) 
+           createCone(solid,volref,lx,ly,lz,rot) 
            break
         print "Solid : "+solid.tag+" Not yet supported"
         break
@@ -194,7 +188,7 @@ def getVolSolid(root,name):
     solid = root.find("solids/*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(root,ptr) :
+def parsePhysVol(root,ptr,lx,ly,lz):
     print "ParsePhyVol"
     pos = ptr.find("positionref")
     if pos is not None :
@@ -203,6 +197,9 @@ def parsePhysVol(root,ptr) :
        print pos.attrib
     else :
        pos = ptr.find("position")
+    lx += float(eval(pos.get('x')))
+    ly += float(eval(pos.get('y')))
+    lz += float(eval(pos.get('z')))
     rot = ptr.find("rotationref")
     if rot is not None :
        name = getRef(rot)
@@ -213,16 +210,16 @@ def parsePhysVol(root,ptr) :
     name = getRef(volref)
     solid = getVolSolid(root,name)
     if ((pos is not None) and (rot is not None)) :
-       createSolid(solid,volref,pos,rot)
-    parseVolume(root,name)
+       createSolid(solid,volref,lx,ly,lz,rot)
+    parseVolume(root,name,lx,ly,lz)
 
 # ParseVolume 
-def parseVolume(root,name) :
+def parseVolume(root,name,lx,ly,lz) :
     print "ParseVolume : "+name
     vol = root.find("structure/volume[@name='%s']" % name )
     print vol.attrib
     for pv in vol.findall('physvol') : 
-        parsePhysVol(root,pv)
+        parsePhysVol(root,pv,lx,ly,lz)
 
 def processGDML(filename):
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
@@ -235,7 +232,7 @@ def processGDML(filename):
     for setup in root.find('setup'):
         print setup.attrib
         ref = getRef(setup)
-        parseVolume(root,ref)
+        parseVolume(root,ref,0,0,0)
 
     #doc.recompute()
     if printverbose:
