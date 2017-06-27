@@ -1,6 +1,6 @@
-# FreeCAD_GDML
+# FreeCAD_Python_GDML
 
-FreeCAD importer for GDML files.
+FreeCAD python importer for GDML files.
 
 ## Installation Linux
 
@@ -8,9 +8,9 @@ To incorporate into FreeCAD linux.
 
 Assumes you already have FreeCAD and git installed
 
-1) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_GDML.git**
+1) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 
-2) cd FreeCAD_GDML
+2) cd FreeCAD_Python_GDML
 
 3) make sure softLink script is executable
 
