@@ -19,7 +19,8 @@
 #*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
 #*   USA                                                                   *
 #*                                                                         * 
-#*   Acknowledgements :                                                    *
+#*   Acknowledgements : Ideas & code copied from			   * 
+#*                      https://github.com/ignamv/geanTipi		   *
 #*                                                                         *
 #***************************************************************************
 __title__="FreeCAD - GDML exporter Version"
@@ -32,7 +33,7 @@ from FreeCAD import Vector
 # xml handling
 import argparse
 import xml.etree.ElementTree as ET
-
+global ET
 #################################
 # Globals
 global gdml
@@ -64,7 +65,7 @@ def case(*args):
 #  Setup GDML environment
 #################################
 def GDMLstructure() :
-     global gdml, define, materials, structure, setup
+     global gdml, define, materials, solids, structure, setup
      gdml = ET.Element('gdml', {
           'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
           'xsi:noNamespaceSchemaLocation': "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd"
@@ -74,7 +75,7 @@ def GDMLstructure() :
      solids = ET.SubElement(gdml, 'solids')
      structure = ET.SubElement(gdml, 'structure')
      setup = ET.SubElement(gdml, 'setup', {'name': 'Default', 'version': '1.0'})
-     ET.SubElement(setup, 'world', {'ref': 'worldLogical'})
+     ET.SubElement(setup, 'world', {'ref': 'worldLV'})
 
 
 def DefineMaterials():
@@ -112,7 +113,12 @@ def DefineBoundingBox(exportList,bbox):
 
 
 def ConstructWorld():
-    x = 1
+    print("Construct World")
+    worldLV = ET.Element('volume', {'name':'worldLV'})
+    ET.SubElement(worldLV, 'materialref',{'ref': 'G4_AIR'})
+    ET.SubElement(worldLV, 'solidref',{'ref': 'world'})
+    ET.SubElement(solids, 'box',{'name': 'World','x': '0,1000','y': '0,1000','z': '0,1000','lunit' : 'mm'})
+
     # Python has automatic garbage collection system.
     # Geometry objects must be defined as GLOBAL not to be deleted.
     #global sld_world, lv_world, pv_world, va_world
@@ -151,7 +157,7 @@ def ConstructWorld():
     #    p1 = G4ThreeVector(0.0,0.0,0.0)
     #    p2 = G4ThreeVector(0.0,50.0,0.0)
 
-    #    return(pv_world)
+    return(worldLV)
 
 def report_object(obj) :
     
@@ -403,12 +409,14 @@ def export(exportList,filename) :
 
     bbox = FreeCAD.BoundBox()
     DefineBoundingBox(exportList,bbox)
-    world_volume = ConstructWorld()
+    worldLV = ConstructWorld()
     for obj in exportList :
         report_object(obj)
-        process_object(world_volume,obj)
+        process_object(worldLV,obj)
 
-    # write GDML file              
+    structure.append(worldLV)
+ 
+    # write GDML file 
     print("Write to GDML file")
     #navigator= gTransportationManager.GetNavigatorForTracking()
     ##world_volume= navigator.GetWorldVolume()
