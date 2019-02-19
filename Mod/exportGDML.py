@@ -91,49 +91,157 @@ def GDMLstructure() :
 
 def defineMaterials():
     print("Define Materials")
+#    ET.ElementTree(gdml).write("test1", 'utf-8', True)
+
 #   Some hardcoded isotopes, elements & materials
 #
 #   ISOTOPES
 #
+#   C0 - Carbon
+#
+    iso = ET.SubElement(materials,'isotope', N='12', Z='6', \
+                        name="C120x56070ee874f0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='12')
+    iso = ET.SubElement(materials,'isotope', N='13', Z='6', \
+                        name="C130x56070ee940b0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='13.0034')
+#
+#   N - Nitrogen
+#
+    iso = ET.SubElement(materials,'isotope', N='14', Z='7', \
+                        name="N140x56070ee89030")
+    ET.SubElement(iso,'atom', unit='g/mole', value='14.0031')
+    iso = ET.SubElement(materials,'isotope', N='15', Z='7', \
+                        name="N150x56070ee8feb0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='15.0001')
+#
+#   O0 - Oxygen
+#
+    iso = ET.SubElement(materials,'isotope', N='16', Z='8', \
+                        name="O160x56070ee8fa60")
+    ET.SubElement(iso,'atom', unit='g/mole', value='15.9949')
+    iso = ET.SubElement(materials,'isotope', N='17', Z='8', \
+                        name="O170x56070ee8a570")
+    ET.SubElement(iso,'atom', unit='g/mole', value='16.9991')
+    iso = ET.SubElement(materials,'isotope', N='18', Z='8', \
+                        name="O180x56070ee90cb0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='17.9992')
+#
+#   Cr Chromium
+#
+    iso = ET.SubElement(materials,'isotope', N='50', Z='24', \
+                        name="Cr500x56070ee875e0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='49.946')
+    iso = ET.SubElement(materials,'isotope', N='52', Z='24', \
+                        name="Cr520x56070ee897e0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='51.9405')
+    iso = ET.SubElement(materials,'isotope', N='53', Z='24', \
+                        name="Cr530x56070ee89830")
+    ET.SubElement(iso,'atom', unit='g/mole', value='52.9407')
+    iso = ET.SubElement(materials,'isotope', N='54', Z='24', \
+                        name="Cr540x56070ee89880")
+    ET.SubElement(iso,'atom', unit='g/mole', value='53.9389')
+#
+#   Ni - Nickel
+#
+    iso = ET.SubElement(materials,'isotope', N='58', Z='28', \
+                        name="Ni580x56070ee899c0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='57.9353')
+    iso = ET.SubElement(materials,'isotope', N='60', Z='28', \
+                        name="Ni600x56070ee89a10")
+    ET.SubElement(iso,'atom', unit='g/mole', value='59.9308')
+    iso = ET.SubElement(materials,'isotope', N='61', Z='28', \
+                        name="Ni610x56070ee89a60")
+    ET.SubElement(iso,'atom', unit='g/mole', value='61.9311')
+    iso = ET.SubElement(materials,'isotope', N='62', Z='28', \
+                        name="Ni620x56070ee89ab0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='61.9283')
+    iso = ET.SubElement(materials,'isotope', N='64', Z='28', \
+                        name="Ni640x56070ee87ca0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='63.928')
+#
+#   Ar - Argon
+#
+    iso = ET.SubElement(materials,'isotope', N='36', Z='18', \
+                        name="Ar360x56070ee8aba0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='35.9675')
+    iso = ET.SubElement(materials,'isotope', N='38', Z='18', \
+                        name="Ar380x56070ee87400")
+    ET.SubElement(iso,'atom', unit='g/mole', value='37.9627')
+    iso = ET.SubElement(materials,'isotope', N='40', Z='18', \
+                        name="Ar400x56070ee90c20")
+    ET.SubElement(iso,'atom', unit='g/mole', value='37.9627')
+#
+#   Fe - Iron
+#
     iso = ET.SubElement(materials,'isotope', N='54', Z='26', \
                         name="Fe540x56070ee87130")
     ET.SubElement(iso,'atom', unit='g/mole', value='53.9396')
-
     iso = ET.SubElement(materials,'isotope', N='56', Z='26', \
                         name="Fe560x56070ee95300")
     ET.SubElement(iso,'atom', unit='g/mole', value='55.9349')
-
     iso = ET.SubElement(materials,'isotope', N='57', Z='26', \
                         name="Fe570x56070ee8eff0")
     ET.SubElement(iso,'atom', unit='g/mole', value='56.9354')
-
     iso = ET.SubElement(materials,'isotope', N='58', Z='26', \
                         name="Fe580x56070ee8d300")
-    ET.SubElement(iso,'atom', unit='g/mole', value='57.9333')
+    ET.SubElement(iso,'atom', unit='g/mole', value='57.9333') 
 #
 #   ELEMENTS
 #
+    elem = ET.SubElement(materials,'element', name="Iron0x56070eea0880")
+    ET.SubElement(elem,'fraction', n="0.05845", ref="Fe540x56070ee87130")
+    ET.SubElement(elem,'fraction', n="0.91754", ref="Fe560x56070ee95300")
+    ET.SubElement(elem,'fraction', n="0.02119", ref="Fe570x56070ee8eff0")
+    ET.SubElement(elem,'fraction', n="0.00282", ref="Fe580x56070ee8d300")
+    elem = ET.SubElement(materials,'element', name="Chromium0x56070eea004")
+    ET.SubElement(elem,'fraction', n="0.04345", ref="Cr500x56070ee875e0")
+    ET.SubElement(elem,'fraction', n="0.83789", ref="Cr520x56070ee897e0")
+    ET.SubElement(elem,'fraction', n="0.09501", ref="Cr530x56070ee89830")
+    ET.SubElement(elem,'fraction', n="0.02365", ref="Cr540x56070ee89880")
+    elem = ET.SubElement(materials,'element', name="Nickel0x56070ee81420")
+    ET.SubElement(elem,'fraction', n="0.680769", ref="Ni580x56070ee899c0")
+    ET.SubElement(elem,'fraction', n="0.262231", ref="Ni600x56070ee89a10")
+    ET.SubElement(elem,'fraction', n="0.011399", ref="Ni610x56070ee89a60")
+    ET.SubElement(elem,'fraction', n="0.036345", ref="Ni620x56070ee89ab0")
+    ET.SubElement(elem,'fraction', n="0.009256", ref="Ni640x56070ee87ca0") 
+    elem = ET.SubElement(materials,'element', name="N0x56070ee94e30")
+    ET.SubElement(elem,'fraction', n="0.99632", ref="N140x56070ee89030")
+    ET.SubElement(elem,'fraction', n="0.00368", ref="N150x56070ee8feb0")
+    elem = ET.SubElement(materials,'element', name="O0x56070eea0370")
+    ET.SubElement(elem,'fraction', n="0.99757", ref="O160x56070ee8fa60")
+    ET.SubElement(elem,'fraction', n="0.00038", ref="O170x56070ee8a570")
+    ET.SubElement(elem,'fraction', n="0.00205", ref="O180x56070ee90cb0")
+    elem = ET.SubElement(materials,'element', name="Ar0x56070eea07c0")
+    ET.SubElement(elem,'fraction', n="0.003365", ref="Ar360x56070ee8aba0")
+    ET.SubElement(elem,'fraction', n="0.000632", ref="Ar380x56070ee87400")
+    ET.SubElement(elem,'fraction', n="0.996003", ref="Ar400x56070ee90c20")
 
 #
 #   MATERIALS
 #
-    # Our defined Materials 
-    #Fe = G4Element(G4String("Iron"),G4String("Fe"),"z=26.","55.845*g/mole")
-    #Fe = G4Element(G4String("Iron"),G4String("Fe"),26.0,55.845*g/mole)
-    #Cr = G4Element(G4String("Chromium"),G4String("Cr"),"z=24.","51.9961*g/mole")
-    #Cr = G4Element(G4String("Chromium"),G4String("Cr"),24.0,51.9961*g/mole)
-    #Ni = G4Element(G4String("Nickel"),G4String("Ni"),"z=28.","58.6934*g/mole")
-    #Ni = G4Element(G4String("Nickel"),G4String("Ni"),28.0,58.6934*g/mole)
-
-    #global SSteel,Fe,Cr,Ni
-    #SSteel = G4Material("SSteel","density=8.03*g/cm3",components)
-    #SSteel = G4Material("SSteel",8.03,3)
-    #SSteel.AddElement(Fe,"74*perCent")
-    #SSteel.AddElement(Fe,0.74)
-    #SSteel.AddElement(Cr,"18*perCent")
-    #SSteel.AddElement(Cr,0.18)
-    #SSteel.AddElement(Ni,"8*perCent")
-    #SSteel.AddElement(Ni,0.08)
+    sst = ET.SubElement(materials,'material', \
+               name="SSteel0x56070ee87d10", state="gas")
+    ET.SubElement(sst,'T', unit="K", value="293.15")
+    ET.SubElement(sst,'MEE', unit="eV", value="282.530633667015")
+    ET.SubElement(sst,'D', unit="g/cm3", value="1.286547719061e-18")
+    ET.SubElement(elem,'fraction', n="0.74", ref="Iron0x56070eea0880")
+    ET.SubElement(elem,'fraction', n="0.18", ref="Chromium0x56070eea0040") 
+    ET.SubElement(elem,'fraction', n="0.08", ref="Nickel0x56070ee81420")
+    sst = ET.SubElement(materials, 'material', \
+                name="SG4_AIR0x56070ee81710", state="gas")
+    ET.SubElement(sst,'T', unit="K", value="293.15")
+    ET.SubElement(sst,'MEE', unit="eV", value="85.7")
+    ET.SubElement(sst,'D', unit="g/cm3", value="0.00120479")
+    ET.SubElement(elem,'fraction', n="0.000124000124000124", \
+                   ref="C0x56070ee949e0")
+    ET.SubElement(elem,'fraction', n="0.755267755267755",  \
+                   ref="N0x56070ee94e30")
+    ET.SubElement(elem,'fraction', n="0.231781231781232", \
+                    ref="O0x56070eea0370")
+    ET.SubElement(elem,'fraction', n="0.0128270128270128", \
+                     ref="Ar0x56070eea07c0")
+#    ET.ElementTree(gdml).write("test2", 'utf-8', True)
    
 def defineBoundingBox(exportList,bbox):
     x = 1
@@ -455,6 +563,8 @@ def export(exportList,filename) :
     #    gdml_pretty = prettify(gdml)
 
     #ET.ElementTree(gdml_pretty).write(filename, 'utf-8', True)
+    print("GDML")
+    print(str(gdml))
     ET.ElementTree(gdml).write(filename, 'utf-8', True)
 
     #gdml_parser = G4GDMLParser()
