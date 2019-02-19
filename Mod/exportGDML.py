@@ -33,6 +33,9 @@ from FreeCAD import Vector
 # xml handling
 import argparse
 import xml.etree.ElementTree as ET
+from   xml.etree.ElementTree import XML 
+import xml.dom.minidom 
+#from xml.dom.minidom import minidom
 global ET
 #################################
 # Globals
@@ -47,6 +50,13 @@ else: gui = True
 # no doubt there will be a problem when they do implement Value
 if open.__module__ in ['__builtin__', 'io']:
     pythonopen = open # to distinguish python built-in open function from the one declared here
+
+def prettify(elem):
+    """Return a pretty-printed XML string for the Element.
+    """
+    rough_string = ET.tostring(elem, 'utf-8')
+    reparsed = xml.dom.minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="  ")
 
 #################################
 # Switch functions
@@ -65,26 +75,48 @@ def case(*args):
 #  Setup GDML environment
 #################################
 def GDMLstructure() :
-     global gdml, define, materials, solids, structure, setup
-     gdml = ET.Element('gdml', {
+    print("Setup GDML structure")
+    global gdml, define, materials, solids, structure, setup
+    gdml = ET.Element('gdml', {
           'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
           'xsi:noNamespaceSchemaLocation': "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd"
 })
-     define = ET.SubElement(gdml, 'define')
-     materials = ET.SubElement(gdml, 'materials')
-     solids = ET.SubElement(gdml, 'solids')
-     structure = ET.SubElement(gdml, 'structure')
-     setup = ET.SubElement(gdml, 'setup', {'name': 'Default', 'version': '1.0'})
-     ET.SubElement(setup, 'world', {'ref': 'worldLV'})
+    define = ET.SubElement(gdml, 'define')
+    materials = ET.SubElement(gdml, 'materials')
+    solids = ET.SubElement(gdml, 'solids')
+    structure = ET.SubElement(gdml, 'structure')
+    setup = ET.SubElement(gdml, 'setup', {'name': 'Default', 'version': '1.0'})
+    ET.SubElement(setup, 'world', {'ref': 'worldLV'})
 
 
-def DefineMaterials():
-    x = 1
-    # Materials from DataBase 
-    #nist = G4NistManager.Instance()
-    #air = nist.FindOrBuildMaterial("G4_AIR")
-    #global air
-   
+def defineMaterials():
+    print("Define Materials")
+#   Some hardcoded isotopes, elements & materials
+#
+#   ISOTOPES
+#
+    iso = ET.SubElement(materials,'isotope', N='54', Z='26', \
+                        name="Fe540x56070ee87130")
+    ET.SubElement(iso,'atom', unit='g/mole', value='53.9396')
+
+    iso = ET.SubElement(materials,'isotope', N='56', Z='26', \
+                        name="Fe560x56070ee95300")
+    ET.SubElement(iso,'atom', unit='g/mole', value='55.9349')
+
+    iso = ET.SubElement(materials,'isotope', N='57', Z='26', \
+                        name="Fe570x56070ee8eff0")
+    ET.SubElement(iso,'atom', unit='g/mole', value='56.9354')
+
+    iso = ET.SubElement(materials,'isotope', N='58', Z='26', \
+                        name="Fe580x56070ee8d300")
+    ET.SubElement(iso,'atom', unit='g/mole', value='57.9333')
+#
+#   ELEMENTS
+#
+
+#
+#   MATERIALS
+#
     # Our defined Materials 
     #Fe = G4Element(G4String("Iron"),G4String("Fe"),"z=26.","55.845*g/mole")
     #Fe = G4Element(G4String("Iron"),G4String("Fe"),26.0,55.845*g/mole)
@@ -103,7 +135,7 @@ def DefineMaterials():
     #SSteel.AddElement(Ni,"8*perCent")
     #SSteel.AddElement(Ni,0.08)
    
-def DefineBoundingBox(exportList,bbox):
+def defineBoundingBox(exportList,bbox):
     x = 1
     # Does not work if just a mesh`
     #for obj in exportList :
@@ -112,7 +144,7 @@ def DefineBoundingBox(exportList,bbox):
     #    print(bbox)
 
 
-def ConstructWorld():
+def constructWorld():
     print("Construct World")
     worldLV = ET.Element('volume', {'name':'worldLV'})
     ET.SubElement(worldLV, 'materialref',{'ref': 'G4_AIR'})
@@ -159,7 +191,7 @@ def ConstructWorld():
 
     return(worldLV)
 
-def report_object(obj) :
+def reportObject(obj) :
     
     print("Report Object")
     print(obj)
@@ -275,7 +307,7 @@ def mesh2Tessellate(mesh) :
          #print("Facet added")
      #return(tessellate)
 
-def process_Mesh(wv,obj) :
+def processMesh(wv,obj) :
 
     tessellate = mesh2Tessellate(obj.Mesh)
     pos_x = 0.0
@@ -305,7 +337,7 @@ def shape2Mesh(shape) :
      return (MeshPart.meshFromShape(Shape=shape, Deflection = 0.0))
 #            Deflection= params.GetFloat('meshdeflection',0.0)) 
 
-def process_Object_Shape(wv,obj) :
+def processObjectShape(wv,obj) :
     print("Process Object Shape")
     print(obj)
     print(obj.PropertiesList)
@@ -336,10 +368,10 @@ def process_Object_Shape(wv,obj) :
 # G4solid = G4BREPSolid() G4BREPSolid depreciated
 
 # Create Mesh from shape & then Process Mesh to create Tessellated Solid in Geant4
-    process_Mesh(wv,shape2Mesh(shape))
+    processMesh(wv,shape2Mesh(shape))
 
 
-def process_box_object(wv, obj) :
+def processBoxObject(wv, obj) :
     x = 1
     #solidBox = G4Box("dummy", 10.*cm, 10.*cm, 10.*cm)
     #lvBox = G4LogicalVolume(solidBox,SSteel,"box")
@@ -357,15 +389,15 @@ def process_box_object(wv, obj) :
     #                  False,0)
 
 
-def process_object(wv, obj) :
+def processObject(wv, obj) :
    
     print("\nProcess Object")
     while switch(obj.TypeId) :
 
-#      if case("Part::Box") :
-#         print("Box")
-#         process_Object_Box(wv, obj)
-#         break
+      if case("Part::Box") :
+         print("Box")
+         processBoxObject(wv, obj)
+         break
 
       if case("Part::Cut") :
          print("Cut")
@@ -392,10 +424,11 @@ def process_object(wv, obj) :
          process_Mesh(wv,obj)
          break
 
+# Not handled by the above
 # Dropped through so treat object as a shape
 # Need to check obj has attribute Shape
 # Create a mesh & tessellate
-      process_Object_Shape(wv, obj)
+      processObjectShape(wv, obj)
       break
 
 def export(exportList,filename) :
@@ -403,16 +436,15 @@ def export(exportList,filename) :
    
     # process Objects
     print("\nStart GDML Export 0.1")
-
     GDMLstructure()
-    DefineMaterials()
+    defineMaterials()
 
     bbox = FreeCAD.BoundBox()
-    DefineBoundingBox(exportList,bbox)
-    worldLV = ConstructWorld()
+    defineBoundingBox(exportList,bbox)
+    worldLV = constructWorld()
     for obj in exportList :
-        report_object(obj)
-        process_object(worldLV,obj)
+        reportObject(obj)
+        processObject(worldLV,obj)
 
     structure.append(worldLV)
  
@@ -420,7 +452,9 @@ def export(exportList,filename) :
     print("Write to GDML file")
     #navigator= gTransportationManager.GetNavigatorForTracking()
     ##world_volume= navigator.GetWorldVolume()
+    #    gdml_pretty = prettify(gdml)
 
+    #ET.ElementTree(gdml_pretty).write(filename, 'utf-8', True)
     ET.ElementTree(gdml).write(filename, 'utf-8', True)
 
     #gdml_parser = G4GDMLParser()
@@ -428,4 +462,5 @@ def export(exportList,filename) :
     #print(type(filename))
     #gdml_parser.Write(G4String(str(filename)), world_volume)
     
-    FreeCAD.Console.PrintMessage("successfully exported "+filename)
+   
+
