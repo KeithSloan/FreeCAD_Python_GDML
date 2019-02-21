@@ -70,6 +70,10 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
+#################################
+# globals
+################################
+global gdml, define, materials, solids, structure, setup
 
 #################################
 #  Setup GDML environment
@@ -91,17 +95,16 @@ def GDMLstructure() :
 
 def defineMaterials():
     print("Define Materials")
-#    ET.ElementTree(gdml).write("test1", 'utf-8', True)
-
+#
 #   Some hardcoded isotopes, elements & materials
 #
 #   ISOTOPES
 #
 #   C0 - Carbon
 #
-    iso = ET.SubElement(materials,'isotope', N='12', Z='6', \
-                        name="C120x56070ee874f0")
-    ET.SubElement(iso,'atom', unit='g/mole', value='12')
+    iso = ET.SubElement(materials,'isotope', \
+                {'N': 12, 'Z': 6 'name': "C120x56070ee874f0" })
+    ET.SubElement(iso,'atom', {'unit': 'g/mole' 'value': 12)
     iso = ET.SubElement(materials,'isotope', N='13', Z='6', \
                         name="C130x56070ee940b0")
     ET.SubElement(iso,'atom', unit='g/mole', value='13.0034')
@@ -254,6 +257,7 @@ def defineBoundingBox(exportList,bbox):
 
 def constructWorld():
     print("Construct World")
+    global worldLV
     worldLV = ET.Element('volume', {'name':'worldLV'})
     ET.SubElement(worldLV, 'materialref',{'ref': 'G4_AIR'})
     ET.SubElement(worldLV, 'solidref',{'ref': 'world'})
@@ -297,7 +301,30 @@ def constructWorld():
     #    p1 = G4ThreeVector(0.0,0.0,0.0)
     #    p2 = G4ThreeVector(0.0,50.0,0.0)
 
-    return(worldLV)
+def createLVandPV(obj,solidName):
+    #print("Object Base")
+    #dir(obj.Base)
+    #print dir(obj)
+    #print dir(obj.Placement)
+    name = obj.Name
+    lvName = 'LV'+name
+    pvName = 'PV'+name
+    pos  = obj.Placement.Base
+    angles = obj.Placement.Rotation.toEuler()
+    print ("Angles")
+    print angles
+    #lvol = ET.SubElement(structure,'volume', {'name':pvName})
+    #ET.SubElement(lvol, 'materialref', {'ref': 'SSteal'})
+    #ET.SubElement(lvol, 'solidref', {'ref': solidName})
+    #phys = ET.SubElement(worldLV, 'physvol', {'name': str('PV'+name)})
+    #ET.SubElement(phys, 'volumeref', {'ref': lvName})
+    #ET.SubElement(phys, 'position', {'name': name+'_pos', 'unit': 'mm', \
+    #              'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]) })
+    #ET.SubElement(phys, 'rotation', {'name': name+'_pos', 'unit': 'deg', \
+    #              'x': str(-angles[2]), \
+    #              'y': str(-angles[1]), \
+    #              'z': str(-angles[0])})
+ 
 
 def reportObject(obj) :
     
@@ -387,7 +414,7 @@ def createFacet(v0,v1,v2) :
     #return(facet)
 
 #    Add XML for TessellateSolid
-def mesh2Tessellate(mesh) :
+def mesh2Tessellate(mesh, name) :
      print "mesh"
      print mesh
      print dir(mesh)
@@ -396,16 +423,28 @@ def mesh2Tessellate(mesh) :
      print "mesh topology"
      print dir(mesh.Topology)
      print mesh.Topology
-
-#     add name of TessellateSolid
-#     tessellate = G4TessellatedSolid()
+#
 #    mesh.Topology[0] = points
 #    mesh.Topology[1] = faces
+#
+#    First setup vertex in define section vetexs (points) 
+#    define = ET.ElementTree(structure,'define')
+     for fc_points in mesh.Topology[0] : 
+         print(fc_points)
+         #ET.element('position $$$$$$$$$$$$ Cont
+         #g4_facet = createFacet(mesh.Topology[0][fc_facet[0]],
+
+#     add name of TessellateSolid
+#     tess = ET.ElementTree(solids,'tessellated', {'name' = name })
+#
+#     Add faces
+#
      for fc_facet in mesh.Topology[1] : 
          print(fc_facet)
-         g4_facet = createFacet(mesh.Topology[0][fc_facet[0]],
-                                mesh.Topology[0][fc_facet[1]],
-                                mesh.Topology[0][fc_facet[2]])
+         #ET.Element(tess,'triangular' $$$$$$$$$$verte
+         #g4_facet = createFacet(mesh.Topology[0][fc_facet[0]],
+         #                      mesh.Topology[0][fc_facet[1]],
+         #                      mesh.Topology[0][fc_facet[2]])
          #print(g4_facet.GetVertex(0))
          #print(g4_facet.GetVertex(1))
          #print(g4_facet.GetVertex(2))
@@ -413,31 +452,13 @@ def mesh2Tessellate(mesh) :
          print("Adding Facet")
          #tessellate.AddFacet(g4_facet)
          #print("Facet added")
-     #return(tessellate)
 
 def processMesh(wv,obj) :
 
-    tessellate = mesh2Tessellate(obj.Mesh)
-    pos_x = 0.0
-    pos_y = 0.0
-    pos_z = 0.0
-
     print("Create Tessellate Logical Volume")
-    #lvTess = G4LogicalVolume(tessellate,SSteel,"Tessellate")
-    print("Add Logical Volume to Physical Volume")
-    #pvTess = G4PVPlacement(G4RotationMatrix(),         # no rotaion     \
-    #                  G4ThreeVector(pos_x, pos_y, pos_z),               \
-    #                  G4String("Tessellated"),         # its name       \
-    #                  lvTess,                 # its logical volume      \
-    #                  wv,                # its mother (physical) volume \
-    #                  False,0)
-
-
-    #dir   = G4ThreeVector(0.,1.,0.)
-    #axis  = G4ThreeVector(0.,1.,0.)
-    #point = G4Point3D(0.,0.,0.)
-    #point = G4ThreeVector(0.,0.,0.)
-    #G4FPlane(dir,axis,point,1)
+    LVobject = createLVandPV(obj,"tessellated")
+    mesh2Tessellate(obj.Mesh,obj.Name)
+    #tessellate = mesh2Tessellate(obj.Mesh)
     #return(tessellate)
 
 def shape2Mesh(shape) :
@@ -472,11 +493,9 @@ def processObjectShape(wv,obj) :
         print f
 #        print dir(f)
 
-# Virtual function    G4solid = myG4VSolid()
-# G4solid = G4BREPSolid() G4BREPSolid depreciated
-
 # Create Mesh from shape & then Process Mesh to create Tessellated Solid in Geant4
     processMesh(wv,shape2Mesh(shape))
+    createLVandPV(obj,"tessellated")
 
 
 def processBoxObject(wv, obj) :
@@ -529,7 +548,7 @@ def processObject(wv, obj) :
 
       if case("Mesh::Feature") :
          print("Mesh Feature") 
-         process_Mesh(wv,obj)
+         processMesh(wv,obj)
          break
 
 # Not handled by the above
