@@ -71,16 +71,17 @@ def case(*args):
     return any((arg == switch.value for arg in args))
 
 #################################
-# globals
-################################
-global gdml, define, materials, solids, structure, setup
-
-#################################
 #  Setup GDML environment
 #################################
 def GDMLstructure() :
     print("Setup GDML structure")
+    #################################
+    # globals
+    ################################
     global gdml, define, materials, solids, structure, setup
+    global defineCnt
+
+    defineCnt = 1
     gdml = ET.Element('gdml', {
           'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
           'xsi:noNamespaceSchemaLocation': "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd"
@@ -96,6 +97,7 @@ def GDMLstructure() :
 
 def defineMaterials():
     print("Define Materials")
+    global materials
 #
 #   Some hardcoded isotopes, elements & materials
 #
@@ -266,11 +268,12 @@ def defineBoundingBox(exportList,bbox):
 
 def constructWorld():
     print("Construct World")
-    global worldLV
     #ET.ElementTree(gdml).write("test9b", 'utf-8', True)
-    worldLV = ET.Element('volume', {'name': 'worldLV'})
+    # Volumes get added to structue section of gdml ( structure is a global )
+    worldLV = ET.SubElement(structure,'volume', {'name': 'worldLV'})
     ET.SubElement(worldLV, 'materialref',{'ref': 'G4_AIR'})
     ET.SubElement(worldLV, 'solidref',{'ref': 'world'})
+    # Solids get added to solids section of gdml ( solids is a global )
     ET.SubElement(solids, 'box',{'name': 'World','x': '0,1000','y': '0,1000','z': '0,1000','lunit' : 'mm'})
     #ET.ElementTree(gdml).write("test9c", 'utf-8', True)
 
@@ -313,6 +316,9 @@ def constructWorld():
     #    p2 = G4ThreeVector(0.0,50.0,0.0)
 
 def createLVandPV(obj,solidName):
+    #
+    # Logical & Physical Volumes get added to structure section of gdml
+    #
     #ET.ElementTree(gdml).write("test9d", 'utf-8', True)
     #print("Object Base")
     #dir(obj.Base)
@@ -325,18 +331,17 @@ def createLVandPV(obj,solidName):
     angles = obj.Placement.Rotation.toEuler()
     print ("Angles")
     print angles
-    #lvol = ET.SubElement(structure,'volume', {'name':pvName})
-    #ET.SubElement(lvol, 'materialref', {'ref': 'SSteal'})
-    #ET.SubElement(lvol, 'solidref', {'ref': solidName})
-    #phys = ET.SubElement(worldLV, 'physvol', {'name': str('PV'+name)})
-    #ET.SubElement(phys, 'volumeref', {'ref': lvName})
-    #ET.SubElement(phys, 'position', {'name': name+'_pos', 'unit': 'mm', \
-    #              'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]) })
-    #ET.SubElement(phys, 'rotation', {'name': name+'_pos', 'unit': 'deg', \
-    #              'x': str(-angles[2]), \
-    #              'y': str(-angles[1]), \
-    #              'z': str(-angles[0])})
- 
+    lvol = ET.SubElement(structure,'volume', {'name':pvName})
+    ET.SubElement(lvol, 'materialref', {'ref': 'SSteal'})
+    ET.SubElement(lvol, 'solidref', {'ref': solidName})
+    phys = ET.SubElement(lvol, 'physvol', {'name': str('PV'+name)})
+    ET.SubElement(phys, 'volumeref', {'ref': lvName})
+    ET.SubElement(phys, 'position', {'name': name+'_pos', 'unit': 'mm', \
+                  'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]) })
+    ET.SubElement(phys, 'rotation', {'name': name+'_pos', 'unit': 'deg', \
+                  'x': str(-angles[2]), \
+                  'y': str(-angles[1]), \
+                  'z': str(-angles[0])})
 
 def reportObject(obj) :
     
@@ -427,6 +432,9 @@ def createFacet(v0,v1,v2) :
 
 #    Add XML for TessellateSolid
 def mesh2Tessellate(mesh, name) :
+     global defineCnt
+
+     baseVrt = defineCnt
      print "mesh"
      print mesh
      print dir(mesh)
@@ -440,45 +448,43 @@ def mesh2Tessellate(mesh, name) :
 #    mesh.Topology[1] = faces
 #
 #    First setup vertex in define section vetexs (points) 
-#    define = ET.ElementTree(structure,'define')
+     print("Add Vertex positions")
      for fc_points in mesh.Topology[0] : 
          print(fc_points)
-         #ET.element('position $$$$$$$$$$$$ Cont
-         #g4_facet = createFacet(mesh.Topology[0][fc_facet[0]],
-
-#     add name of TessellateSolid
-#     tess = ET.ElementTree(solids,'tessellated', {'name' = name })
-#
+         v = 'v'+str(defineCnt)
+         ET.SubElement(define, 'position', {'name': v, \
+                  'x': str(fc_points[0]), \
+                  'y': str(fc_points[1]), \
+                  'z': str(fc_points[2]), \
+                  'unit': 'mm'})
+         defineCnt += 1         
+#                  
 #     Add faces
 #
+     print("Add Triangular vertex")
+     tess = ET.SubElement(structure,'tessellated',{'name': name})
      for fc_facet in mesh.Topology[1] : 
-         print(fc_facet)
-         #ET.Element(tess,'triangular' $$$$$$$$$$verte
-         #g4_facet = createFacet(mesh.Topology[0][fc_facet[0]],
-         #                      mesh.Topology[0][fc_facet[1]],
-         #                      mesh.Topology[0][fc_facet[2]])
-         #print(g4_facet.GetVertex(0))
-         #print(g4_facet.GetVertex(1))
-         #print(g4_facet.GetVertex(2))
+       print(fc_facet)
+       vrt1 = 'v'+str(baseVrt+fc_facet[0])
+       vrt2 = 'v'+str(baseVrt+fc_facet[1])
+       vrt3 = 'v'+str(baseVrt+fc_facet[2])
+       ET.SubElement(tess,'triangular',{ \
+         'vertex1': vrt1, 'vertex2': vrt2 ,'vertex3': vrt3, 'type': 'ABSOLUTE'})
 
-         print("Adding Facet")
-         #tessellate.AddFacet(g4_facet)
-         #print("Facet added")
 
-def processMesh(wv,obj) :
+def processMesh(obj) :
 
     print("Create Tessellate Logical Volume")
-    LVobject = createLVandPV(obj,"tessellated")
+    createLVandPV(obj,"tessellated")
     mesh2Tessellate(obj.Mesh,obj.Name)
     #tessellate = mesh2Tessellate(obj.Mesh)
-    #return(tessellate)
 
 def shape2Mesh(shape) :
      import MeshPart
      return (MeshPart.meshFromShape(Shape=shape, Deflection = 0.0))
 #            Deflection= params.GetFloat('meshdeflection',0.0)) 
 
-def processObjectShape(wv,obj) :
+def processObjectShape(obj) :
     print("Process Object Shape")
     print(obj)
     print(obj.PropertiesList)
@@ -510,7 +516,7 @@ def processObjectShape(wv,obj) :
     createLVandPV(obj,"tessellated")
 
 
-def processBoxObject(wv, obj) :
+def processBoxObject(obj) :
     x = 1
     #solidBox = G4Box("dummy", 10.*cm, 10.*cm, 10.*cm)
     #lvBox = G4LogicalVolume(solidBox,SSteel,"box")
@@ -528,17 +534,14 @@ def processBoxObject(wv, obj) :
     #                  False,0)
 
 
-def processObject(wv, obj) :
+def processObject(obj) :
    
     print("\nProcess Object")
     #ET.ElementTree(gdml).write("test9a", 'utf-8', True)
     while switch(obj.TypeId) :
-
-      if case("Part::Box") :
-         print("Box")
-         processBoxObject(wv, obj)
-         break
-
+      #
+      # Deal with non solids
+      #
       if case("Part::Cut") :
          print("Cut")
          break
@@ -561,15 +564,25 @@ def processObject(wv, obj) :
 
       if case("Mesh::Feature") :
          print("Mesh Feature") 
-         processMesh(wv,obj)
+         processMesh(obj)
          break
+      #
+      #  Now deal with solids
+      #
+      while switch(obj.TypeId) :
 
-# Not handled by the above
-# Dropped through so treat object as a shape
-# Need to check obj has attribute Shape
-# Create a mesh & tessellate
-      processObjectShape(wv, obj)
-      break
+         if case("Part::Box") :
+            print("Box")
+            processBoxObject(obj)
+            break
+
+         # Not a Solid that translated to GDML solid
+         # Dropped through so treat object as a shape
+         # Need to check obj has attribute Shape
+         # Create a mesh & tessellate
+         #
+         processObjectShape(obj)
+         break
 
 def export(exportList,filename) :
     "called when FreeCAD exports a file"
@@ -584,7 +597,7 @@ def export(exportList,filename) :
     constructWorld()
     for obj in exportList :
         reportObject(obj)
-        processObject(worldLV,obj)
+        processObject(obj)
     #ET.ElementTree(gdml).write("test9e", 'utf-8', True)
 
     # write GDML file 
