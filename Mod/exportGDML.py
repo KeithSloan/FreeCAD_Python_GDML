@@ -34,12 +34,7 @@ from FreeCAD import Vector
 import argparse
 import xml.etree.ElementTree as ET
 from   xml.etree.ElementTree import XML 
-import xml.dom.minidom 
-#from xml.dom.minidom import minidom
-global ET
 #################################
-# Globals
-global gdml
 
 try: import FreeCADGui
 except ValueError: gui = False
@@ -50,13 +45,6 @@ else: gui = True
 # no doubt there will be a problem when they do implement Value
 if open.__module__ in ['__builtin__', 'io']:
     pythonopen = open # to distinguish python built-in open function from the one declared here
-
-def prettify(elem):
-    """Return a pretty-printed XML string for the Element.
-    """
-    rough_string = ET.tostring(elem, 'utf-8')
-    reparsed = xml.dom.minidom.parseString(rough_string)
-    return reparsed.toprettyxml(indent="  ")
 
 #################################
 # Switch functions
@@ -602,19 +590,5 @@ def export(exportList,filename) :
 
     # write GDML file 
     print("Write to GDML file")
-    #navigator= gTransportationManager.GetNavigatorForTracking()
-    ##world_volume= navigator.GetWorldVolume()
-    #    gdml_pretty = prettify(gdml)
-
-    #ET.ElementTree(gdml_pretty).write(filename, 'utf-8', True)
-    print("GDML")
-    print(str(gdml))
     ET.ElementTree(gdml).write(filename, 'utf-8', True)
-
-    #gdml_parser = G4GDMLParser()
-    #print(filename)
-    #print(type(filename))
-    #gdml_parser.Write(G4String(str(filename)), world_volume)
-    
-   
-
+    print("GDML file written")
