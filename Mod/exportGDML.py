@@ -58,6 +58,25 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
+#########################################################
+# Pretty format GDML                                    #
+#########################################################
+def indent(elem, level=0):
+    i = "\n" + level*"  "
+    j = "\n" + (level-1)*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for subelem in elem:
+            indent(subelem, level+1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = j
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = j
+    return elem
 #################################
 #  Setup GDML environment
 #################################
@@ -588,7 +607,8 @@ def export(exportList,filename) :
         processObject(obj)
     #ET.ElementTree(gdml).write("test9e", 'utf-8', True)
 
-    # write GDML file 
+    # format & write GDML file 
+    indent(gdml)
     print("Write to GDML file")
     ET.ElementTree(gdml).write(filename, 'utf-8', True)
     print("GDML file written")
