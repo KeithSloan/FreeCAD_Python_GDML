@@ -1,6 +1,6 @@
 # FreeCAD_Python_GDML
 
-FreeCAD python importer & Exporter for GDML files.
+FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister devlopment https://github.com/KeithSloan/FreeCAD_Geant4
 
@@ -35,7 +35,8 @@ Current version converts all FreeCAD objects containing shapes to a mesh and the
 * Use lxml rather than etree (Needs apt-get install python-lxml)
 * Tidy softLink script
 * Make FreeCAD installable workbench
-* Documentation 
+* Documentation
+* Investigate handling of Materials
 
 ## Feedback
 
