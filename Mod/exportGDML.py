@@ -336,8 +336,9 @@ def constructWorld():
     #    p1 = G4ThreeVector(0.0,0.0,0.0)
     #    p2 = G4ThreeVector(0.0,50.0,0.0)
 
-def createLVandPV(obj,solidName):
+def createLVandPV(obj, name, solidName):
     #
+    # Cannot rely on obj.Name so have to pass name
     # Logical & Physical Volumes get added to structure section of gdml
     #
     #ET.ElementTree(gdml).write("test9d", 'utf-8', True)
@@ -346,7 +347,6 @@ def createLVandPV(obj,solidName):
     #print dir(obj)
     #print dir(obj.Placement)
     global PVcount, POScount, ROTcount
-    name = obj.Name
     pvName = 'PV'+name+str(PVcount)
     PVcount += 1
     posName = 'Pos'+name+str(POScount)
@@ -429,34 +429,6 @@ def reportObject(obj) :
       print(obj.TypeId)
       break
 
-def fc2g4Vec(v) :
-    print(str(v[0])+" : "+str(v[1])+" : "+str(v[2]))
-    #    return(G4ThreeVector(int(v[0]),int(v[1]),int(v[2])))
-
-def createFacet(v0,v1,v2) :
-    global facet
-    print("Create Facet : ")
-    print(str(v0)+" : "+str(v1)+" : "+str(v2))
-# following should work but does not wait for weyner response in forum
-#    facet = MyG4TriangularFacet(v0,v1,v2)
-    v0g4 = fc2g4Vec(v0)
-    v1g4 = fc2g4Vec(v1)
-    v2g4 = fc2g4Vec(v2)
-    print(str(v0g4)+" : "+str(v1g4)+" : "+str(v2g4))
-    #facet = MyG4TriangularFacet(v0g4,v1g4,v2g4)
-    print("Facet constructed")
-#   facet = G4VFacet() cannot be initiated from python
-#   G4TrianglerFacet needs to be constructed with all three vectors
-#   otherwise Isdefined is false and one gets an error 
-# need to convert FreeCAD base.Vector to Geant4 vector Hep3Vector
-    #print("Number Vert   : "+str(facet.GetNumberOfVertices()))
-    #print("Area          : "+str(facet.GetArea()))
-    #print("Is defined    : "+str(bool(facet.IsDefined)))
-    #print(facet.GetVertex(0))
-    #print(facet.GetVertex(1))
-    #print(facet.GetVertex(2))
-    #return(facet)
-
 #    Add XML for TessellateSolid
 def mesh2Tessellate(mesh, name) :
      global defineCnt
@@ -499,11 +471,13 @@ def mesh2Tessellate(mesh, name) :
          'vertex1': vrt1, 'vertex2': vrt2 ,'vertex3': vrt3, 'type': 'ABSOLUTE'})
 
 
-def processMesh(obj) :
-
+def processMesh(obj, Mesh, Name) :
+    #  obj needed for Volune names
+    #  object maynot have Mesh as part of Obj
+    #  Name - allows control over name
     print("Create Tessellate Logical Volume")
-    createLVandPV(obj,obj.Name)
-    mesh2Tessellate(obj.Mesh,obj.Name)
+    createLVandPV(obj, Name, 'Tessellated')
+    mesh2Tessellate(Mesh, Name)
 
 def shape2Mesh(shape) :
      import MeshPart
@@ -535,11 +509,10 @@ def processObjectShape(obj) :
     print("Faces")
     for f in shape.Faces :
         print f
-#        print dir(f)
+        print dir(f)
 
 # Create Mesh from shape & then Process Mesh to create Tessellated Solid in Geant4
-    processMesh(wv,shape2Mesh(shape))
-    createLVandPV(obj,"tessellated")
+    processMesh(obj,shape2Mesh(shape),obj.Name)
 
 
 def processBoxObject(obj) :
@@ -590,25 +563,23 @@ def processObject(obj) :
 
       if case("Mesh::Feature") :
          print("Mesh Feature") 
-         processMesh(obj)
+         processMesh(obj, obj.Mesh, obj.Name)
          break
       #
       #  Now deal with solids
       #
-      while switch(obj.TypeId) :
+#      if case("Part::Box") :
+#         print("Box")
+#         processBoxObject(obj)
+#         break
 
-         if case("Part::Box") :
-            print("Box")
-            processBoxObject(obj)
-            break
-
-         # Not a Solid that translated to GDML solid
-         # Dropped through so treat object as a shape
-         # Need to check obj has attribute Shape
-         # Create a mesh & tessellate
-         #
-         processObjectShape(obj)
-         break
+      # Not a Solid that translated to GDML solid
+      # Dropped through so treat object as a shape
+      # Need to check obj has attribute Shape
+      # Create a mesh & tessellate
+      #
+      processObjectShape(obj)
+      break
 
 def export(exportList,filename) :
     "called when FreeCAD exports a file"
