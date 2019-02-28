@@ -429,6 +429,50 @@ def reportObject(obj) :
       print(obj.TypeId)
       break
 
+def processPlanar(obj, shape, name ) :
+    print 'Polyhedron ????'
+    global defineCnt
+    #
+    print("Add tessellated Solid")
+    tess = ET.SubElement(solids,'tessellated',{'name': name})
+    print("Add Vertex positions")
+    for f in shape.Faces :
+       baseVrt = defineCnt
+       for vrt in f.Vertexes :
+           vnum = 'v'+str(defineCnt)
+           ET.SubElement(define, 'position', {'name': vnum, \
+              'x': str(vrt.Point.x), \
+              'y': str(vrt.Point.y), \
+              'z': str(vrt.Point.z), \
+              'unit': 'mm'})
+           defineCnt += 1
+       print("Add vertex to tessellated Solid")
+       vrt1 = 'v'+str(baseVrt)
+       vrt2 = 'v'+str(baseVrt+1)
+       vrt3 = 'v'+str(baseVrt+2)
+       vrt4 = 'v'+str(baseVrt+3)
+       NumVrt = len(f.Vertexes)
+       if NumVrt == 3 :
+          ET.SubElement(tess,'triangular',{ \
+                      'vertex1': vrt1, \
+                      'vertex2': vrt2, \
+                      'vertex3': vrt3, \
+                      'type': 'ABSOLUTE'})
+       elif NumVrt == 4 :   
+          ET.SubElement(tess,'quadrangular',{ \
+                      'vertex1': vrt1, \
+                      'vertex2': vrt2, \
+                      'vertex3': vrt3, \
+                      'vertex4': vrt4, \
+                      'type': 'ABSOLUTE'})
+
+def checkShapeAllPlanar(Shape) :
+    for f in Shape.Faces :
+        if f.Surface.isPlanar() == False :
+           return False
+        break
+    return True
+
 #    Add XML for TessellateSolid
 def mesh2Tessellate(mesh, name) :
      global defineCnt
@@ -506,13 +550,35 @@ def processObjectShape(obj) :
 
 #   Dropped through to here
 #   Need to check has Shape
+
     print("Faces")
     for f in shape.Faces :
+        print 'Face'
         print f
         print dir(f)
+        print f.Vertexes
+        for v in f.Vertexes :
+            print 'X :'+str(v.Point.x)
+            print 'Y :'+str(v.Point.y)
+            print 'Z :'+str(v.Point.z)
 
-# Create Mesh from shape & then Process Mesh to create Tessellated Solid in Geant4
-    processMesh(obj,shape2Mesh(shape),obj.Name)
+#        print dir(f.Vertexes)
+#        print 'Surface'
+#        print f.Surface
+#        #print dir(f.Surface)
+#        print f.Surface.isPlanar()
+
+    print 'Check if All planar'
+    planar = checkShapeAllPlanar(shape)
+    print planar
+
+    if planar :
+       processPlanar(obj,shape,obj.Name)
+
+    else :
+       # Create Mesh from shape & then Process Mesh
+       #to create Tessellated Solid in Geant4
+       processMesh(obj,shape2Mesh(shape),obj.Name)
 
 
 def processBoxObject(obj) :
