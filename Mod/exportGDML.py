@@ -1,4 +1,3 @@
-
 #***************************************************************************
 #*                                                                         *
 #*   Copyright (c) 2019 Keith Sloan <keith@sloan-home.co.uk>               *
@@ -85,10 +84,11 @@ def GDMLstructure() :
     #################################
     # globals
     ################################
-    global gdml, define, materials, solids, structure, setup
-    global defineCnt
+    global gdml, define, materials, solids, structure, setup, worldVOL
+    global defineCnt, LVcount, PVcount, POScount, ROTcount
 
-    defineCnt = 1
+    defineCnt = LVcount = PVcount = POScount =  ROTcount = 1
+
     gdml = ET.Element('gdml', {
           'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
           'xsi:noNamespaceSchemaLocation': "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd"
@@ -98,7 +98,7 @@ def GDMLstructure() :
     solids = ET.SubElement(gdml, 'solids')
     structure = ET.SubElement(gdml, 'structure')
     setup = ET.SubElement(gdml, 'setup', {'name': 'Default', 'version': '1.0'})
-    ET.SubElement(setup, 'world', {'ref': 'worldLV'})
+    worldVOL = ET.SubElement(setup, 'world', {'ref': 'worldVOL'})
     #ET.ElementTree(gdml).write("test2", 'utf-8', True)
 
 
@@ -158,6 +158,7 @@ def defineMaterials():
     iso = ET.SubElement(materials,'isotope',{'N': '54', 'Z': '24', \
                         'name': "Cr540x56070ee89880"})
     ET.SubElement(iso,'atom', {'unit': 'g/mole', 'value': '53.9389'})
+
     #ET.ElementTree(gdml).write("test3a2", 'utf-8', True)
 #
 #   Ni - Nickel
@@ -173,7 +174,7 @@ def defineMaterials():
     ET.SubElement(iso,'atom', {'unit': 'g/mole', 'value': '61.9311'})
     iso = ET.SubElement(materials,'isotope', {'N': '62', 'Z': '28', \
                          'name': "Ni620x56070ee89ab0"})
-    ET.SubElement(iso,'atom', {'uniti': 'g/mole', 'value': '61.9283'})
+    ET.SubElement(iso,'atom', {'unit': 'g/mole', 'value': '61.9283'})
     iso = ET.SubElement(materials,'isotope', {'N': '64', 'Z': '28', \
                          'name': "Ni640x56070ee87ca0"})
     ET.SubElement(iso,'atom', {'unit': 'g/mole', 'value': '63.928'})
@@ -189,7 +190,7 @@ def defineMaterials():
     ET.SubElement(iso,'atom', {'unit': 'g/mole', 'value': '37.9627'})
     iso = ET.SubElement(materials,'isotope', {'N': '40', 'Z': '18', \
                           'name': "Ar400x56070ee90c20"})
-    ET.SubElement(iso,'atom', {'unitr': 'g/mole', 'value': '37.9627'})
+    ET.SubElement(iso,'atom', {'unit': 'g/mole', 'value': '37.9627'})
 #
 #   Fe - Iron
 #
@@ -242,25 +243,36 @@ def defineMaterials():
 #   MATERIALS
 #
     sst = ET.SubElement(materials,'material', \
-            {'name': "SSteel0x56070ee87d10", 'state': "gas"})
+            {'name': "SSteel0x56070ee87d10"})
+#    sst = ET.SubElement(materials,'material', \
+#            {'name': "SSteel0x56070ee87d10", 'state': "solid"})
     ET.SubElement(sst,'T', {'unit': "K", 'value': '293.15'})
     ET.SubElement(sst,'MEE', {'unit': "eV", 'value': '282.530633667015'})
     ET.SubElement(sst,'D', {'unit': "g/cm3", 'value': '1.286547719061e-18'})
-    ET.SubElement(elem,'fraction', {'n': '0.74', 'ref': "Iron0x56070eea0880"})
-    ET.SubElement(elem,'fraction', {'n': '0.18', 'ref': "Chromium0x56070eea0040"}) 
-    ET.SubElement(elem,'fraction', {'n': '0.08', 'ref': "Nickel0x56070ee81420"})
+    ET.SubElement(sst,'fraction', {'n': '0.74', 'ref': "Iron0x56070eea0880"})
+    ET.SubElement(sst,'fraction', {'n': '0.18', 'ref': "Chromium0x56070eea004"}) 
+    ET.SubElement(sst,'fraction', {'n': '0.08', 'ref': "Nickel0x56070ee81420"})
     sst = ET.SubElement(materials, 'material', \
-            {'name': "SG4_AIR0x56070ee81710", 'state': "gas"})
+            {'name': "G4_AIR0x56070ee81710", 'state': "gas"})
     ET.SubElement(sst,'T', {'unit': "K", 'value': '293.15'})
     ET.SubElement(sst,'MEE', {'unit': "eV", 'value': '85.7'})
     ET.SubElement(sst,'D', {'unit': "g/cm3", 'value': '0.00120479'})
-    ET.SubElement(elem,'fraction', {'n': '0.000124000124000124', \
-                   'ref': "C0x56070ee949e0"})
-    ET.SubElement(elem,'fraction', {'n': '0.755267755267755',  \
+#    ET.SubElement(sst,'fraction', {'n': '0.000124000124000124', \
+#                   'ref': "C120x56070ee874f0"})
+#    Need definition of Carbon element not isotope 
+
+#    ET.SubElement(sst,'fraction', {'n': '0.755267755267755',  \
+#                   'ref': "N0x56070ee94e30"})
+#    ET.SubElement(sst,'fraction', {'n': '0.231781231781232', \
+#                   'ref': "O0x56070eea0370"})
+#    ET.SubElement(sst,'fraction', {'n': '0.0128270128270128', \
+#                     'ref': "Ar0x56070eea07c0"})
+
+    ET.SubElement(sst,'fraction', {'n': '0.75',  \
                    'ref': "N0x56070ee94e30"})
-    ET.SubElement(elem,'fraction', {'n': '0.231781231781232', \
+    ET.SubElement(sst,'fraction', {'n': '0.24', \
                    'ref': "O0x56070eea0370"})
-    ET.SubElement(elem,'fraction', {'n': '0.0128270128270128', \
+    ET.SubElement(sst,'fraction', {'n': '0.01', \
                      'ref': "Ar0x56070eea07c0"})
     #ET.ElementTree(gdml).write("test6", 'utf-8', True)
    
@@ -275,13 +287,15 @@ def defineBoundingBox(exportList,bbox):
 
 def constructWorld():
     print("Construct World")
+    global worldVOL
+
     #ET.ElementTree(gdml).write("test9b", 'utf-8', True)
-    # Volumes get added to structue section of gdml ( structure is a global )
-    worldLV = ET.SubElement(structure,'volume', {'name': 'worldLV'})
-    ET.SubElement(worldLV, 'materialref',{'ref': 'G4_AIR'})
-    ET.SubElement(worldLV, 'solidref',{'ref': 'world'})
+    # world volume needs to be added to structure after all other volumes
+    worldVOL = ET.Element('volume', {'name': 'worldVOL'})
+    ET.SubElement(worldVOL, 'materialref',{'ref': 'G4_AIR0x56070ee81710'})
+    ET.SubElement(worldVOL, 'solidref',{'ref': 'WorldBox'})
     # Solids get added to solids section of gdml ( solids is a global )
-    ET.SubElement(solids, 'box',{'name': 'World','x': '0,1000','y': '0,1000','z': '0,1000','lunit' : 'mm'})
+    ET.SubElement(solids, 'box',{'name': 'WorldBox','x': '1000','y': '1000','z': '1000','lunit' : 'mm'})
     #ET.ElementTree(gdml).write("test9c", 'utf-8', True)
 
     # Python has automatic garbage collection system.
@@ -331,21 +345,27 @@ def createLVandPV(obj,solidName):
     #dir(obj.Base)
     #print dir(obj)
     #print dir(obj.Placement)
+    global PVcount, POScount, ROTcount
     name = obj.Name
-    lvName = 'LV'+name
-    pvName = 'PV'+name
+    pvName = 'PV'+name+str(PVcount)
+    PVcount += 1
+    posName = 'Pos'+name+str(POScount)
+    POScount += 1
+    rotName = 'Rot'+name+str(ROTcount)
+    ROTcount += 1
     pos  = obj.Placement.Base
     angles = obj.Placement.Rotation.toEuler()
     print ("Angles")
     print angles
     lvol = ET.SubElement(structure,'volume', {'name':pvName})
-    ET.SubElement(lvol, 'materialref', {'ref': 'SSteal'})
+    ET.SubElement(lvol, 'materialref', {'ref': 'SSteel0x56070ee87d10'})
     ET.SubElement(lvol, 'solidref', {'ref': solidName})
-    phys = ET.SubElement(lvol, 'physvol', {'name': str('PV'+name)})
-    ET.SubElement(phys, 'volumeref', {'ref': lvName})
-    ET.SubElement(phys, 'position', {'name': name+'_pos', 'unit': 'mm', \
+    # Place child physical volume in World Volume
+    phys = ET.SubElement(worldVOL, 'physvol')
+    ET.SubElement(phys, 'volumeref', {'ref': pvName})
+    ET.SubElement(phys, 'position', {'name': posName, 'unit': 'mm', \
                   'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]) })
-    ET.SubElement(phys, 'rotation', {'name': name+'_pos', 'unit': 'deg', \
+    ET.SubElement(phys, 'rotation', {'name': rotName, 'unit': 'deg', \
                   'x': str(-angles[2]), \
                   'y': str(-angles[1]), \
                   'z': str(-angles[0])})
@@ -469,7 +489,7 @@ def mesh2Tessellate(mesh, name) :
 #     Add faces
 #
      print("Add Triangular vertex")
-     tess = ET.SubElement(structure,'tessellated',{'name': name})
+     tess = ET.SubElement(solids,'tessellated',{'name': name})
      for fc_facet in mesh.Topology[1] : 
        print(fc_facet)
        vrt1 = 'v'+str(baseVrt+fc_facet[0])
@@ -482,9 +502,8 @@ def mesh2Tessellate(mesh, name) :
 def processMesh(obj) :
 
     print("Create Tessellate Logical Volume")
-    createLVandPV(obj,"tessellated")
+    createLVandPV(obj,obj.Name)
     mesh2Tessellate(obj.Mesh,obj.Name)
-    #tessellate = mesh2Tessellate(obj.Mesh)
 
 def shape2Mesh(shape) :
      import MeshPart
@@ -605,6 +624,12 @@ def export(exportList,filename) :
     for obj in exportList :
         reportObject(obj)
         processObject(obj)
+
+    # Now append World Volume definition to stucture
+    # as it will contain references to volumes that need defining
+    # before it
+    structure.append(worldVOL)
+
     #ET.ElementTree(gdml).write("test9e", 'utf-8', True)
 
     # format & write GDML file 

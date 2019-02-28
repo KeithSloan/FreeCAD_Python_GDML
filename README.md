@@ -38,6 +38,10 @@ Current version converts all FreeCAD objects containing shapes to a mesh and the
 * Documentation
 * Investigate handling of Materials
 
+## For NIST Materials database see http://physics.nist.gov/PhysRefData
+
+## Need to sort out AIR definition
+
 ## Feedback
 
 To contact the Author email keith[at]sloan-home.co.uk
