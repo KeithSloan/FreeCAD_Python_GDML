@@ -276,13 +276,22 @@ def defineMaterials():
                      'ref': "Ar0x56070eea07c0"})
     #ET.ElementTree(gdml).write("test6", 'utf-8', True)
    
-def defineBoundingBox(exportList,bbox):
-    x = 1
-    # Does not work if just a mesh`
-    #for obj in exportList :
-    #    print("{} + {} = ".format(bbox, obj.Shape.BoundBox))
-    #    bbox.add(obj.Shape.BoundBox)
-    #    print(bbox)
+def defineWorldBox(exportList,bbox):
+    for obj in exportList :
+        # print("{} + {} = ".format(bbox, obj.Shape.BoundBox))
+        if hasattr(obj,"Shape"):
+           bbox.add(obj.Shape.BoundBox)
+        if hasattr(obj,"Mesh"):
+           bbox.add(obj.Mesh.BoundBox)
+        if hasattr(obj,"Points"):
+           bbox.add(obj.Points.BoundBox)
+    #   print(bbox)
+    # Solids get added to solids section of gdml ( solids is a global )
+    ET.SubElement(solids, 'box', {'name': 'WorldBox',
+                     'x': str(2*max(abs(bbox.XMin), abs(bbox.XMax))), \
+                     'y': str(2*max(abs(bbox.YMin), abs(bbox.YMax))), \
+                     'z': str(2*max(abs(bbox.ZMin), abs(bbox.ZMax))), \
+                     'lunit': 'mm'})
 
 
 def constructWorld():
@@ -294,8 +303,8 @@ def constructWorld():
     worldVOL = ET.Element('volume', {'name': 'worldVOL'})
     ET.SubElement(worldVOL, 'materialref',{'ref': 'G4_AIR0x56070ee81710'})
     ET.SubElement(worldVOL, 'solidref',{'ref': 'WorldBox'})
-    # Solids get added to solids section of gdml ( solids is a global )
-    ET.SubElement(solids, 'box',{'name': 'WorldBox','x': '1000','y': '1000','z': '1000','lunit' : 'mm'})
+    # WorldBox is set in defineWorldBox
+    #ET.SubElement(solids, 'box',{'name': 'WorldBox','x': '1000','y': '1000','z': '1000','lunit' : 'mm'})
     #ET.ElementTree(gdml).write("test9c", 'utf-8', True)
 
 def createLVandPV(obj, name, solidName):
@@ -393,6 +402,12 @@ def reportObject(obj) :
       if case("Extrusion") : 
          print("Wire extrusion")
          break
+
+      if case("Mesh::Feature") :
+         print("Mesh")
+         #print dir(obj.Mesh)
+         break
+
 
       print("Other")
       print(obj.TypeId)
@@ -678,10 +693,9 @@ def export(exportList,filename) :
     print("\nStart GDML Export 0.1")
     GDMLstructure()
     defineMaterials()
-
-    bbox = FreeCAD.BoundBox()
-    defineBoundingBox(exportList,bbox)
     constructWorld()
+    bbox = FreeCAD.BoundBox()
+    defineWorldBox(exportList, bbox)
     for obj in exportList :
         reportObject(obj)
         processObject(obj)
