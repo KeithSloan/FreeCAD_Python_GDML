@@ -21,8 +21,10 @@ Assumes you already have FreeCAD and git installed
    
 ## Exporter
 
-Current version converts all FreeCAD objects containing shapes to a mesh and then to a GDML Tessellated Solid.
-
+Current version checks all FreeCAD objects shapes to see if planar,
+if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
+If not creates a mesh and then a Tessellated solid with 3 vertex. 
+ 
 ## Future Development Road Map
 
 * Implement Booleans operations
