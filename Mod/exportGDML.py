@@ -298,44 +298,6 @@ def constructWorld():
     ET.SubElement(solids, 'box',{'name': 'WorldBox','x': '1000','y': '1000','z': '1000','lunit' : 'mm'})
     #ET.ElementTree(gdml).write("test9c", 'utf-8', True)
 
-    # Python has automatic garbage collection system.
-    # Geometry objects must be defined as GLOBAL not to be deleted.
-    #global sld_world, lv_world, pv_world, va_world
-
-    #sld_world= G4Box("world", 1.*m, 1.*m, 1.*m)
-    #lv_world= G4LogicalVolume(sld_world, air, "world")
-    #pv_world= G4PVPlacement(G4Transform3D(), lv_world, "world",
-    #                        None, False, 0)
-
-    #va_world= G4VisAttributes()
-    #va_world.SetVisibility(False)
-    #lv_world.SetVisAttributes(va_world)
-
-    # solid object (dummy)
-    #    global sld_brep_box, sld_sld, lv_sld, pv_sld
-
-    #solidBox = G4Box("dummy", 10.*cm, 10.*cm, 10.*cm)
-    #lvBox = G4LogicalVolume(solidBox,SSteel,"box")
-
-    #pos_x = G4double(-1.0*meter)
-    #pos_x = -1.0
-    #pos_y = G4doule(0.0*meter)
-    #pos_y = 0.0
-    #pos_z = G4double(0.0*meter)
-    #pos_z = 0.0
-
-    # Look for better constructor options for G4PVPlacement
-    #pvBox = G4PVPlacement(G4RotationMatrix(),  # no rotaion \
-    #                  G4ThreeVector(pos_x, pos_y, pos_z),   \
-    #                  G4String("Box"),         # its name   \ 
-    #                  lvBox,                   # its logical volume \
-    #                  pv_world,                # its mother (physical) volume \
-    #                  False,0)
-
-
-    #    p1 = G4ThreeVector(0.0,0.0,0.0)
-    #    p2 = G4ThreeVector(0.0,50.0,0.0)
-
 def createLVandPV(obj, name, solidName):
     #
     # Cannot rely on obj.Name so have to pass name
@@ -369,6 +331,13 @@ def createLVandPV(obj, name, solidName):
                   'x': str(-angles[2]), \
                   'y': str(-angles[1]), \
                   'z': str(-angles[0])})
+
+def createAdjustedLVandPV(obj, name, solidName, delta):
+    # Allow for difference in placement between FreeCAD and GDML
+    adjObj = obj
+    rot = FreeCAD.Rotation(obj.Placement.Rotation)
+    adjObj.Placement.move(rot.multVec(delta))#.negative()
+    createLVandPV(adjObj, name, solidName)
 
 def reportObject(obj) :
     
@@ -529,6 +498,9 @@ def shape2Mesh(shape) :
 #            Deflection= params.GetFloat('meshdeflection',0.0)) 
 
 def processObjectShape(obj) :
+    # Check if Planar
+    # If plannar create Tessellated Solid with 3 & 4 vertex as appropriate
+    # If not planar create a mesh and the a Tessellated Solid with 3 vertex
     print("Process Object Shape")
     print(obj)
     print(obj.PropertiesList)
@@ -582,21 +554,58 @@ def processObjectShape(obj) :
 
 
 def processBoxObject(obj) :
-    x = 1
-    #solidBox = G4Box("dummy", 10.*cm, 10.*cm, 10.*cm)
-    #lvBox = G4LogicalVolume(solidBox,SSteel,"box")
+    # Needs unique Name
+    boxName = 'Box' + obj.Name
+    ET.SubElement(solids, 'box',{'name': boxName, \
+                           'x': str(obj.Length.Value),  \
+                           'y': str(obj.Width.Value),  \
+                           'z': str(obj.Height.Value),  \
+                           'lunit' : 'mm'})
+    # Adjustment for position in GDML
+    delta = FreeCAD.Vector(obj.Length.Value / 2, \
+                           obj.Width.Value / 2,  \
+                           obj.Height.Value / 2)
 
-    #pos_x = -1.0
-    #pos_y = 0.0
-    #pos_z = 0.0
+    createAdjustedLVandPV(obj, obj.Name, boxName, delta)
 
-    # Look for better constructor options for G4PVPlacement
-    #pvBox = G4PVPlacement(G4RotationMatrix(),  # no rotaion \
-    #                  G4ThreeVector(pos_x, pos_y, pos_z),   \
-    #                  G4String("Box"),         # its name   \
-    #                  lvBox,                   # its logical volume \
-    #                  wv,                # its mother (physical) volume \
-    #                  False,0)
+def processCylinderObject(obj) :
+    # Needs unique Name
+    cylName = 'Cyl-' + obj.Name
+    ET.SubElement(solids, 'tube',{'name': cylName, \
+                           'rmax': str(obj.Radius.Value), \
+                           'deltaphi': str(float(obj.Angle)), \
+                           'aunit': 'deg',
+                           'z': str(obj.Height.Value),  \
+                           'lunit' : 'mm'})
+    # Adjustment for position in GDML
+    delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
+    createAdjustedLVandPV(obj, obj.Name, cylName, delta)
+
+def processConeObject(obj) :
+    # Needs unique Name
+    coneName = 'Cone' + obj.Name
+    ET.SubElement(solids, 'cone',{'name': coneName, \
+                           'rmax1': str(obj.Radius1.Value),  \
+                           'rmax2': str(obj.Radius2.Value),  \
+                           'deltaphi': str(float(obj.Angle)), \
+                           'aunit': 'deg',
+                           'z': str(obj.Height.Value),  \
+                           'lunit' : 'mm'})
+    # Adjustment for position in GDML
+    delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
+    createAdjustedLVandPV(obj, obj.Name, coneName, delta)
+
+def processSphereObject(obj) :
+    # Needs unique Name
+    sphereName = 'Sphere' + obj.Name
+    ET.SubElement(solids, 'cone',{'name': sphereName, \
+                           'rmax': str(obj.Radius.Value), \
+                           'starttheta': str(90.-float(obj.Angle2)), \
+                           'deltatheta': str(float(obj.Angle2-obj.Angle1)), \
+                           'deltaphi': str(float(obj.Angle3)), \
+                           'aunit': 'deg',
+                           'lunit' : 'mm'})
+    createLVandPV(obj,obj.Name,sphereName)
 
 
 def processObject(obj) :
@@ -632,17 +641,32 @@ def processObject(obj) :
          processMesh(obj, obj.Mesh, obj.Name)
          break
       #
-      #  Now deal with solids
+      #  Now deal with objects that map to GDML solids
       #
-#      if case("Part::Box") :
-#         print("Box")
-#         processBoxObject(obj)
-#         break
+      if case("Part::Box") :
+         print("Box")
+         processBoxObject(obj)
+         break
+
+      if case("Part::Cylinder") :
+         print("Cylinder")
+         processCylinderObject(obj)
+         break
+
+      if case("Part::Cone") :
+         print("Cone")
+         processConeObject(obj)
+         break
+
+      if case("Part::Sphere") :
+         print("Sphere")
+         processSphereObject(obj)
+         break
 
       # Not a Solid that translated to GDML solid
       # Dropped through so treat object as a shape
       # Need to check obj has attribute Shape
-      # Create a mesh & tessellate
+      # Create tessellated solid
       #
       processObjectShape(obj)
       break

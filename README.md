@@ -21,8 +21,17 @@ Assumes you already have FreeCAD and git installed
    
 ## Exporter
 
-Current version converts all FreeCAD objects containing shapes to a mesh and then to a GDML Tessellated Solid.
+The following FreeCAD objects are output as GDML equivalents
 
+1) Cube     ( GDML - Box )
+2) Cone     ( GDML - Cone )
+3) Cylinder ( GDML - Tube )
+4) Sphere   ( GDML - Sphere )
+
+If not handled as above then objects shapes are checked  to see if planar,
+if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
+If not creates a mesh and then a Tessellated solid with 3 vertex. 
+ 
 ## Future Development Road Map
 
 * Implement Booleans operations
@@ -34,7 +43,7 @@ Current version converts all FreeCAD objects containing shapes to a mesh and the
 * Add function for objects that can be directly converted
 * Use lxml rather than etree (Needs apt-get install python-lxml)
 * Tidy softLink script
-* Make FreeCAD installable workbench
+* Make FreeCAD installable workbench 
 * Documentation
 * Investigate handling of Materials
 
