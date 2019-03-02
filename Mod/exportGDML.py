@@ -506,6 +506,7 @@ def processMesh(obj, Mesh, Name) :
     print("Create Tessellate Logical Volume")
     createLVandPV(obj, Name, 'Tessellated')
     mesh2Tessellate(Mesh, Name)
+    return(Name)
 
 def shape2Mesh(shape) :
      import MeshPart
@@ -560,12 +561,12 @@ def processObjectShape(obj) :
     print planar
 
     if planar :
-       processPlanar(obj,shape,obj.Name)
+       return(processPlanar(obj,shape,obj.Name))
 
     else :
        # Create Mesh from shape & then Process Mesh
        #to create Tessellated Solid in Geant4
-       processMesh(obj,shape2Mesh(shape),obj.Name)
+       return(processMesh(obj,shape2Mesh(shape),obj.Name))
 
 
 def processBoxObject(obj) :
@@ -582,6 +583,7 @@ def processBoxObject(obj) :
                            obj.Height.Value / 2)
 
     createAdjustedLVandPV(obj, obj.Name, boxName, delta)
+    return(boxName)
 
 def processCylinderObject(obj) :
     # Needs unique Name
@@ -595,6 +597,7 @@ def processCylinderObject(obj) :
     # Adjustment for position in GDML
     delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
     createAdjustedLVandPV(obj, obj.Name, cylName, delta)
+    return(cylName)
 
 def processConeObject(obj) :
     # Needs unique Name
@@ -609,11 +612,12 @@ def processConeObject(obj) :
     # Adjustment for position in GDML
     delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
     createAdjustedLVandPV(obj, obj.Name, coneName, delta)
+    return(coneName)
 
 def processSphereObject(obj) :
     # Needs unique Name
     sphereName = 'Sphere' + obj.Name
-    ET.SubElement(solids, 'cone',{'name': sphereName, \
+    ET.SubElement(solids, 'sphere',{'name': sphereName, \
                            'rmax': str(obj.Radius.Value), \
                            'starttheta': str(90.-float(obj.Angle2)), \
                            'deltatheta': str(float(obj.Angle2-obj.Angle1)), \
@@ -621,11 +625,17 @@ def processSphereObject(obj) :
                            'aunit': 'deg',
                            'lunit' : 'mm'})
     createLVandPV(obj,obj.Name,sphereName)
+    return(sphereName)
 
+def addPositionAndRotation(union,obj):
+    ET.SubElement(define, 'position',{'name': 'Pos'+str(defineCnt)})
+    print "Union Pos"
+    print dir(obj)
+                                      
 
 def processObject(obj) :
-   
     print("\nProcess Object")
+    # return solid or boolean reference name
     #ET.ElementTree(gdml).write("test9a", 'utf-8', True)
     while switch(obj.TypeId) :
       #
@@ -633,34 +643,68 @@ def processObject(obj) :
       #
       if case("Part::Cut") :
          print("Cut")
+         cutName = 'Cut'+obj.Name
+         ref1 = processObject(obj.Base)
+         ref2 = processObject(obj.Tool)
+         subtract = ET.SubElement(solids,'subtraction',{'name': cutName })
+         ET.SubElement(subtract,'first', {'ref': ref1})
+         ET.SubElement(subtract,'second',{'ref': ref2})
+         addPositionAndRotation(subtract,obj)
+         return cutName
          break
 
       if case("Part::Fuse") :
          print("Union")
+         unionName = 'Union'+obj.Name
+         ref1 = processObject(obj.Base)
+         ref2 = processObject(obj.Tool)
+         union = ET.SubElement(solids,'union',{'name': unionName })
+         ET.SubElement(union,'first', {'ref': ref1})
+         ET.SubElement(union,'second',{'ref': ref2})
+         addPositionAndRotation(union,obj)
+         return unionName
          break
 
       if case("Part::Common") :
          print("intersection")
+         intersectName = 'Intersect'+obj.Name
+         ref1 = processObject(obj.Base)
+         ref2 = processObject(obj.Tool)
+         intersect = ET.SubElement(solids,'intersect',{'name': intersectName })
+         ET.SubElement(intersect,'first', {'ref': ref1})
+         ET.SubElement(intersect,'second',{'ref': ref2})
+         addPositionAndRotation(intersect,obj)
+         return intersectName
          break
 
       if case("Part::MultiFuse") :
          print("Multifuse") 
+         multName = 'MultiFuse'+obj.Name
+         for subobj in obj.Shapes:
+            process_object(subobj)
+         multUnion = ET.SubElement(solids,'MultiUnion',{'name': multName })
+         ET.SubElement(multUnion,'first', {'ref': ref1})
+         ET.SubElement(multUnion,'second',{'ref': ref2})
+         addPositionAndRotation(multUnion,obj)
+         return multName
          break
 
       if case("Part::MultiCommon") :
          print("Multi Common / intersection")
+         print("Not available in GDML")
+         exit(-3)
          break
 
       if case("Mesh::Feature") :
          print("Mesh Feature") 
-         processMesh(obj, obj.Mesh, obj.Name)
+         return(processMesh(obj, obj.Mesh, obj.Name))
          break
       #
       #  Now deal with objects that map to GDML solids
       #
       if case("Part::Box") :
          print("Box")
-         processBoxObject(obj)
+         return(processBoxObject(obj))
          break
 
       if case("Part::Cylinder") :
@@ -675,7 +719,7 @@ def processObject(obj) :
 
       if case("Part::Sphere") :
          print("Sphere")
-         processSphereObject(obj)
+         return(processSphereObject(obj))
          break
 
       # Not a Solid that translated to GDML solid
