@@ -539,23 +539,6 @@ def processObjectShape(obj) :
 #   Dropped through to here
 #   Need to check has Shape
 
-    print("Faces")
-    for f in shape.Faces :
-        print 'Face'
-        print f
-        print dir(f)
-        print f.Vertexes
-        for v in f.Vertexes :
-            print 'X :'+str(v.Point.x)
-            print 'Y :'+str(v.Point.y)
-            print 'Z :'+str(v.Point.z)
-
-#        print dir(f.Vertexes)
-#        print 'Surface'
-#        print f.Surface
-#        #print dir(f.Surface)
-#        print f.Surface.isPlanar()
-
     print 'Check if All planar'
     planar = checkShapeAllPlanar(shape)
     print planar
@@ -569,7 +552,7 @@ def processObjectShape(obj) :
        return(processMesh(obj,shape2Mesh(shape),obj.Name))
 
 
-def processBoxObject(obj) :
+def processBoxObject(obj, addVolsFlag) :
     # Needs unique Name
     boxName = 'Box' + obj.Name
     ET.SubElement(solids, 'box',{'name': boxName, \
@@ -577,15 +560,16 @@ def processBoxObject(obj) :
                            'y': str(obj.Width.Value),  \
                            'z': str(obj.Height.Value),  \
                            'lunit' : 'mm'})
-    # Adjustment for position in GDML
-    delta = FreeCAD.Vector(obj.Length.Value / 2, \
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(obj.Length.Value / 2, \
                            obj.Width.Value / 2,  \
                            obj.Height.Value / 2)
 
-    createAdjustedLVandPV(obj, obj.Name, boxName, delta)
+       createAdjustedLVandPV(obj, obj.Name, boxName, delta)
     return(boxName)
 
-def processCylinderObject(obj) :
+def processCylinderObject(obj, addVolsFlag) :
     # Needs unique Name
     cylName = 'Cyl-' + obj.Name
     ET.SubElement(solids, 'tube',{'name': cylName, \
@@ -594,12 +578,13 @@ def processCylinderObject(obj) :
                            'aunit': 'deg',
                            'z': str(obj.Height.Value),  \
                            'lunit' : 'mm'})
-    # Adjustment for position in GDML
-    delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
-    createAdjustedLVandPV(obj, obj.Name, cylName, delta)
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, cylName, delta)
     return(cylName)
 
-def processConeObject(obj) :
+def processConeObject(obj, addVolsFlag) :
     # Needs unique Name
     coneName = 'Cone' + obj.Name
     ET.SubElement(solids, 'cone',{'name': coneName, \
@@ -609,12 +594,13 @@ def processConeObject(obj) :
                            'aunit': 'deg',
                            'z': str(obj.Height.Value),  \
                            'lunit' : 'mm'})
-    # Adjustment for position in GDML
-    delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
-    createAdjustedLVandPV(obj, obj.Name, coneName, delta)
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, coneName, delta)
     return(coneName)
 
-def processSphereObject(obj) :
+def processSphereObject(obj, addVolsFlag) :
     # Needs unique Name
     sphereName = 'Sphere' + obj.Name
     ET.SubElement(solids, 'sphere',{'name': sphereName, \
@@ -624,18 +610,26 @@ def processSphereObject(obj) :
                            'deltaphi': str(float(obj.Angle3)), \
                            'aunit': 'deg',
                            'lunit' : 'mm'})
-    createLVandPV(obj,obj.Name,sphereName)
+    if addVolsFlag :
+       createLVandPV(obj,obj.Name,sphereName)
     return(sphereName)
 
-def addPositionAndRotation(union,obj):
-    ET.SubElement(define, 'position',{'name': 'Pos'+str(defineCnt)})
-    print "Union Pos"
-    print dir(obj)
-                                      
+def addPositionAndRotation(element,obj):
+    global defineCnt
+    positionName = 'Pos'+str(defineCnt)
+    pos = obj.Placement.Base
+    # Need to add rotation ??? !!!!
+    ET.SubElement(define, 'position', {'name': positionName, \
+            'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]), \
+            'unit': 'mm'})
+    defineCnt += 1
+    ET.SubElement(element,'positionref', {'ref': positionName})
 
-def processObject(obj) :
+def processObject(obj, addVolsFlag) :
     print("\nProcess Object")
     # return solid or boolean reference name
+    # addVolsFlag = True then create Logical & Physical Volumes
+    #             = False needed for booleans
     #ET.ElementTree(gdml).write("test9a", 'utf-8', True)
     while switch(obj.TypeId) :
       #
@@ -644,8 +638,8 @@ def processObject(obj) :
       if case("Part::Cut") :
          print("Cut")
          cutName = 'Cut'+obj.Name
-         ref1 = processObject(obj.Base)
-         ref2 = processObject(obj.Tool)
+         ref1 = processObject(obj.Base,False)
+         ref2 = processObject(obj.Tool,False)
          subtract = ET.SubElement(solids,'subtraction',{'name': cutName })
          ET.SubElement(subtract,'first', {'ref': ref1})
          ET.SubElement(subtract,'second',{'ref': ref2})
@@ -656,8 +650,8 @@ def processObject(obj) :
       if case("Part::Fuse") :
          print("Union")
          unionName = 'Union'+obj.Name
-         ref1 = processObject(obj.Base)
-         ref2 = processObject(obj.Tool)
+         ref1 = processObject(obj.Base,False)
+         ref2 = processObject(obj.Tool,False)
          union = ET.SubElement(solids,'union',{'name': unionName })
          ET.SubElement(union,'first', {'ref': ref1})
          ET.SubElement(union,'second',{'ref': ref2})
@@ -668,8 +662,8 @@ def processObject(obj) :
       if case("Part::Common") :
          print("intersection")
          intersectName = 'Intersect'+obj.Name
-         ref1 = processObject(obj.Base)
-         ref2 = processObject(obj.Tool)
+         ref1 = processObject(obj.Base,False)
+         ref2 = processObject(obj.Tool,False)
          intersect = ET.SubElement(solids,'intersect',{'name': intersectName })
          ET.SubElement(intersect,'first', {'ref': ref1})
          ET.SubElement(intersect,'second',{'ref': ref2})
@@ -680,12 +674,15 @@ def processObject(obj) :
       if case("Part::MultiFuse") :
          print("Multifuse") 
          multName = 'MultiFuse'+obj.Name
+         multUnion = ET.Element('multiUnion',{'name': multName })
          for subobj in obj.Shapes:
-            process_object(subobj)
-         multUnion = ET.SubElement(solids,'MultiUnion',{'name': multName })
-         ET.SubElement(multUnion,'first', {'ref': ref1})
-         ET.SubElement(multUnion,'second',{'ref': ref2})
-         addPositionAndRotation(multUnion,obj)
+            solidName = processObject(subobj,False)
+            node = ET.SubElement(multUnion,'multiUnionNode', \
+               {'MF-Node' : 'Node-'+solidName})
+            ET.SubElement(node,'solid', {'ref': solidName})
+            addPositionAndRotation(node,subobj)
+         solids.append(multUnion)   
+         createLVandPV(obj,obj.Name,multName)
          return multName
          break
 
@@ -704,22 +701,22 @@ def processObject(obj) :
       #
       if case("Part::Box") :
          print("Box")
-         return(processBoxObject(obj))
+         return(processBoxObject(obj, addVolsFlag))
          break
 
       if case("Part::Cylinder") :
          print("Cylinder")
-         processCylinderObject(obj)
+         return(processCylinderObject(obj, addVolsFlag))
          break
 
       if case("Part::Cone") :
          print("Cone")
-         processConeObject(obj)
+         return(processConeObject(obj, addVolsFlag))
          break
 
       if case("Part::Sphere") :
          print("Sphere")
-         return(processSphereObject(obj))
+         return(processSphereObject(obj, addVolsFlag))
          break
 
       # Not a Solid that translated to GDML solid
@@ -727,7 +724,7 @@ def processObject(obj) :
       # Need to check obj has attribute Shape
       # Create tessellated solid
       #
-      processObjectShape(obj)
+      return(processObjectShape(obj, AddVolsFlag))
       break
 
 def export(exportList,filename) :
@@ -742,7 +739,7 @@ def export(exportList,filename) :
     defineWorldBox(exportList, bbox)
     for obj in exportList :
         reportObject(obj)
-        processObject(obj)
+        processObject(obj, True)
 
     # Now append World Volume definition to stucture
     # as it will contain references to volumes that need defining
