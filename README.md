@@ -31,10 +31,11 @@ The following FreeCAD objects are output as GDML equivalents
 If not handled as above then objects shapes are checked  to see if planar,
 if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
 If not creates a mesh and then a Tessellated solid with 3 vertex. 
+
+Booleans apart from MultiCommon are now implemented for export.
  
 ## Future Development Road Map
 
-* Implement Booleans operations
 * Workbench
   * Analize FreeCAD file for direct conversion of object to GDML solid
   * Display mesh for objects that will not directly convert
