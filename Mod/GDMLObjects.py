@@ -1,3 +1,6 @@
+import FreeCAD, FreeCADGui
+from pivy import coin
+
 class RefineShapeFeature:
     def IsActive(self):
         return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
@@ -20,7 +23,7 @@ class RefineShapeFeature:
                 'Create Refine Shape Feature')}
 
 
-class GDMLConeSolid :
+class GDMLCone :
    def __init__(self, obj):
       '''Add some custom properties to our Cone feature'''
       obj.addProperty("App::PropertyDistance","rmin1","Cone","Min Radius 1").rmin1=1.0
@@ -28,7 +31,7 @@ class GDMLConeSolid :
       obj.addProperty("App::PropertyDistance","rmin2","Cone","Min Radius 2").rmin2=1.0
       obj.addProperty("App::PropertyDistance","rmax2","Cone","Max Radius 2").rmax2=1.0
       obj.addProperty("App::PropertyLength","z","Cone","Height of Cone").z=1.0
-      obj.addProperty("App::PropertyAngle","startphi","Cone","Start Angle").statphi=0
+      obj.addProperty("App::PropertyAngle","startphi","Cone","Start Angle").startphi=0
       obj.addProperty("App::PropertyAngle","deltaphi","Cone","Delta Angle").deltaphi=0
       obj.addProperty("App::PropertyStringList","units","Cone","Units").units="rad"
       obj.Proxy = self
@@ -43,7 +46,7 @@ class GDMLConeSolid :
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
 
-class ViewProviderBox:
+class ViewProviderCone:
    def __init__(self, obj):
        '''Set this object to the proxy object of the actual view provider'''
        #obj.addProperty("App::PropertyColor","Color","Box","Color of the box").Color=(1.0,0.0,0.0)
@@ -56,7 +59,7 @@ class ViewProviderBox:
        self.scale = coin.SoScale()
        self.color = coin.SoBaseColor()
        
-       data=coin.SoCube()
+       data=coin.SoCone()
        self.shaded.addChild(self.scale)
        self.shaded.addChild(self.color)
        self.shaded.addChild(data)
@@ -142,3 +145,11 @@ class ViewProviderBox:
        '''When restoring the serialized object from document we have the chance to set some internals here.\
                Since no data were serialized nothing needs to be done here.'''
        return None
+
+def makeCone():
+    #FreeCAD.newDocument()
+    a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLCone")
+    GDMLCone(a)
+    ViewProviderCone(a.ViewObject)
+
+#makeCone()    
