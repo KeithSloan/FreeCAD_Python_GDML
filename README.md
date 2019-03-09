@@ -4,9 +4,14 @@ FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
-## Installation Linux
+## Branches
 
-To incorporate into FreeCAD linux.
+1) workbench - underdevelopment
+GDML workbench to Add GDML Objects as FreeCAD python Objects
+
+2) master - GDML import / export
+
+## Installation - To incorporate into FreeCAD linux.
 
 Assumes you already have FreeCAD and git installed
 
