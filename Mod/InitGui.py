@@ -35,7 +35,7 @@ import FreeCAD
 class GDML_Workbench ( Workbench ):
     "GDML workbench object"
     def __init__(self):
-        #self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/OpenSCAD/Resources/icons/OpenSCADWorkbench.svg"
+        self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/GDML/Resources/icons/GDMLWorkbench.svg"
         self.__class__.MenuText = "GDML"
         self.__class__.ToolTip = "GDML workbench"
 
@@ -43,17 +43,20 @@ class GDML_Workbench ( Workbench ):
         def QT_TRANSLATE_NOOP(scope, text):
             return text
         #import OpenSCAD_rc,OpenSCADCommands
-        commands=[]
+        import GDMLCommands
+        #commands=['GDML_ConeFeature']
+        commands=['ConeCommand']
         #commands=['OpenSCAD_ReplaceObject','OpenSCAD_RemoveSubtree',\
         #    'OpenSCAD_RefineShapeFeature',\
         #    'OpenSCAD_IncreaseToleranceFeature', 'OpenSCAD_Edgestofaces', \
         #    'OpenSCAD_ExpandPlacements','OpenSCAD_ExplodeGroup']
-        toolbarcommands=[]
+        toolbarcommands=['ConeCommand']
         #toolbarcommands=['OpenSCAD_ReplaceObject','OpenSCAD_RemoveSubtree',\
         #    'OpenSCAD_ExplodeGroup','OpenSCAD_RefineShapeFeature']
         #    #'OpenSCAD_IncreaseToleranceFeature' #icon still missing
         import PartGui
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common',\
+            #'Part_Extrude',"Part_Revolve","GDML_GUI_Cone"]
             'Part_Extrude',"Part_Revolve"]
         import FreeCAD
         #param = FreeCAD.ParamGet(\
@@ -79,7 +82,9 @@ class GDML_Workbench ( Workbench ):
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbech','GDML Part tools'),parttoolbarcommands)
         #self.appendMenu('OpenSCAD',["AddOpenSCADElement"])
         ###self.appendCommandbar("&Generic Tools",["ColorCodeShape"])
-        FreeCADGui.addIconPath(":/icons")
+        #FreeCADGui.addIconPath(":/icons")
+        FreeCADGui.addIconPath(FreeCAD.getResourceDir() + \
+                              "Mod/GDML/Resources/icons")
         FreeCADGui.addLanguagePath(":/translations")
         #FreeCADGui.addPreferencePage(":/ui/openscadprefs-base.ui","OpenSCAD")
 
@@ -88,3 +93,4 @@ class GDML_Workbench ( Workbench ):
         return "Gui::PythonWorkbench"
 
 Gui.addWorkbench(GDML_Workbench())
+
