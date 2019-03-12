@@ -34,6 +34,7 @@ class GDMLCone :
       obj.addProperty("App::PropertyAngle","startphi","Cone","Start Angle").startphi=0
       obj.addProperty("App::PropertyAngle","deltaphi","Cone","Delta Angle").deltaphi=0
       obj.addProperty("App::PropertyStringList","units","Cone","Units").units="rad"
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", "Shape of the Cone")
       obj.Proxy = self
 
 
@@ -43,35 +44,18 @@ class GDMLCone :
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
+       #from Part import makeCone
+       import Part
+       #solid=Part.makeCone(fp.rmax1,fp.rmax2,fp.z)
+       solid=Part.makeCone(2,4,8)
+       fp.Shape = solid
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
 
 class ViewProviderCone:
    def __init__(self, obj):
        '''Set this object to the proxy object of the actual view provider'''
-       #obj.addProperty("App::PropertyColor","Color","Box","Color of the box").Color=(1.0,0.0,0.0)
        obj.Proxy = self
- 
-   def attach(self, obj):
-       '''Setup the scene sub-graph of the view provider, this method is mandatory'''
-       self.shaded = coin.SoGroup()
-       self.wireframe = coin.SoGroup()
-       self.scale = coin.SoScale()
-       self.color = coin.SoBaseColor()
-       
-       data=coin.SoCone()
-       self.shaded.addChild(self.scale)
-       self.shaded.addChild(self.color)
-       self.shaded.addChild(data)
-       obj.addDisplayMode(self.shaded,"Shaded");
-       style=coin.SoDrawStyle()
-       style.style = coin.SoDrawStyle.LINES
-       self.wireframe.addChild(style)
-       self.wireframe.addChild(self.scale)
-       self.wireframe.addChild(self.color)
-       self.wireframe.addChild(data)
-       obj.addDisplayMode(self.wireframe,"Wireframe");
-       self.onChanged(obj,"Color")
  
    def updateData(self, fp, prop):
        '''If a property of the handled feature has changed we have the chance to handle this here'''

@@ -9,17 +9,18 @@ This Script includes the GUI Commands of the GDML module
 import FreeCAD,FreeCADGui
 from PySide import QtCore, QtGui
 
-import GDMLObjects
-
 class ConeFeature:
     def IsActive(self):
         return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
 
     def Activated(self):
-        #a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLConeSolid")
-        from GDMLObjects import makeCone
-        makeCone()
-        print("GDMLConeSolid Object - added")
+        from GDMLObjects import GDMLCone, ViewProviderCone
+        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLCone")
+        print("GDMLCone Object - added")
+        GDMLCone(a)
+        print("GDMLCone initiated")
+        ViewProviderCone(a.ViewObject)
+        print("GDMLCone ViewProvided - added")
         FreeCAD.ActiveDocument.recompute()
 
     def IsActive(self):
