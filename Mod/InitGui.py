@@ -42,23 +42,15 @@ class GDML_Workbench ( Workbench ):
     def Initialize(self):
         def QT_TRANSLATE_NOOP(scope, text):
             return text
-        #import OpenSCAD_rc,OpenSCADCommands
+        
         import GDMLCommands
-        #commands=['GDML_ConeFeature']
-        commands=['ConeCommand']
-        #commands=['OpenSCAD_ReplaceObject','OpenSCAD_RemoveSubtree',\
-        #    'OpenSCAD_RefineShapeFeature',\
-        #    'OpenSCAD_IncreaseToleranceFeature', 'OpenSCAD_Edgestofaces', \
-        #    'OpenSCAD_ExpandPlacements','OpenSCAD_ExplodeGroup']
-        toolbarcommands=['ConeCommand']
-        #toolbarcommands=['OpenSCAD_ReplaceObject','OpenSCAD_RemoveSubtree',\
-        #    'OpenSCAD_ExplodeGroup','OpenSCAD_RefineShapeFeature']
-        #    #'OpenSCAD_IncreaseToleranceFeature' #icon still missing
+        commands=['BoxCommand','ConeCommand','TubeCommand']
+        toolbarcommands=['BoxCommand','ConeCommand','TubeCommand']
+
         import PartGui
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common',\
-            #'Part_Extrude',"Part_Revolve","GDML_GUI_Cone"]
             'Part_Extrude',"Part_Revolve"]
-        import FreeCAD
+        #import FreeCAD
         #param = FreeCAD.ParamGet(\
         #    "User parameter:BaseApp/Preferences/Mod/OpenSCAD")
         #openscadfilename = param.GetString('openscadexecutable')
@@ -80,8 +72,6 @@ class GDML_Workbench ( Workbench ):
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbench','GDMLTools'),toolbarcommands)
         self.appendMenu('GDML',commands)
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbech','GDML Part tools'),parttoolbarcommands)
-        #self.appendMenu('OpenSCAD',["AddOpenSCADElement"])
-        ###self.appendCommandbar("&Generic Tools",["ColorCodeShape"])
         #FreeCADGui.addIconPath(":/icons")
         FreeCADGui.addIconPath(FreeCAD.getResourceDir() + \
                               "Mod/GDML/Resources/icons")

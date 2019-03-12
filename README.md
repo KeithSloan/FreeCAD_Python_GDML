@@ -34,7 +34,13 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
  
 ## Future Development Road Map
 
-* Implement Booleans operations
+* GDML solids as Part::PythonFeatures
+  * Import
+  * Export
+  * Dialog for initial values(?)
+
+* Import
+  * Volume rotations
 * Workbench
   * Analize FreeCAD file for direct conversion of object to GDML solid
   * Display mesh for objects that will not directly convert

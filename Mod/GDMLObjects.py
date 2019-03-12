@@ -1,60 +1,134 @@
-import FreeCAD, FreeCADGui
+import FreeCAD, FreeCADGui, Part
 from pivy import coin
 
-class RefineShapeFeature:
-    def IsActive(self):
-        return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
-
-    def Activated(self):
-        import Part,OpenSCADFeatures
-        selection=FreeCADGui.Selection.getSelectionEx()
-        for selobj in selection:
-            newobj=selobj.Document.addObject("Part::FeaturePython",'refine')
-            OpenSCADFeatures.RefineShape(newobj,selobj.Object)
-            OpenSCADFeatures.ViewProviderTree(newobj.ViewObject)
-            newobj.Label='refine_%s' % selobj.Object.Label
-            selobj.Object.ViewObject.hide()
-        FreeCAD.ActiveDocument.recompute()
-    def GetResources(self):
-        return {'Pixmap'  : 'OpenSCAD_RefineShapeFeature', 'MenuText': \
-                QtCore.QT_TRANSLATE_NOOP('OpenSCAD_RefineShapeFeature',\
-                'Refine Shape Feature'), 'ToolTip': \
-                QtCore.QT_TRANSLATE_NOOP('OpenSCAD_RefineShapeFeature',\
-                'Create Refine Shape Feature')}
-
-
-class GDMLCone :
+class GDMLBox :
    def __init__(self, obj):
       '''Add some custom properties to our Cone feature'''
-      obj.addProperty("App::PropertyDistance","rmin1","Cone","Min Radius 1").rmin1=1.0
-      obj.addProperty("App::PropertyDistance","rmax1","Cone","Max Radius 1").rmax1=1.0
-      obj.addProperty("App::PropertyDistance","rmin2","Cone","Min Radius 2").rmin2=1.0
-      obj.addProperty("App::PropertyDistance","rmax2","Cone","Max Radius 2").rmax2=1.0
-      obj.addProperty("App::PropertyLength","z","Cone","Height of Cone").z=1.0
-      obj.addProperty("App::PropertyAngle","startphi","Cone","Start Angle").startphi=0
-      obj.addProperty("App::PropertyAngle","deltaphi","Cone","Delta Angle").deltaphi=0
-      obj.addProperty("App::PropertyStringList","units","Cone","Units").units="rad"
-      obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", "Shape of the Cone")
+      obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=10.0
+      obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=10.0
+      obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=10.0
+      obj.addProperty("App::PropertyString","material","GDMLBox","Material").material="SSteal"
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLBox", "Shape of the Box")
       obj.Proxy = self
-
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
-       #from Part import makeCone
-       import Part
-       #solid=Part.makeCone(fp.rmax1,fp.rmax2,fp.z)
-       cone1 = Part.makeCone(10,20,40)
-       cone2 = Part.makeCone(9,19,40)
+       # Need to add code to check values make a valid cone
+       box = Part.makeBox(fp.x,fp.y,fp.z)
+       fp.Shape = box
+       FreeCAD.Console.PrintMessage("Recompute GDML Box Object \n")
+
+class GDMLCone :
+   def __init__(self, obj):
+      '''Add some custom properties to our Cone feature'''
+      obj.addProperty("App::PropertyDistance","rmin1","GDMLCone","Min Radius 1").rmin1=3.0
+      obj.addProperty("App::PropertyDistance","rmax1","GDMLCone","Max Radius 1").rmax1=5.0
+      obj.addProperty("App::PropertyDistance","rmin2","GDMLCone","Min Radius 2").rmin2=6.0
+      obj.addProperty("App::PropertyDistance","rmax2","GDMLCone","Max Radius 2").rmax2=9.0
+      obj.addProperty("App::PropertyLength","z","GDMLCone","Height of Cone").z=10.0
+      obj.addProperty("App::PropertyAngle","startphi","GDMLCone","Start Angle").startphi=0
+      obj.addProperty("App::PropertyAngle","deltaphi","GDMLCone","Delta Angle").deltaphi=0
+      obj.addProperty("App::PropertyStringList","units","GDMLCone","Units").units="rad"
+      obj.addProperty("App::PropertyString","material","GDMLCone","Material").material="SSteel"
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", "Shape of the Cone")
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+
+       # Need to add code to check variables will make a valid cone
+       # i.e.max > min etc etc
+       cone1 = Part.makeCone(fp.rmax1,fp.rmax2,fp.z)
+       cone2 = Part.makeCone(fp.rmin1,fp.rmin2,fp.z)
        cone3 = cone1.cut(cone2)
        fp.Shape = cone3
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
+class GDMLTube :
+   def __init__(self, obj):
+      '''Add some custom properties to our Cone feature'''
+      obj.addProperty("App::PropertyLength","rmin","GDMLTube","Inside Radius").rmin=5.0
+      obj.addProperty("App::PropertyLength","rmax","GDMLTube","Outside Radius").rmax=8.0
+      obj.addProperty("App::PropertyLength","z","GDMLTube","Length z").z=10.0
+      obj.addProperty("App::PropertyAngle","startphi","GDMLTube","Start Angle").startphi="0.52"
+      obj.addProperty("App::PropertyAngle","deltaphi","GDMLTube","Delta Angle").deltaphi="1.57"
+      obj.addProperty("App::PropertyString","material","GDMLTube","Material").material="SSteal"
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Box")
+      obj.Proxy = self
 
-class ViewProviderCone:
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+       import math
+       # Need to add code to check values make a valid cone
+       #box = Part.makeBox(fp.x,fp.y,fp.z)
+       # Define six vetices for the shape
+       x1 = fp.rmax*math.sin(fp.startphi)
+       y1 = fp.rmax*math.cos(fp.startphi)
+       x2 = fp.rmax*math.sin(fp.startphi+fp.deltaphi)
+       y2 = fp.rmax*math.cos(fp.startphi+fp.deltaphi)
+       v1 = FreeCAD.Vector(0,0,0)
+       v2 = FreeCAD.Vector(x1,y1,0)
+       v3 = FreeCAD.Vector(x2,y2,0)
+       v4 = FreeCAD.Vector(0,0,fp.z)
+       v5 = FreeCAD.Vector(x1,y1,fp.z)
+       v6 = FreeCAD.Vector(x2,y2,fp.z)
+
+       # Make the wires/faces
+       f1 = self.make_face3(v1,v2,v3)
+       f2 = self.make_face4(v1,v3,v6,v4)
+       f3 = self.make_face3(v4,v6,v5)
+       f4 = self.make_face4(v5,v2,v1,v4)
+       shell=Part.makeShell([f1,f2,f3,f4])
+       solid=Part.makeSolid(shell)
+
+       cyl1 = Part.makeCylinder(fp.rmax,fp.z)
+       cyl2 = Part.makeCylinder(fp.rmin,fp.z)
+       cyl3 = cyl1.cut(cyl2) 
+
+       tube = cyl3.cut(solid)
+
+       fp.Shape = tube
+       FreeCAD.Console.PrintMessage("Recompute GDML Tube Object \n")
+
+       # helper mehod to create the faces
+   def make_face3(self,v1,v2,v3):
+       wire = Part.makePolygon([v1,v2,v3,v1])
+       face = Part.Face(wire)
+       return face
+
+       # helper mehod to create the faces
+   def make_face4(self,v1,v2,v3,v4):
+       wire = Part.makePolygon([v1,v2,v3,v4,v1])
+       face = Part.Face(wire)
+       return face
+
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+# use general ViewProvider if poss
+class ViewProvider:
    def __init__(self, obj):
        '''Set this object to the proxy object of the actual view provider'''
        obj.Proxy = self
@@ -132,10 +206,18 @@ class ViewProviderCone:
                Since no data were serialized nothing needs to be done here.'''
        return None
 
+def makeBox():
+    a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLBox")
+    GDMLBox(a)
+    ViewProvider(a.ViewObject)
+
 def makeCone():
-    #FreeCAD.newDocument()
     a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLCone")
     GDMLCone(a)
-    ViewProviderCone(a.ViewObject)
+    ViewProvider(a.ViewObject)
 
-#makeCone()    
+def makeTube():
+    a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLTube")
+    GDMLTube(a)
+    ViewProvider(a.ViewObject)
+

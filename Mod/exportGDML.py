@@ -361,6 +361,19 @@ def reportObject(obj) :
     
     while switch(obj.TypeId) :
 
+      ###########################################
+      # FreeCAD GDML Parts                      #
+      ###########################################
+      if case("Part::FeaturePython") : 
+         print("Part::FeaturePython")
+         print obj.Label
+         print obj.Name
+         print dir(obj)
+         #print("cylinder : Height "+str(obj.Height)+ " Radius "+str(obj.Radius))
+         break
+      ###########################################
+      # FreeCAD Parts                           #
+      ###########################################
       if case("Part::Sphere") :
          print("Sphere Radius : "+str(obj.Radius))
          break
