@@ -51,6 +51,14 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
 
 ## Need to sort out AIR definition
 
+## Acknowledgements
+
+Thanks to the following FreeCAD forum members
+
+* wmayer
+* Joel_graff
+* chrisb
+
 ## Feedback
 
 To contact the Author email keith[at]sloan-home.co.uk

@@ -47,8 +47,10 @@ class GDMLCone :
        #from Part import makeCone
        import Part
        #solid=Part.makeCone(fp.rmax1,fp.rmax2,fp.z)
-       solid=Part.makeCone(2,4,8)
-       fp.Shape = solid
+       cone1 = Part.makeCone(10,20,40)
+       cone2 = Part.makeCone(9,19,40)
+       cone3 = cone1.cut(cone2)
+       fp.Shape = cone3
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
 
