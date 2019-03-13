@@ -10,6 +10,7 @@ class GDMLBox :
       obj.addProperty("App::PropertyString","material","GDMLBox","Material").material="SSteal"
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLBox", "Shape of the Box")
       obj.Proxy = self
+      self.Type = 'GDMLBox'
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
@@ -38,6 +39,7 @@ class GDMLCone :
       obj.addProperty("App::PropertyString","material","GDMLCone","Material").material="SSteel"
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", "Shape of the Cone")
       obj.Proxy = self
+      self.Type = 'GDMLCone'
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
@@ -67,6 +69,7 @@ class GDMLTube :
       obj.addProperty("App::PropertyString","material","GDMLTube","Material").material="SSteal"
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Box")
       obj.Proxy = self
+      self.Type = 'GDMLTube'
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''

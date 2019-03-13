@@ -366,9 +366,14 @@ def reportObject(obj) :
       ###########################################
       if case("Part::FeaturePython") : 
          print("Part::FeaturePython")
-         print obj.Label
-         print obj.Name
-         print dir(obj)
+         if hasattr(obj.Proxy,'Type'):
+            print obj.Proxy.Type
+            print obj.Name
+         else :
+            print("Not a GDML Feature")
+            
+         #print dir(obj)
+         #print dir(obj.Proxy)
          #print("cylinder : Height "+str(obj.Height)+ " Radius "+str(obj.Radius))
          break
       ###########################################
@@ -582,6 +587,23 @@ def processBoxObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, boxName, delta)
     return(boxName)
 
+def processGDMLBoxObject(obj, addVolsFlag) :
+    # Needs unique Name
+    boxName = 'Box' + obj.Name
+    ET.SubElement(solids, 'box',{'name': boxName, \
+                           'x': str(obj.x.Value),  \
+                           'y': str(obj.y.Value),  \
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(obj.x.Value / 2, \
+                           obj.y.Value / 2,  \
+                           obj.z.Value / 2)
+
+       createAdjustedLVandPV(obj, obj.Name, boxName, delta)
+    return(boxName)
+
 def processCylinderObject(obj, addVolsFlag) :
     # Needs unique Name
     cylName = 'Cyl-' + obj.Name
@@ -612,6 +634,42 @@ def processConeObject(obj, addVolsFlag) :
        delta = FreeCAD.Vector(0, 0, obj.Height.Value / 2)
        createAdjustedLVandPV(obj, obj.Name, coneName, delta)
     return(coneName)
+
+def processGDMLConeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    coneName = 'Cone' + obj.Name
+    ET.SubElement(solids, 'cone',{'name': coneName, \
+                           'rmin1': str(obj.rmin1.Value),  \
+                           'rmin2': str(obj.rmin2.Value),  \
+                           'rmax1': str(obj.rmax1.Value),  \
+                           'rmax2': str(obj.rmax2.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, coneName, delta)
+    return(coneName)
+
+def processGDMLTubeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    tubeName = 'Tube' + obj.Name
+    ET.SubElement(solids, 'tube',{'name': tubeName, \
+                           'rmin': str(obj.rmin.Value),  \
+                           'rmax': str(obj.rmax.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
+    return(tubeName)
 
 def processSphereObject(obj, addVolsFlag) :
     # Needs unique Name
@@ -709,6 +767,29 @@ def processObject(obj, addVolsFlag) :
          print("Mesh Feature") 
          return(processMesh(obj, obj.Mesh, obj.Name))
          break
+
+      if case("Part::FeaturePython"):
+          print("Python Feature")
+          if hasattr(obj.Proxy, 'Type') :
+             switch(obj.Proxy.Type)
+             if case("GDMLBox") :
+                print("GDMLBox") 
+                return(processGDMLBoxObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLCone") :
+                print("GDMLCone") 
+                return(processGDMLConeObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLTube") :
+                print("GDMLTube") 
+                return(processGDMLTubeObject(obj, addVolsFlag))
+                break
+          else :
+             print("Not a GDML Feature")
+          break  
+
       #
       #  Now deal with objects that map to GDML solids
       #
