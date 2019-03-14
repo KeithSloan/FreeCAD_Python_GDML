@@ -2,12 +2,15 @@ import FreeCAD, FreeCADGui, Part
 from pivy import coin
 
 class GDMLBox :
-   def __init__(self, obj):
+   def __init__(self, obj, x, y, z, lunits, material):
       '''Add some custom properties to our Cone feature'''
-      obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=10.0
-      obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=10.0
-      obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=10.0
-      obj.addProperty("App::PropertyString","material","GDMLBox","Material").material="SSteal"
+      print "GDMLBox init"
+      print x
+      obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
+      obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
+      obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
+      obj.addProperty("App::PropertyString","lunits","GDMLBox","lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","material","GDMLBox","Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLBox", "Shape of the Box")
       obj.Proxy = self
       self.Type = 'GDMLBox'
@@ -26,7 +29,8 @@ class GDMLBox :
        FreeCAD.Console.PrintMessage("Recompute GDML Box Object \n")
 
 class GDMLCone :
-   def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,units,material):
+   def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,aunit, \
+                lunits, material):
       '''Add some custom properties to our Cone feature'''
       obj.addProperty("App::PropertyDistance","rmin1","GDMLCone","Min Radius 1").rmin1=rmin1
       obj.addProperty("App::PropertyDistance","rmax1","GDMLCone","Max Radius 1").rmax1=rmax1
@@ -35,7 +39,8 @@ class GDMLCone :
       obj.addProperty("App::PropertyLength","z","GDMLCone","Height of Cone").z=z
       obj.addProperty("App::PropertyAngle","startphi","GDMLCone","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyAngle","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
-      obj.addProperty("App::PropertyStringList","units","GDMLCone","Units").units=units
+      obj.addProperty("App::PropertyStringList","aunit","GDMLCone","aunit").aunit=aunit
+      obj.addProperty("App::PropertyStringList","lunits","GDMLCone","lunits").lunits=lunits
       obj.addProperty("App::PropertyStringList","material","GDMLCone","Material").material=material
       self.Type = 'GDMLCone'
       obj.Proxy = self
@@ -63,14 +68,17 @@ class GDMLCone :
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
 class GDMLTube :
-   def __init__(self, obj):
+   def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \
+                lunits, material):
       '''Add some custom properties to our Cone feature'''
-      obj.addProperty("App::PropertyLength","rmin","GDMLTube","Inside Radius").rmin=5.0
-      obj.addProperty("App::PropertyLength","rmax","GDMLTube","Outside Radius").rmax=8.0
-      obj.addProperty("App::PropertyLength","z","GDMLTube","Length z").z=10.0
-      obj.addProperty("App::PropertyAngle","startphi","GDMLTube","Start Angle").startphi="0.52"
-      obj.addProperty("App::PropertyAngle","deltaphi","GDMLTube","Delta Angle").deltaphi="1.57"
-      obj.addProperty("App::PropertyString","material","GDMLTube","Material").material="SSteal"
+      obj.addProperty("App::PropertyLength","rmin","GDMLTube","Inside Radius").rmin=rmin
+      obj.addProperty("App::PropertyLength","rmax","GDMLTube","Outside Radius").rmax=rmax
+      obj.addProperty("App::PropertyLength","z","GDMLTube","Length z").z=z
+      obj.addProperty("App::PropertyAngle","startphi","GDMLTube","Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyAngle","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyString","aunit","GDMLTube","aunit").aunit=aunit
+      obj.addProperty("App::PropertyString","lunits","GDMLTube","lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","material","GDMLTube","Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Box")
       obj.Proxy = self
       self.Type = 'GDMLTube'

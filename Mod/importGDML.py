@@ -91,8 +91,35 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
-def getVal(ptr,var) :
-    return float(eval(ptr.get(var)))
+def checkConstant(vval):
+    print vval
+
+def getVal(cdict,ptr,var) :
+    # get value for var variable var 
+    from math import pi
+    print ptr.attrib
+    # is the variable defined in passed attribute
+    if var in ptr.attrib :
+       # if yes get its value 
+       vval = ptr.attrib.get(var)
+       #print "vval"
+       #print vval
+       # check if defined as a constant
+       if vval in cdict :
+          c = cdict.get(vval)
+          #print c
+          return(eval(c))
+       
+       else :
+          return float(eval(ptr.attrib.get(var)))
+    else :
+       return (0.0)
+
+def getText(ptr,var,default) :
+    if var in ptr :
+       return (ptr.attrib.get(var))
+    else :
+       return default
 
 def processPlacement(base,rot) :
     print "Rotation : "
@@ -110,64 +137,79 @@ def processPlacement(base,rot) :
     place = FreeCAD.Placement(base,axis,angle)
     return place
 
-def createBox(solid,volref,lx,ly,lz,rot) :
+def createBox(solid,cdict,volref,lx,ly,lz,rot) :
+    from GDMLObjects import GDMLBox, ViewProvider
     print "CreateBox : "
     print solid.attrib
-    mycube=doc.addObject('Part::Box',volref.get('ref')+'_'+solid.get('name')+'_')
-    x = getVal(solid,'x')
-    y = getVal(solid,'y')
-    z = getVal(solid,'z')
-    mycube.Length = x
-    mycube.Width = y
-    mycube.Height = z
+    #mycube=doc.addObject('Part::Box',volref.get('ref')+'_'+solid.get('name')+'_')
+    mycube=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLBox")
+    x = getVal(cdict,solid,'x')
+    y = getVal(cdict,solid,'y')
+    z = getVal(cdict,solid,'z')
+    GDMLBox(mycube,x,y,z,"mm","SSteel")
+    ViewProvider(mycube.ViewObject)
     print "Logical Position : "+str(lx)+','+str(ly)+','+str(lz)
     base = FreeCAD.Vector(lx-x/2,ly-y/2,lz-z/2)
     mycube.Placement = processPlacement(base,rot)
     print mycube.Placement.Rotation
-    mycube.ViewObject.DisplayMode = 'Wireframe'
+    #mycube.ViewObject.DisplayMode = 'Wireframe'
 
-def makeCylinder(solid,r) :
-    mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
-    mycyl.Height = getVal(solid,'z')
-    mycyl.Radius = r
-    if solid.get('aunit' == 'rad') :
-       mycyl.Angle = 180 * float(solid.get('deltaphi')) / math.pi
-    if solid.get('aunit' == 'degrees') :
-       mycyl.Angle = solid.get('deltaphi')
+def createCylinder(solid,cdict,r) :
+    #mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
+    mycyl=doc.addObject("Part::FeaturePython","GDMLCyl")
+    z = getVal(cdict,solid,'z')
+    r = getVal(cdict,solid,'r')
+    aunit = getText(solid,'aunit','rad')
+    deltaphi = getVal(define,solid,'deltaphi')
+    if ('aunit' == 'rad') :
+       deltaphi = (180 * deltaphi) / math.pi
+    GDMLCyl(mycyl,r,z,deltaphi,aunit,"SSteel")   
     return mycyl
 
-def createTube(solid,volref,lx,ly,lz,rot) :
+def createTube(solid,cdict,volref,lx,ly,lz,rot) :
+    from GDMLObjects import GDMLTube, ViewProvider
     print "CreateTube : "
     print solid.attrib
-    rmax = getVal(solid,'rmax')
-    rmin = solid.get('rmin')
-    if ( rmin is None or rmin == 0 ) :
-       mytube = makeCylinder(solid,rmax)
-    else :
-       mytube = doc.addObject('Part::Cut','Tube_'+solid.get('name')+'_')
-       mytube.Base = makeCylinder(solid,rmax)
-       mytube.Tool = makeCylinder(solid,rmin)
-
+    rmin = getVal(cdict,solid,'rmin')
+    rmax = getVal(cdict,solid,'rmax')
+    z = getVal(cdict,solid,'z')
+    startphi = getVal(cdict,solid,'startphi')
+    deltaphi = getVal(cdict,solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunits = getText(solid,'lunits',"mm")
+    #if ( rmin is None or rmin == 0 ) :
+    #   mytube = makeCylinder(solid,rmax)
+    #else :
+    #   mytube = doc.addObject('Part::Cut','Tube_'+solid.get('name')+'_')
+    #   mytube.Base = makeCylinder(solid,rmax)
+    #   mytube.Tool = makeCylinder(solid,rmin)
+    print "Tube parameters"
+    print rmin
+    print rmax
+    print z
+    mytube=doc.addObject("Part::FeaturePython","GDMLTube")
+    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunits,"SSteel")
     print "Position : "+str(lx)+','+str(ly)+','+str(lz)
     base = FreeCAD.Vector(lx,ly,lz)
     mytube.Placement = processPlacement(base,rot)
     print mytube.Placement.Rotation
+    ViewProvider(mytube.ViewObject)
 
-def createCone(solid,volref,lx,ly,lz,rot) :
+def createCone(solid,cdict,volref,lx,ly,lz,rot) :
     print "CreateCone : "
     print solid.attrib
 
-def createSolid(solid,volref,lx,ly,lz,rot) :
+def createSolid(solid,cdict,volref,lx,ly,lz,rot) :
     while switch(solid.tag):
         if case('box'):
-           createBox(solid,volref,lx,ly,lz,rot) 
+           createBox(solid,cdict,volref,lx,ly,lz,rot) 
            break
         if case('tube'):
-           createTube(solid,volref,lx,ly,lz,rot) 
+           createTube(solid,cdict,volref,lx,ly,lz,rot) 
            break
-        if case('cone'):
-           createCone(solid,volref,lx,ly,lz,rot) 
-           break
+        #if case('cone'):
+        #   createCone(solid,cdict,volref,lx,ly,lz,rot) 
+        #   break
         print "Solid : "+solid.tag+" Not yet supported"
         break
 
@@ -200,7 +242,7 @@ def getVolSolid(root,name):
     solid = root.find("solids/*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(root,ptr,lx,ly,lz):
+def parsePhysVol(root,cdict,ptr,lx,ly,lz):
     print "ParsePhyVol"
     pos = ptr.find("positionref")
     if pos is not None :
@@ -209,9 +251,9 @@ def parsePhysVol(root,ptr,lx,ly,lz):
        print pos.attrib
     else :
        pos = ptr.find("position")
-    lx += float(eval(pos.get('x')))
-    ly += float(eval(pos.get('y')))
-    lz += float(eval(pos.get('z')))
+    lx += getVal(cdict,pos,'x')
+    ly += getVal(cdict,pos,'y')
+    lz += getVal(cdict,pos,'z')
     rot = ptr.find("rotationref")
     if rot is not None :
        name = getRef(rot)
@@ -222,16 +264,31 @@ def parsePhysVol(root,ptr,lx,ly,lz):
     name = getRef(volref)
     solid = getVolSolid(root,name)
     if ((pos is not None) and (rot is not None)) :
-       createSolid(solid,volref,lx,ly,lz,rot)
-    parseVolume(root,name,lx,ly,lz)
+       createSolid(solid,cdict,volref,lx,ly,lz,rot)
+    parseVolume(root,cdict,name,lx,ly,lz)
 
 # ParseVolume 
-def parseVolume(root,name,lx,ly,lz) :
+def parseVolume(root,cdict,name,lx,ly,lz) :
     print "ParseVolume : "+name
     vol = root.find("structure/volume[@name='%s']" % name )
     print vol.attrib
     for pv in vol.findall('physvol') : 
-        parsePhysVol(root,pv,lx,ly,lz)
+        parsePhysVol(root,cdict,pv,lx,ly,lz)
+
+def processConstants(root):
+    print "Process Constants"
+    dict = {}
+    define = root.find('define')
+    for cdefine in root.findall('define/constant') :
+        #print cdefine.attrib
+        name  = cdefine.attrib.get('name')
+        #print name
+        value = cdefine.attrib.get('value')
+        #print value
+        dict[name] = value
+    print "Constant Dictionary"    
+    print dict
+    return(dict)
 
 def processGDML(filename):
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
@@ -240,11 +297,11 @@ def processGDML(filename):
     import xml.etree.ElementTree as ET
     tree = ET.parse(filename)
     root = tree.getroot()
- 
+    cdict = processConstants(root)
     for setup in root.find('setup'):
         print setup.attrib
         ref = getRef(setup)
-        parseVolume(root,ref,0,0,0)
+        parseVolume(root,cdict,ref,0,0,0)
 
     doc.recompute()
     if printverbose:
