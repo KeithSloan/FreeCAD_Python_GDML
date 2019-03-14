@@ -67,6 +67,35 @@ class BoxFeature:
                 QtCore.QT_TRANSLATE_NOOP('GDMLBoxFeature',\
                 'Box Object')}
 
+class SphereFeature:
+    def IsActive(self):
+        return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
+
+    def Activated(self):
+        from GDMLObjects import GDMLSphere, ViewProvider
+        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLSphere")
+        print("GDMLSphere Object - added")
+        # obj, rmin, rmax, startphi, deltaphi, starttheta, deltatheta,
+        #       aunit, lunits, material
+        GDMLSphere(a,10.0, 20.0, 0.0, 2.02, 0.0, 2.02,"rad","mm","SSteel")
+        print("GDMLSphere initiated")
+        ViewProvider(a.ViewObject)
+        print("GDMLSphere ViewProvided - added")
+        FreeCAD.ActiveDocument.recompute()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
+
+    def IsActive(self):
+        if FreeCAD.ActiveDocument == None:
+           return False
+        else:
+           return True
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDMLSphereFeature', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLSphereFeature',\
+                'Sphere Object'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLSphereFeature',\
+                'Sphere Object')}
 
 class TubeFeature:
     def IsActive(self):
@@ -100,4 +129,5 @@ class TubeFeature:
 
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('ConeCommand',ConeFeature())
+FreeCADGui.addCommand('SphereCommand',SphereFeature())
 FreeCADGui.addCommand('TubeCommand',TubeFeature())

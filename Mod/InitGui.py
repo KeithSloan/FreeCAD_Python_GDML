@@ -44,8 +44,8 @@ class GDML_Workbench ( Workbench ):
             return text
         
         import GDMLCommands
-        commands=['BoxCommand','ConeCommand','TubeCommand']
-        toolbarcommands=['BoxCommand','ConeCommand','TubeCommand']
+        commands=['BoxCommand','ConeCommand','SphereCommand','TubeCommand']
+        toolbarcommands=['BoxCommand','ConeCommand','SphereCommand','TubeCommand']
 
         import PartGui
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common',\

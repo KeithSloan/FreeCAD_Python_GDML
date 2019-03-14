@@ -5,7 +5,6 @@ class GDMLBox :
    def __init__(self, obj, x, y, z, lunits, material):
       '''Add some custom properties to our Cone feature'''
       print "GDMLBox init"
-      print x
       obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
       obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
@@ -41,7 +40,10 @@ class GDMLCone :
       obj.addProperty("App::PropertyAngle","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyStringList","aunit","GDMLCone","aunit").aunit=aunit
       obj.addProperty("App::PropertyStringList","lunits","GDMLCone","lunits").lunits=lunits
-      obj.addProperty("App::PropertyStringList","material","GDMLCone","Material").material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
+                      "Shape of the Cone")
+      obj.addProperty("App::PropertyStringList","material","GDMLCone", \
+                       "Material").material=material
       self.Type = 'GDMLCone'
       obj.Proxy = self
 
@@ -67,6 +69,58 @@ class GDMLCone :
        fp.Shape = cone3
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
+class GDMLSphere :
+   def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
+                deltatheta, aunit, lunits, material):
+      '''Add some custom properties to our Sphere feature'''
+      print "GDMLSphere init"
+      obj.addProperty("App::PropertyLength","rmin","GDMLSphere", \
+              "Inside Radius").rmin=rmin
+      obj.addProperty("App::PropertyLength","rmax","GDMLSphere", \
+              "Outside Radius").rmax=rmax
+      obj.addProperty("App::PropertyAngle","startphi","GDMLSphere", \
+              "Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyAngle","deltaphi","GDMLSphere", \
+             "Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyAngle","starttheta","GDMLSphere", \
+             "Start Theta pos").starttheta=starttheta
+      obj.addProperty("App::PropertyAngle","deltatheta","GDMLSphere", \
+             "Delta Angle").deltatheta=deltatheta
+      obj.addProperty("App::PropertyString","aunit","GDMLSphere", \
+                      "aunit").aunit=aunit
+      obj.addProperty("App::PropertyString","lunits","GDMLSphere", \
+                      "lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","material","GDMLSphere", \
+                       "Material").material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLSphere", \
+                      "Shape of the Sphere")
+      obj.Proxy = self
+      self.Type = 'GDMLSphere'
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+       import math
+       # Need to add code to check values make a valid sphere
+       cp = FreeCAD.Vector(0,0,0)
+       axis_dir = FreeCAD.Vector(0,0,1)
+       sphere1 = Part.makeSphere(fp.rmin, cp, axis_dir, fp.startphi, \
+                   fp.startphi+fp.deltaphi, fp.deltatheta)
+       sphere2 = Part.makeSphere(fp.rmax, cp, axis_dir, fp.startphi, \
+                   fp.startphi+fp.deltaphi, fp.deltatheta)
+       
+       sphere3 = sphere2.cut(sphere1)
+       #fp.Shape = sphere3
+       fp.Shape = sphere2
+       FreeCAD.Console.PrintMessage("Recompute GDML Sphere Object \n")
+
+
 class GDMLTube :
    def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \
                 lunits, material):
@@ -79,7 +133,7 @@ class GDMLTube :
       obj.addProperty("App::PropertyString","aunit","GDMLTube","aunit").aunit=aunit
       obj.addProperty("App::PropertyString","lunits","GDMLTube","lunits").lunits=lunits
       obj.addProperty("App::PropertyString","material","GDMLTube","Material").material=material
-      obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Box")
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Tube")
       obj.Proxy = self
       self.Type = 'GDMLTube'
 
@@ -92,8 +146,7 @@ class GDMLTube :
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
        import math
-       # Need to add code to check values make a valid cone
-       #box = Part.makeBox(fp.x,fp.y,fp.z)
+       # Need to add code to check values make a valid Tube
        # Define six vetices for the shape
        x1 = fp.rmax*math.sin(fp.startphi)
        y1 = fp.rmax*math.cos(fp.startphi)
@@ -119,22 +172,20 @@ class GDMLTube :
        cyl3 = cyl1.cut(cyl2) 
 
        tube = cyl3.cut(solid)
-
        fp.Shape = tube
        FreeCAD.Console.PrintMessage("Recompute GDML Tube Object \n")
 
-       # helper mehod to create the faces
    def make_face3(self,v1,v2,v3):
+       # helper mehod to create the faces
        wire = Part.makePolygon([v1,v2,v3,v1])
        face = Part.Face(wire)
        return face
 
-       # helper mehod to create the faces
    def make_face4(self,v1,v2,v3,v4):
+       # helper mehod to create the faces
        wire = Part.makePolygon([v1,v2,v3,v4,v1])
        face = Part.Face(wire)
        return face
-
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
@@ -221,6 +272,10 @@ class ViewProvider:
                Since no data were serialized nothing needs to be done here.'''
        return None
 
+
+#
+#   Need to add variables to these functions or delete?
+#
 def makeBox():
     a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLBox")
     GDMLBox(a)
@@ -229,6 +284,11 @@ def makeBox():
 def makeCone():
     a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLCone")
     GDMLCone(a)
+    ViewProvider(a.ViewObject)
+
+def makecSphere():
+    a=FreeCAD.ActiveDocument.addObject("App::FeaturePython","GDMLSphere")
+    GDMLSphere(a)
     ViewProvider(a.ViewObject)
 
 def makeTube():

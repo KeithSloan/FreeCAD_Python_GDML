@@ -166,6 +166,25 @@ def createCylinder(solid,cdict,r) :
     GDMLCyl(mycyl,r,z,deltaphi,aunit,"SSteel")   
     return mycyl
 
+def createSphere(solid,cdict,volref,lx,ly,lz,rot) :
+    from GDMLObjects import GDMLSphere, ViewProvider
+    print "CreateSphere : "
+    print solid.attrib
+    rmin = getVal(cdict,solid,'rmin')
+    rmax = getVal(cdict,solid,'rmax')
+    startphi = getVal(cdict,solid,'startphi')
+    deltaphi = getVal(cdict,solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunits = getText(solid,'lunits',"mm")
+    mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
+    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit,lunits,"SSteel")
+    print "Position : "+str(lx)+','+str(ly)+','+str(lz)
+    base = FreeCAD.Vector(lx,ly,lz)
+    mysphere.Placement = processPlacement(base,rot)
+    print mysphere.Placement.Rotation
+    ViewProvider(mysphere.ViewObject)
+
+
 def createTube(solid,cdict,volref,lx,ly,lz,rot) :
     from GDMLObjects import GDMLTube, ViewProvider
     print "CreateTube : "
@@ -204,6 +223,11 @@ def createSolid(solid,cdict,volref,lx,ly,lz,rot) :
         if case('box'):
            createBox(solid,cdict,volref,lx,ly,lz,rot) 
            break
+
+        if case('sphere'):
+           createSphere(solid,cdict,volref,lx,ly,lz,rot) 
+           break
+
         if case('tube'):
            createTube(solid,cdict,volref,lx,ly,lz,rot) 
            break
