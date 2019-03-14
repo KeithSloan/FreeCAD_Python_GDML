@@ -17,11 +17,13 @@ class ConeFeature:
         from GDMLObjects import GDMLCone, ViewProvider
         a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLCone")
         print("GDMLCone Object - added")
-        GDMLCone(a)
+        #  obj,rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,units,material
+        GDMLCone(a,1,3,4,7,10.0,0,2,"rads","SSteal")
         print("GDMLCone initiated")
         ViewProvider(a.ViewObject)
         print("GDMLCone ViewProvided - added")
         FreeCAD.ActiveDocument.recompute()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
 
     def IsActive(self):
         if FreeCAD.ActiveDocument == None:

@@ -26,20 +26,19 @@ class GDMLBox :
        FreeCAD.Console.PrintMessage("Recompute GDML Box Object \n")
 
 class GDMLCone :
-   def __init__(self, obj):
+   def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,units,material):
       '''Add some custom properties to our Cone feature'''
-      obj.addProperty("App::PropertyDistance","rmin1","GDMLCone","Min Radius 1").rmin1=3.0
-      obj.addProperty("App::PropertyDistance","rmax1","GDMLCone","Max Radius 1").rmax1=5.0
-      obj.addProperty("App::PropertyDistance","rmin2","GDMLCone","Min Radius 2").rmin2=6.0
-      obj.addProperty("App::PropertyDistance","rmax2","GDMLCone","Max Radius 2").rmax2=9.0
-      obj.addProperty("App::PropertyLength","z","GDMLCone","Height of Cone").z=10.0
-      obj.addProperty("App::PropertyAngle","startphi","GDMLCone","Start Angle").startphi=0
-      obj.addProperty("App::PropertyAngle","deltaphi","GDMLCone","Delta Angle").deltaphi=0
-      obj.addProperty("App::PropertyStringList","units","GDMLCone","Units").units="rad"
-      obj.addProperty("App::PropertyString","material","GDMLCone","Material").material="SSteel"
-      obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", "Shape of the Cone")
-      obj.Proxy = self
+      obj.addProperty("App::PropertyDistance","rmin1","GDMLCone","Min Radius 1").rmin1=rmin1
+      obj.addProperty("App::PropertyDistance","rmax1","GDMLCone","Max Radius 1").rmax1=rmax1
+      obj.addProperty("App::PropertyDistance","rmin2","GDMLCone","Min Radius 2").rmin2=rmin2
+      obj.addProperty("App::PropertyDistance","rmax2","GDMLCone","Max Radius 2").rmax2=rmax2
+      obj.addProperty("App::PropertyLength","z","GDMLCone","Height of Cone").z=z
+      obj.addProperty("App::PropertyAngle","startphi","GDMLCone","Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyAngle","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyStringList","units","GDMLCone","Units").units=units
+      obj.addProperty("App::PropertyStringList","material","GDMLCone","Material").material=material
       self.Type = 'GDMLCone'
+      obj.Proxy = self
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
@@ -52,6 +51,11 @@ class GDMLCone :
 
        # Need to add code to check variables will make a valid cone
        # i.e.max > min etc etc
+       #print("execute cone")
+       #print fp.rmax1
+       #print fp.rmax2
+       #print fp.z
+
        cone1 = Part.makeCone(fp.rmax1,fp.rmax2,fp.z)
        cone2 = Part.makeCone(fp.rmin1,fp.rmin2,fp.z)
        cone3 = cone1.cut(cone2)
