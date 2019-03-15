@@ -123,7 +123,10 @@ def getText(ptr,var,default) :
 
 def processPlacement(base,rot) :
     print "Rotation : "
+    # set angle & axis in case not set by rotation attribute
     print rot.attrib
+    axis = FreeCAD.Vector(1,0,0) 
+    angle = 0
     if 'y' in rot.attrib :
 	axis = FreeCAD.Vector(0,1,0) 
         angle = float(rot.attrib['y'])
