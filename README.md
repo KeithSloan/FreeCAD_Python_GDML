@@ -4,17 +4,17 @@ FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
-## Branches
+## Branches ( git checkout <branch> )
 
 * workbench - underdevelopment
-GDML workbench to Add GDML Objects as FreeCAD python Objects
+  GDML workbench to Add GDML Objects as FreeCAD python Objects
 
-GDML Objects added
+   GDML Objects added
 
-   * GDMLBox
-   * GDMLCone
-   * GDMLSphere
-   * GDMLTube
+      * GDMLBox
+      * GDMLCone
+      * GDMLSphere
+      * GDMLTube
 
 * master - GDML import / export
 
