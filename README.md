@@ -6,39 +6,39 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
 ## Branches
 
-1) workbench - underdevelopment
+* workbench - underdevelopment
 GDML workbench to Add GDML Objects as FreeCAD python Objects
 
 GDML Objects added
 
-   1) GDMLBox
-   2) GDMLCone
-   3) GDMLSphere
-   4) GDMLTube
+   * GDMLBox
+   * GDMLCone
+   * GDMLSphere
+   * GDMLTube
 
-2) master - GDML import / export
+* master - GDML import / export
 
 ## Installation - To incorporate into FreeCAD linux.
 
 Assumes you already have FreeCAD and git installed
 
-1) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
+* Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 
-2) cd FreeCAD_Python_GDML
+* cd FreeCAD_Python_GDML
 
-3) make sure softLink script is executable
+* make sure softLink script is executable
 
-4) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
+* Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
    
    
 ## Exporter
 
 The following FreeCAD objects are output as GDML equivalents
 
-1) Cube     ( GDML - Box )
-2) Cone     ( GDML - Cone )
-3) Cylinder ( GDML - Tube )
-4) Sphere   ( GDML - Sphere )
+* Cube     ( GDML - Box )
+* Cone     ( GDML - Cone )
+* Cylinder ( GDML - Tube )
+* Sphere   ( GDML - Sphere )
 
 If not handled as above then objects shapes are checked  to see if planar,
 if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
