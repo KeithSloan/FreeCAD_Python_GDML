@@ -6,7 +6,7 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
 ## Branches ( git checkout "branch" )
 
-* workbench - underdevelopment
+* **workbench** - underdevelopment
   GDML workbench to Add GDML Objects as FreeCAD python Objects
 
    GDML Objects added
@@ -16,7 +16,7 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
       * GDMLSphere
       * GDMLTube
 
-* master - GDML import / export
+* **master** - GDML import / export
 
 ## Installation - To incorporate into FreeCAD linux.
 
