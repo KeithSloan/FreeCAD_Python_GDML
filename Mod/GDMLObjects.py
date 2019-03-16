@@ -36,8 +36,8 @@ class GDMLCone :
       obj.addProperty("App::PropertyDistance","rmin2","GDMLCone","Min Radius 2").rmin2=rmin2
       obj.addProperty("App::PropertyDistance","rmax2","GDMLCone","Max Radius 2").rmax2=rmax2
       obj.addProperty("App::PropertyLength","z","GDMLCone","Height of Cone").z=z
-      obj.addProperty("App::PropertyAngle","startphi","GDMLCone","Start Angle").startphi=startphi
-      obj.addProperty("App::PropertyAngle","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyFloat","startphi","GDMLCone","Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyFloat","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyStringList","aunit","GDMLCone","aunit").aunit=aunit
       obj.addProperty("App::PropertyStringList","lunits","GDMLCone","lunits").lunits=lunits
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
@@ -78,13 +78,13 @@ class GDMLSphere :
               "Inside Radius").rmin=rmin
       obj.addProperty("App::PropertyLength","rmax","GDMLSphere", \
               "Outside Radius").rmax=rmax
-      obj.addProperty("App::PropertyAngle","startphi","GDMLSphere", \
+      obj.addProperty("App::PropertyFloat","startphi","GDMLSphere", \
               "Start Angle").startphi=startphi
-      obj.addProperty("App::PropertyAngle","deltaphi","GDMLSphere", \
+      obj.addProperty("App::PropertyFloat","deltaphi","GDMLSphere", \
              "Delta Angle").deltaphi=deltaphi
-      obj.addProperty("App::PropertyAngle","starttheta","GDMLSphere", \
+      obj.addProperty("App::PropertyFloat","starttheta","GDMLSphere", \
              "Start Theta pos").starttheta=starttheta
-      obj.addProperty("App::PropertyAngle","deltatheta","GDMLSphere", \
+      obj.addProperty("App::PropertyFloat","deltatheta","GDMLSphere", \
              "Delta Angle").deltatheta=deltatheta
       obj.addProperty("App::PropertyString","aunit","GDMLSphere", \
                       "aunit").aunit=aunit
@@ -128,8 +128,8 @@ class GDMLTube :
       obj.addProperty("App::PropertyLength","rmin","GDMLTube","Inside Radius").rmin=rmin
       obj.addProperty("App::PropertyLength","rmax","GDMLTube","Outside Radius").rmax=rmax
       obj.addProperty("App::PropertyLength","z","GDMLTube","Length z").z=z
-      obj.addProperty("App::PropertyAngle","startphi","GDMLTube","Start Angle").startphi=startphi
-      obj.addProperty("App::PropertyAngle","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyFloat","startphi","GDMLTube","Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyFloat","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyString","aunit","GDMLTube","aunit").aunit=aunit
       obj.addProperty("App::PropertyString","lunits","GDMLTube","lunits").lunits=lunits
       obj.addProperty("App::PropertyString","material","GDMLTube","Material").material=material

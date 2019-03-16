@@ -97,13 +97,13 @@ def checkConstant(vval):
 def getVal(cdict,ptr,var) :
     # get value for var variable var 
     from math import pi
-    print ptr.attrib
+    #print ptr.attrib
     # is the variable defined in passed attribute
     if var in ptr.attrib :
        # if yes get its value 
        vval = ptr.attrib.get(var)
-       #print "vval"
-       #print vval
+       print "vval"
+       print vval
        # check if defined as a constant
        if vval in cdict :
           c = cdict.get(vval)
@@ -111,7 +111,7 @@ def getVal(cdict,ptr,var) :
           return(eval(c))
        
        else :
-          return float(eval(ptr.attrib.get(var)))
+          return(float(eval(vval)))
     else :
        return (0.0)
 
@@ -131,7 +131,7 @@ def processPlacement(base,rot) :
 	axis = FreeCAD.Vector(0,1,0) 
         angle = float(rot.attrib['y'])
     if 'x' in rot.attrib :
-	axis = FreeCAD.Vector(1,0,0) 
+       	axis = FreeCAD.Vector(1,0,0) 
         angle = float(rot.attrib['x'])
     if 'z' in rot.attrib :
 	axis = FreeCAD.Vector(0,0,1) 

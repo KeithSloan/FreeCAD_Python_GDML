@@ -654,6 +654,37 @@ def processGDMLConeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, coneName, delta)
     return(coneName)
 
+def processSphereObject(obj, addVolsFlag) :
+    # Needs unique Name
+    sphereName = 'Sphere' + obj.Name
+    ET.SubElement(solids, 'sphere',{'name': sphereName, \
+                           'rmax': str(obj.Radius.Value), \
+                           'starttheta': str(90.-float(obj.Angle2)), \
+                           'deltatheta': str(float(obj.Angle2-obj.Angle1)), \
+                           'deltaphi': str(float(obj.Angle3)), \
+                           'aunit': 'deg',
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       createLVandPV(obj,obj.Name,sphereName)
+    return(sphereName)
+
+def processGDMLSphereObject(obj, addVolsFlag) :
+    # Needs unique Name
+    sphereName = 'Sphere' + obj.Name
+    ET.SubElement(solids, 'sphere',{'name': sphereName, \
+                           'rmin': str(obj.rmin.Value),  \
+                           'rmax': str(obj.rmax.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'lunit' : 'mm'})
+    #if addVolsFlag :
+    #   # Adjustment for position in GDML
+    #   delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+    #   createAdjustedLVandPV(obj, obj.Name, sphereName, delta)
+    return(sphereName)
+
+
 def processGDMLTubeObject(obj, addVolsFlag) :
     # Needs unique Name
     tubeName = 'Tube' + obj.Name
@@ -670,20 +701,6 @@ def processGDMLTubeObject(obj, addVolsFlag) :
        delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
        createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
     return(tubeName)
-
-def processSphereObject(obj, addVolsFlag) :
-    # Needs unique Name
-    sphereName = 'Sphere' + obj.Name
-    ET.SubElement(solids, 'sphere',{'name': sphereName, \
-                           'rmax': str(obj.Radius.Value), \
-                           'starttheta': str(90.-float(obj.Angle2)), \
-                           'deltatheta': str(float(obj.Angle2-obj.Angle1)), \
-                           'deltaphi': str(float(obj.Angle3)), \
-                           'aunit': 'deg',
-                           'lunit' : 'mm'})
-    if addVolsFlag :
-       createLVandPV(obj,obj.Name,sphereName)
-    return(sphereName)
 
 def addPositionAndRotation(element,obj):
     global defineCnt
@@ -780,6 +797,11 @@ def processObject(obj, addVolsFlag) :
              if case("GDMLCone") :
                 print("GDMLCone") 
                 return(processGDMLConeObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLSphere") :
+                print("GDMLSphere") 
+                return(processGDMLSphereObject(obj, addVolsFlag))
                 break
 
              if case("GDMLTube") :
