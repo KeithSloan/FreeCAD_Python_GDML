@@ -59,7 +59,11 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
 
 ## Acknowledgements
 
-Thanks to the following FreeCAD forum members
+Thanks to
+
+* Wouter Deconnick
+
+and the following FreeCAD forum members
 
 * wmayer
 * Joel_graff

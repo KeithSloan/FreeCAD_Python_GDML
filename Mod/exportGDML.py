@@ -274,6 +274,14 @@ def defineMaterials():
                    'ref': "O0x56070eea0370"})
     ET.SubElement(sst,'fraction', {'n': '0.01', \
                      'ref': "Ar0x56070eea07c0"})
+
+    sst = ET.SubElement(materials, 'material', \
+            {'Z': '1' , 'name': 'G4_Galactic', 'state': 'gas'})
+    ET.SubElement(sst,'T', {'unit': "K", 'value': '2.73'})
+    ET.SubElement(sst,'P', {'unit': "pascal", 'value': '3e-18'})
+    ET.SubElement(sst,'D', {'unit': "g/cm3", 'value': '1e-25'})
+    ET.SubElement(sst,'atom', {'unit': "g/mole", 'value': '1.01'})
+
     #ET.ElementTree(gdml).write("test6", 'utf-8', True)
    
 def defineWorldBox(exportList,bbox):
@@ -301,7 +309,7 @@ def constructWorld():
     #ET.ElementTree(gdml).write("test9b", 'utf-8', True)
     # world volume needs to be added to structure after all other volumes
     worldVOL = ET.Element('volume', {'name': 'worldVOL'})
-    ET.SubElement(worldVOL, 'materialref',{'ref': 'G4_AIR0x56070ee81710'})
+    ET.SubElement(worldVOL, 'materialref',{'ref': 'G4_Galactic'})
     ET.SubElement(worldVOL, 'solidref',{'ref': 'WorldBox'})
     # WorldBox is set in defineWorldBox
     #ET.SubElement(solids, 'box',{'name': 'WorldBox','x': '1000','y': '1000','z': '1000','lunit' : 'mm'})
