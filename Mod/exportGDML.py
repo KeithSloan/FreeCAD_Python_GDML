@@ -686,10 +686,9 @@ def processGDMLSphereObject(obj, addVolsFlag) :
                            'deltaphi': str(obj.deltaphi), \
                            'aunit': 'rad',
                            'lunit' : 'mm'})
-    #if addVolsFlag :
-    #   # Adjustment for position in GDML
-    #   delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
-    #   createAdjustedLVandPV(obj, obj.Name, sphereName, delta)
+    if addVolsFlag :
+       createLVandPV(obj,obj.Name,sphereName)
+
     return(sphereName)
 
 

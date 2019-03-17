@@ -331,6 +331,7 @@ def processGDML(filename):
         parseVolume(root,cdict,ref,0,0,0)
 
     doc.recompute()
+    FreeCADGui.SendMsgToActiveView("ViewFit")
     if printverbose:
         print('End ImportGDML')
     FreeCAD.Console.PrintMessage('End processing GDML file\n')
