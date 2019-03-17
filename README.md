@@ -7,7 +7,7 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 ## Branches ( git checkout "branch" )
 
 * **workbench** - under development
-  GDML workbench to Add GD sudo apt install fritzing fritzing-data fritzing-partsML Objects as FreeCAD python Objects
+  GDML workbench 
 
    GDML Objects added
 
