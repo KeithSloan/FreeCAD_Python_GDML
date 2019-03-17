@@ -6,8 +6,8 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
 ## Branches ( git checkout "branch" )
 
-* **workbench** - underdevelopment
-  GDML workbench to Add GDML Objects as FreeCAD python Objects
+* **workbench** - under development
+  GDML workbench to Add GD sudo apt install fritzing fritzing-data fritzing-partsML Objects as FreeCAD python Objects
 
    GDML Objects added
 
@@ -66,5 +66,5 @@ Booleans apart from MultiCommon are now implemented for export.
 
 ## Feedback
 
-To contact the Author email keith[at]sloan-home.co.uk
+To contact the author email keith[at]sloan-home.co.uk
 
