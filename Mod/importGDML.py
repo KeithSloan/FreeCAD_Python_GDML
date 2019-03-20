@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-
 #***************************************************************************
 #*                                                                         *
 #*   Copyright (c) 2017 Keith Sloan <keith@sloan-home.co.uk>               *
@@ -33,6 +32,18 @@ printverbose = False
 import FreeCAD, os, sys, re, math
 import Part, PartGui
 
+from HTMLParser import HTMLParser
+
+##########################
+# Globals Dictionarys    #
+##########################
+#constDict = {}
+#filesDict = {}
+#currentTag = None
+#currentString = ""
+#global setup, define, materials, solids, structure
+#globals constDict, filesDict, currentString
+
 if FreeCAD.GuiUp:
     import FreeCADGui
     gui = True
@@ -40,9 +51,7 @@ else:
     if printverbose: print("FreeCAD Gui not present.")
     gui = False
 
-
 import Part
-
 
 if open.__module__ == '__builtin__':
     pythonopen = open # to distinguish python built-in open function from the one declared here
@@ -94,7 +103,7 @@ def case(*args):
 def checkConstant(vval):
     print vval
 
-def getVal(cdict,ptr,var) :
+def getVal(ptr,var) :
     # get value for var variable var 
     from math import pi
     #print ptr.attrib
@@ -102,16 +111,20 @@ def getVal(cdict,ptr,var) :
     if var in ptr.attrib :
        # if yes get its value 
        vval = ptr.attrib.get(var)
-       print "vval"
-       print vval
+       #print "vval"
+       #print vval
+       if vval[0] == '&' :  # Is this refering to an HTML entity constant
+          chkval = vval[1:]
+       else : 
+          chkval = vval
        # check if defined as a constant
-       if vval in cdict :
-          c = cdict.get(vval)
+       if vval in constDict :
+          c = constDict.get(vval)
           #print c
           return(eval(c))
        
        else :
-          return(float(eval(vval)))
+          return(float(eval(chkval)))
     else :
        return (0.0)
 
@@ -140,19 +153,18 @@ def processPlacement(base,rot) :
     place = FreeCAD.Placement(base,axis,angle)
     return place
 
-def createBox(solid,cdict,volref,lx,ly,lz,rot) :
+def createBox(solid,cdict,volref,px,py,pz,rot) :
     from GDMLObjects import GDMLBox, ViewProvider
     print "CreateBox : "
     print solid.attrib
-    #mycube=doc.addObject('Part::Box',volref.get('ref')+'_'+solid.get('name')+'_')
     mycube=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLBox")
-    x = getVal(cdict,solid,'x')
-    y = getVal(cdict,solid,'y')
-    z = getVal(cdict,solid,'z')
+    x = getVal(solid,'x')
+    y = getVal(solid,'y')
+    z = getVal(solid,'z')
     GDMLBox(mycube,x,y,z,"mm","SSteel")
     ViewProvider(mycube.ViewObject)
-    print "Logical Position : "+str(lx)+','+str(ly)+','+str(lz)
-    base = FreeCAD.Vector(lx-x/2,ly-y/2,lz-z/2)
+    print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
     mycube.Placement = processPlacement(base,rot)
     print mycube.Placement.Rotation
     #mycube.ViewObject.DisplayMode = 'Wireframe'
@@ -160,8 +172,8 @@ def createBox(solid,cdict,volref,lx,ly,lz,rot) :
 def createCylinder(solid,cdict,r) :
     #mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
     mycyl=doc.addObject("Part::FeaturePython","GDMLCyl")
-    z = getVal(cdict,solid,'z')
-    r = getVal(cdict,solid,'r')
+    z = getVal(solid,'z')
+    r = getVal(solid,'r')
     aunit = getText(solid,'aunit','rad')
     deltaphi = getVal(define,solid,'deltaphi')
     if ('aunit' == 'rad') :
@@ -169,34 +181,34 @@ def createCylinder(solid,cdict,r) :
     GDMLCyl(mycyl,r,z,deltaphi,aunit,"SSteel")   
     return mycyl
 
-def createSphere(solid,cdict,volref,lx,ly,lz,rot) :
+def createSphere(solid,cdict,volref,px,py,pz,rot) :
     from GDMLObjects import GDMLSphere, ViewProvider
     print "CreateSphere : "
     print solid.attrib
-    rmin = getVal(cdict,solid,'rmin')
-    rmax = getVal(cdict,solid,'rmax')
-    startphi = getVal(cdict,solid,'startphi')
-    deltaphi = getVal(cdict,solid,'deltaphi')
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunits = getText(solid,'lunits',"mm")
     mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
     GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit,lunits,"SSteel")
-    print "Position : "+str(lx)+','+str(ly)+','+str(lz)
-    base = FreeCAD.Vector(lx,ly,lz)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
     mysphere.Placement = processPlacement(base,rot)
     print mysphere.Placement.Rotation
     ViewProvider(mysphere.ViewObject)
 
 
-def createTube(solid,cdict,volref,lx,ly,lz,rot) :
+def createTube(solid,cdict,volref,px,py,pz,rot) :
     from GDMLObjects import GDMLTube, ViewProvider
     print "CreateTube : "
     print solid.attrib
-    rmin = getVal(cdict,solid,'rmin')
-    rmax = getVal(cdict,solid,'rmax')
-    z = getVal(cdict,solid,'z')
-    startphi = getVal(cdict,solid,'startphi')
-    deltaphi = getVal(cdict,solid,'deltaphi')
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    z = getVal(solid,'z')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunits = getText(solid,'lunits',"mm")
     #if ( rmin is None or rmin == 0 ) :
@@ -211,38 +223,39 @@ def createTube(solid,cdict,volref,lx,ly,lz,rot) :
     print z
     mytube=doc.addObject("Part::FeaturePython","GDMLTube")
     GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunits,"SSteel")
-    print "Position : "+str(lx)+','+str(ly)+','+str(lz)
-    base = FreeCAD.Vector(lx,ly,lz)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
     mytube.Placement = processPlacement(base,rot)
     print mytube.Placement.Rotation
     ViewProvider(mytube.ViewObject)
 
-def createCone(solid,cdict,volref,lx,ly,lz,rot) :
+def createCone(solid,cdict,volref,px,py,pz,rot) :
     print "CreateCone : "
     print solid.attrib
 
-def createSolid(solid,cdict,volref,lx,ly,lz,rot) :
+def createSolid(solid,cdict,volref,px,py,pz,rot) :
     while switch(solid.tag):
         if case('box'):
-           createBox(solid,cdict,volref,lx,ly,lz,rot) 
+           createBox(solid,cdict,volref,px,py,pz,rot) 
            break
 
         if case('sphere'):
-           createSphere(solid,cdict,volref,lx,ly,lz,rot) 
+           createSphere(solid,cdict,volref,px,py,pz,rot) 
            break
 
         if case('tube'):
-           createTube(solid,cdict,volref,lx,ly,lz,rot) 
+           createTube(solid,cdict,volref,px,py,pz,rot) 
            break
         #if case('cone'):
-        #   createCone(solid,cdict,volref,lx,ly,lz,rot) 
+        #   createCone(solid,cdict,volref,px,py,pz,rot) 
         #   break
         print "Solid : "+solid.tag+" Not yet supported"
         break
 
-
-def getRef(ptr) :
-    ref = ptr.get('ref')
+# get ref e.g name world, solidref, materialref
+def getRef(ptr, name) :
+    wkr = ptr.find(name)
+    ref = wrk.get('ref')
     print "ref : " + ref
     return ref
 
@@ -260,6 +273,7 @@ def parseObject(root,ptr) :
        tool = root.find("solids/*[@name='%s']" % name )
        parseObject(root,tool)
 
+#   Not needed ?
 def getVolSolid(root,name):
     print "Get Volume Solid"
     vol = root.find("structure/volume[@name='%s']" % name )
@@ -269,42 +283,46 @@ def getVolSolid(root,name):
     solid = root.find("solids/*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(root,cdict,ptr,lx,ly,lz):
+def parsePhysVol(physVol,solid,material):
     print "ParsePhyVol"
-    pos = ptr.find("positionref")
-    if pos is not None :
-       name = getRef(pos)
-       pos = root.find("define/position[@name='%s']" % name )
+
+    posref = getRef(physVol,"positionref")
+    if posref is not None :
+       pos = define.find("position[@name='%s']" % posref )
        print pos.attrib
     else :
-       pos = ptr.find("position")
-    lx += getVal(cdict,pos,'x')
-    ly += getVal(cdict,pos,'y')
-    lz += getVal(cdict,pos,'z')
-    rot = ptr.find("rotationref")
-    if rot is not None :
-       name = getRef(rot)
-       rot = root.find("define/rotation[@name='%s']" % name )
+       pos = physvol.find("position")
+    px = getVal(pos,'x')
+    py = getVal(pos,'y')
+    pz = getVal(pos,'z')
+    rotref = getRef(physVol,"rotationref")
+    if rotref is not None :
+       rot = define.find("rotation[@name='%s']" % rotref )
     else :
-       rot = ptr.find("rotation")
-    volref = ptr.find("volumeref")
-    name = getRef(volref)
-    solid = getVolSolid(root,name)
-    if ((pos is not None) and (rot is not None)) :
-       createSolid(solid,cdict,volref,lx,ly,lz,rot)
-    parseVolume(root,cdict,name,lx,ly,lz)
+       rot = physVol.find("rotation")
+    #volref = ptr.find("volumeref")
+    #name = getRef(volref)
+    #solid = getVolSolid(root,name)
+    #if ((pos is not None) and (rot is not None)) :
+    createSolid(solid,volref,px,py,pz,rot)
+    #parseVolume(root,cdict,name,lx,ly,lz)
 
-# ParseVolume 
-def parseVolume(root,cdict,name,lx,ly,lz) :
+# ParseVolume name - structure is global
+def parseVolume(name) :
     print "ParseVolume : "+name
-    vol = root.find("structure/volume[@name='%s']" % name )
+    vol      = structure.find("volume[@name='%s']" % name )
+    solid    = find(solids, getRef(vol,"solidref"))
+    material = find(materials, getRef(vol,"materialref")
     print vol.attrib
+    # Volume may or maynot contain physvol's
+    # if no physical volume still have to create solid    
+    createSolid(solid,vol,0,0,0,None)
     for pv in vol.findall('physvol') : 
-        parsePhysVol(root,cdict,pv,lx,ly,lz)
+        # create solids at pos & rot in physvols
+        parsePhysVol(pv,solid,material)
 
 def processConstants(root):
     print "Process Constants"
-    dict = {}
     define = root.find('define')
     for cdefine in root.findall('define/constant') :
         #print cdefine.attrib
@@ -312,23 +330,123 @@ def processConstants(root):
         #print name
         value = cdefine.attrib.get('value')
         #print value
-        dict[name] = value
+        constDict[name] = value
     print "Constant Dictionary"    
-    print dict
-    return(dict)
+    print constDict
+    return(constDict)
+
+# create a subclass and override the handler methods
+class MyHTMLParser(HTMLParser):
+
+    def handle_starttag(self, tag, attrs):
+        #print "Encountered a start tag:", tag
+        global currentTag
+        currentTag = tag
+
+    def handle_decl(self, decl):    
+        # This gets called when the entity is declared
+        print "Encountered a declaration ", decl
+        words = decl.split()
+        wlen  = len(words)
+        print words
+        if words[3] == "<!ENTITY":
+           while switch(wlen):
+              if case(7):
+                 # const that refers to a file
+                 print words[4]
+                 print words[6]
+                 filesDict[words[4]] = words[6].split('"')[1]
+                 break
+
+              if case(6) :
+                 # Constant definition - Add to dict 
+                 print words[4]
+                 print words[5]
+                 constDict[words[4]] = words[5]
+                 break
+
+              print "Not yet handled : "+str(words[1])
+              break
+
+        else :
+          print "Not Handled - Not an Entity"
+    
+    def handle_entityref(self, name):
+        # This gets called when the entity is referenced
+        print "Entity reference : "+ name
+        tag = self.get_starttag_text()
+        print "Current Section  : "+ tag
+        print self.getpos()
+        search = "&"+name
+        print "Search : "+search
+        print "Include file "
+        insertFile = str(filesDict[name])
+        print insertFile
+        f = pythonopen(insertFile)
+        insertString = f.read()
+        lsearch = len(search)+1 # trailing ;
+        print lsearch
+        global currentString
+        l = currentString.find(search)
+        print "Pos in string    : "+str(l)
+        newString = currentString[:l] + insertString + currentString[l+lsearch:]
+        currentString = newString
+
+#    def handle_endtag(self, tag):
+#        print "Encountered an end tag :", tag
+
+#    def handle_data(self, data):
+#        print "Encountered some data  :", data
+
+    def unknown_decl(data):
+        print "Encountered unknown data  :", data
+
+def preProcessHTML(filename) :
+    # instantiate the parser and fed it some HTML
+    f = pythonopen(filename)
+    global currentString
+    currentString = f.read()
+    parser = MyHTMLParser()
+    parser.feed(currentString)
+    g = pythonopen("/tmp/dumpString","w")
+    g.write(currentString)
+    g.close
 
 def processGDML(filename):
+
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
+    
+    global currentString, filesDict
 
-    import xml.etree.ElementTree as ET
-    tree = ET.parse(filename)
-    root = tree.getroot()
-    cdict = processConstants(root)
-    for setup in root.find('setup'):
-        print setup.attrib
-        ref = getRef(setup)
-        parseVolume(root,cdict,ref,0,0,0)
+    # PreProcessHTML file - sets currentString & filesDict
+    preProcessHTML(filename)
+    print "Files dictionary"
+    print filesDict
+   
+    # Add files object so user can change to organise files
+    from GDMLObjects import GDMLFiles, ViewProvider
+    myfiles = doc.addObject("Part::FeaturePython","GDMLFiles")
+    #ViewProvider(myfiles.ViewObject)
+
+    #import xml.etree.ElementTree as ET
+    #tree = ET.parse(filename)
+    #root = tree.getroot()
+
+    global setup, defines, materials, solids, structure
+   
+    from lxml import etree
+    root = etree.fromstring(currentString)
+    setup     = root.find('setup')
+    define    = root.fine('define')
+    materials = root.find('materials')
+    solids    = root.find('solids')
+    structure = root.find('structure')
+
+    constDict = processConstants(define)
+    print setup.attrib
+    world = getRef(setup,"world")
+    parseVolume(root,constDict,world,0,0,0)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")

@@ -193,6 +193,28 @@ class GDMLTube :
        self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
+class GDMLFiles :
+   def __init__(self,obj) :
+      '''Add some custom properties to our Cone feature'''
+      obj.addString("App::PropertyBool","active","GDMLFiles", \
+                    "split option").active=False
+      obj.addString("App::PropertyString","define","GDMLFiles", \
+                    "define section").define="Fred"
+      obj.addString("App::PropertyString","materials","GDMLFiles", \
+                    "materials section").materials=""
+      obj.addString("App::PropertyString","solids","GDMLFiles", \
+                    "solids section").solids=""
+      obj.addString("App::PropertyString","structure","GDMLFiles", \
+                    "sructure section").structure=""
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+
 # use general ViewProvider if poss
 class ViewProvider:
    def __init__(self, obj):
