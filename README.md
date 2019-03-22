@@ -15,6 +15,7 @@ Assumes you already have FreeCAD and git installed
 2) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 
 3) For workbench **git checkout workbench**
+   (if workbench not present **git checkout -b workbench origin/workbench )
 
 4) cd FreeCAD_Python_GDML
 
