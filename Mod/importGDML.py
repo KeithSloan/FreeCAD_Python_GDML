@@ -135,25 +135,27 @@ def getText(ptr,var,default) :
        return default
 
 def processPlacement(base,rot) :
-    print "Rotation : "
+    # rot is rotation or None if default 
     # set angle & axis in case not set by rotation attribute
-    print rot.attrib
     axis = FreeCAD.Vector(1,0,0) 
     angle = 0
-    if 'y' in rot.attrib :
-	axis = FreeCAD.Vector(0,1,0) 
-        angle = float(rot.attrib['y'])
-    if 'x' in rot.attrib :
-       	axis = FreeCAD.Vector(1,0,0) 
-        angle = float(rot.attrib['x'])
-    if 'z' in rot.attrib :
-	axis = FreeCAD.Vector(0,0,1) 
-        angle = float(rot.attrib['z'])
+    if rot != None :
+        print "Rotation : "
+        print rot.attrib
+        if 'y' in rot.attrib :
+	    axis = FreeCAD.Vector(0,1,0) 
+            angle = float(rot.attrib['y'])
+        if 'x' in rot.attrib :
+       	    axis = FreeCAD.Vector(1,0,0) 
+            angle = float(rot.attrib['x'])
+        if 'z' in rot.attrib :
+	    axis = FreeCAD.Vector(0,0,1) 
+            angle = float(rot.attrib['z'])
     print angle 
     place = FreeCAD.Placement(base,axis,angle)
     return place
 
-def createBox(solid,cdict,volref,px,py,pz,rot) :
+def createBox(solid,px,py,pz,rot) :
     from GDMLObjects import GDMLBox, ViewProvider
     print "CreateBox : "
     print solid.attrib
@@ -168,20 +170,21 @@ def createBox(solid,cdict,volref,px,py,pz,rot) :
     mycube.Placement = processPlacement(base,rot)
     print mycube.Placement.Rotation
     #mycube.ViewObject.DisplayMode = 'Wireframe'
+    return mycube
 
-def createCylinder(solid,cdict,r) :
+def createCylinder(solid) :
     #mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
     mycyl=doc.addObject("Part::FeaturePython","GDMLCyl")
     z = getVal(solid,'z')
     r = getVal(solid,'r')
     aunit = getText(solid,'aunit','rad')
-    deltaphi = getVal(define,solid,'deltaphi')
+    deltaphi = getVal(solid,'deltaphi')
     if ('aunit' == 'rad') :
        deltaphi = (180 * deltaphi) / math.pi
     GDMLCyl(mycyl,r,z,deltaphi,aunit,"SSteel")   
     return mycyl
 
-def createSphere(solid,cdict,volref,px,py,pz,rot) :
+def createSphere(solid,px,py,pz,rot) :
     from GDMLObjects import GDMLSphere, ViewProvider
     print "CreateSphere : "
     print solid.attrib
@@ -198,9 +201,10 @@ def createSphere(solid,cdict,volref,px,py,pz,rot) :
     mysphere.Placement = processPlacement(base,rot)
     print mysphere.Placement.Rotation
     ViewProvider(mysphere.ViewObject)
+    return mysphere
 
 
-def createTube(solid,cdict,volref,px,py,pz,rot) :
+def createTube(solid,px,py,pz,rot) :
     from GDMLObjects import GDMLTube, ViewProvider
     print "CreateTube : "
     print solid.attrib
@@ -228,59 +232,84 @@ def createTube(solid,cdict,volref,px,py,pz,rot) :
     mytube.Placement = processPlacement(base,rot)
     print mytube.Placement.Rotation
     ViewProvider(mytube.ViewObject)
+    return mytube
 
-def createCone(solid,cdict,volref,px,py,pz,rot) :
+def createCone(solid,px,py,pz,rot) :
     print "CreateCone : "
     print solid.attrib
 
-def createSolid(solid,cdict,volref,px,py,pz,rot) :
-    while switch(solid.tag):
+def parseBoolean(solid,objType,px,py,pz,rot) :
+    from GDMLObjects import ViewProvider
+    print solid.tag
+    print solid.attrib
+    if solid.tag in ["subtraction","union","intersection"] :
+       print "Boolean : "+solid.tag
+       name1st = getRef(solid,'first')
+       base = solids.find("*[@name='%s']" % name1st )
+       print "first : "+name1st
+       #parseObject(root,base)
+       name2nd = getRef(solid,'second')
+       tool = solids.find("*[@name='%s']" % name2nd )
+       print "second : "+name2nd
+       #parseObject(root,tool)
+       mybool = doc.addObject(objType,solid.tag)
+       mybool.Base = createSolid(base,0,0,0,None)
+       #mybool.Base = createSolid(base,px,py,pz,rot)
+       mybool.Tool = createSolid(tool,0,0,0,None)
+       #print "Position : "+str(px)+','+str(py)+','+str(pz)
+       pos = FreeCAD.Vector(px,py,pz)
+       mybool.Placement = processPlacement(pos,rot)
+       #print mybool.Placement.Rotation
+       #ViewProvider(mybool.ViewObject)
+       return mybool
+
+def createSolid(solid,px,py,pz,rot) :
+    print solid.tag
+    while switch(solid.tag) :
         if case('box'):
-           createBox(solid,cdict,volref,px,py,pz,rot) 
+           return(createBox(solid,px,py,pz,rot)) 
            break
 
         if case('sphere'):
-           createSphere(solid,cdict,volref,px,py,pz,rot) 
+           return(createSphere(solid,px,py,pz,rot)) 
            break
 
         if case('tube'):
-           createTube(solid,cdict,volref,px,py,pz,rot) 
+           return(createTube(solid,px,py,pz,rot)) 
            break
         #if case('cone'):
-        #   createCone(solid,cdict,volref,px,py,pz,rot) 
+        #   createCone(solid,px,py,pz,rot) 
         #   break
+
+        if case('intersection'):
+           return(parseBoolean(solid,'Part::Common',px,py,pz,rot)) 
+           break
+
+        if case('union'):
+           return(parseBoolean(solid,'Part::Fuse',px,py,pz,rot)) 
+           break
+
+        if case('subtraction'):
+           return(parseBoolean(solid,'Part::Cut',px,py,pz,rot)) 
+           break
+
         print "Solid : "+solid.tag+" Not yet supported"
         break
 
 # get ref e.g name world, solidref, materialref
 def getRef(ptr, name) :
-    wkr = ptr.find(name)
+    wrk = ptr.find(name)
     ref = wrk.get('ref')
     print "ref : " + ref
     return ref
 
-def parseObject(root,ptr) :
-    print ptr.tag
-    print ptr.attrib
-    if ptr.tag in ["subtraction","union","intersection"] :
-       print "Boolean : "+ptr.tag
-       base = ptr.find('first')
-       name = getRef(base)
-       base = root.find("solids/*[@name='%s']" % name )
-       parseObject(root,base)
-       tool = ptr.find('second')
-       name = getRef(tool)
-       tool = root.find("solids/*[@name='%s']" % name )
-       parseObject(root,tool)
-
-#   Not needed ?
-def getVolSolid(root,name):
+def getVolSolid(name):
     print "Get Volume Solid"
-    vol = root.find("structure/volume[@name='%s']" % name )
+    vol = structure.find("/volume[@name='%s']" % name )
     sr = vol.find("solidref")
     print sr.attrib
     name = getRef(sr)
-    solid = root.find("solids/*[@name='%s']" % name )
+    solid = solids.find("*[@name='%s']" % name )
     return solid
 
 def parsePhysVol(physVol,solid,material):
@@ -300,31 +329,31 @@ def parsePhysVol(physVol,solid,material):
        rot = define.find("rotation[@name='%s']" % rotref )
     else :
        rot = physVol.find("rotation")
-    #volref = ptr.find("volumeref")
-    #name = getRef(volref)
-    #solid = getVolSolid(root,name)
-    #if ((pos is not None) and (rot is not None)) :
-    createSolid(solid,volref,px,py,pz,rot)
-    #parseVolume(root,cdict,name,lx,ly,lz)
+
+    volref = getRef(physVol,"volumeref")
+    print "Volume ref : "+volref
+    parseVolume(volref,px,py,pz,rot)
 
 # ParseVolume name - structure is global
-def parseVolume(name) :
+# We get passed position and rotation
+def parseVolume(name,px,py,pz,rot) :
     print "ParseVolume : "+name
-    vol      = structure.find("volume[@name='%s']" % name )
-    solid    = find(solids, getRef(vol,"solidref"))
-    material = find(materials, getRef(vol,"materialref")
-    print vol.attrib
+    vol = structure.find("volume[@name='%s']" % name )
+    solidref = getRef(vol,"solidref")
+    solid  = solids.find("*[@name='%s']" % solidref )
+    print solid.tag
+    materialref = getRef(vol,"materialref")
+    print "Material : "+materialref
+    material = materials.find(materialref)
+    createSolid(solid,px,py,pz,rot)
     # Volume may or maynot contain physvol's
-    # if no physical volume still have to create solid    
-    createSolid(solid,vol,0,0,0,None)
     for pv in vol.findall('physvol') : 
         # create solids at pos & rot in physvols
         parsePhysVol(pv,solid,material)
 
-def processConstants(root):
+def processConstants():
     print "Process Constants"
-    define = root.find('define')
-    for cdefine in root.findall('define/constant') :
+    for cdefine in define.findall('constant') :
         #print cdefine.attrib
         name  = cdefine.attrib.get('name')
         #print name
@@ -404,7 +433,9 @@ class MyHTMLParser(HTMLParser):
 def preProcessHTML(filename) :
     # instantiate the parser and fed it some HTML
     f = pythonopen(filename)
-    global currentString
+    global constDict, filesDict, currentString
+    constDict = {}
+    filesDict = {}
     currentString = f.read()
     parser = MyHTMLParser()
     parser.feed(currentString)
@@ -425,28 +456,28 @@ def processGDML(filename):
     print filesDict
    
     # Add files object so user can change to organise files
-    from GDMLObjects import GDMLFiles, ViewProvider
-    myfiles = doc.addObject("Part::FeaturePython","GDMLFiles")
+    #from GDMLObjects import GDMLFiles, ViewProvider
+    #myfiles = doc.addObject("Part::FeaturePython","GDMLFiles")
     #ViewProvider(myfiles.ViewObject)
 
     #import xml.etree.ElementTree as ET
     #tree = ET.parse(filename)
     #root = tree.getroot()
 
-    global setup, defines, materials, solids, structure
+    global setup, define, materials, solids, structure
    
     from lxml import etree
     root = etree.fromstring(currentString)
     setup     = root.find('setup')
-    define    = root.fine('define')
+    define    = root.find('define')
     materials = root.find('materials')
     solids    = root.find('solids')
     structure = root.find('structure')
 
-    constDict = processConstants(define)
+    constDict = processConstants()
     print setup.attrib
     world = getRef(setup,"world")
-    parseVolume(root,constDict,world,0,0,0)
+    parseVolume(world,0,0,0,None)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")

@@ -759,7 +759,7 @@ def processObject(obj, addVolsFlag) :
          intersectName = 'Intersect'+obj.Name
          ref1 = processObject(obj.Base,False)
          ref2 = processObject(obj.Tool,False)
-         intersect = ET.SubElement(solids,'intersect',{'name': intersectName })
+         intersect = ET.SubElement(solids,'intersection',{'name': intersectName })
          ET.SubElement(intersect,'first', {'ref': ref1})
          ET.SubElement(intersect,'second',{'ref': ref2})
          addPositionAndRotation(intersect,obj)
