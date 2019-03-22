@@ -3,7 +3,7 @@ from pivy import coin
 
 class GDMLBox :
    def __init__(self, obj, x, y, z, lunits, material):
-      '''Add some custom properties to our Cone feature'''
+      '''Add some custom properties to our Box feature'''
       print "GDMLBox init"
       obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
@@ -63,10 +63,13 @@ class GDMLCone :
        #print fp.rmax2
        #print fp.z
 
-       cone1 = Part.makeCone(fp.rmax1,fp.rmax2,fp.z)
-       cone2 = Part.makeCone(fp.rmin1,fp.rmin2,fp.z)
-       cone3 = cone1.cut(cone2)
-       fp.Shape = cone3
+       cone1 = Part.makeCone(fp.rmax2,fp.rmax1,fp.z)
+       if (fp.rmin1 != 0.0 and fp.rmin2 != 0.0) :
+          cone2 = Part.makeCone(fp.rmin2,fp.rmin1,fp.z)
+          cone3 = cone1.cut(cone2)
+          fp.Shape = cone3
+       else :   
+          fp.Shape = cone1
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
 class GDMLSphere :
@@ -110,13 +113,13 @@ class GDMLSphere :
        # Need to add code to check values make a valid sphere
        cp = FreeCAD.Vector(0,0,0)
        axis_dir = FreeCAD.Vector(0,0,1)
-       sphere1 = Part.makeSphere(fp.rmin, cp, axis_dir, fp.startphi, \
-                   fp.startphi+fp.deltaphi, fp.deltatheta)
-       sphere2 = Part.makeSphere(fp.rmax, cp, axis_dir, fp.startphi, \
-                   fp.startphi+fp.deltaphi, fp.deltatheta)
+       #sphere1 = Part.makeSphere(fp.rmin, cp, axis_dir, fp.startphi, \
+       #            fp.startphi+fp.deltaphi, fp.deltatheta)
+       #sphere2 = Part.makeSphere(fp.rmax, cp, axis_dir, fp.startphi, \
+       #            fp.startphi+fp.deltaphi, fp.deltatheta)
+       sphere2 = Part.makeSphere(fp.rmax, cp, axis_dir)
        
-       sphere3 = sphere2.cut(sphere1)
-       #fp.Shape = sphere3
+       #sphere3 = sphere2.cut(sphere1)
        fp.Shape = sphere2
        FreeCAD.Console.PrintMessage("Recompute GDML Sphere Object \n")
 
@@ -124,7 +127,7 @@ class GDMLSphere :
 class GDMLTube :
    def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \
                 lunits, material):
-      '''Add some custom properties to our Cone feature'''
+      '''Add some custom properties to our Tube feature'''
       obj.addProperty("App::PropertyLength","rmin","GDMLTube","Inside Radius").rmin=rmin
       obj.addProperty("App::PropertyLength","rmax","GDMLTube","Outside Radius").rmax=rmax
       obj.addProperty("App::PropertyLength","z","GDMLTube","Length z").z=z

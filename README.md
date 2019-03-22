@@ -10,16 +10,27 @@ To incorporate into FreeCAD linux.
 
 Assumes you already have FreeCAD and git installed
 
-1) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
+1) Install lmxl - sudo apt-get install python-lxml
 
-2) cd FreeCAD_Python_GDML
+2) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 
-3) make sure softLink script is executable
+3) For workbench **git checkout workbench**
 
-4) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
+4) cd FreeCAD_Python_GDML
+
+5) Check paths in softLinks script
+
+6) make sure softLink script is executable - chmod +x softLinks
+
+7) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
    
-   
+## Workbench
+
+Adds support for GDMLBox, GDMLCone, GDMLCylinder, GDMLSphere, GDMLTube
+
 ## Exporter
+
+GDMLObjects are output as straight GDML solids
 
 The following FreeCAD objects are output as GDML equivalents
 
@@ -34,20 +45,18 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
  
 ## Future Development Road Map
 
-* GDML solids as Part::PythonFeatures
-  * Import
-  * Export
-  * Dialog for initial values(?)
+  * Workbench Dialog for initial GDML Object values(?)
+  * Handle different Positioning between GDML & FreeCAD
+  * Sort out handling of degrees radians
+  * Add support for quantity
+  * Add further GDML Objects
+  * Design icons for workbench
 
-* Import
-  * Volume rotations
 * Workbench
   * Analize FreeCAD file for direct conversion of object to GDML solid
   * Display mesh for objects that will not directly convert
   * Provide options to control meshing objects that will be Tessellated
   * Icons to Analize and Export
-* Add function for objects that can be directly converted
-* Use lxml rather than etree (Needs apt-get install python-lxml)
 * Tidy softLink script
 * Make FreeCAD installable workbench 
 * Documentation

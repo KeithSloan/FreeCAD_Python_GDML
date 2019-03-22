@@ -134,7 +134,17 @@ def getText(ptr,var,default) :
     else :
        return default
 
+# get ref e.g name world, solidref, materialref
+def getRef(ptr, name) :
+    wrk = ptr.find(name)
+    if wrk != None :
+       ref = wrk.get('ref')
+       print name + ' : ' + ref
+       return ref
+    return wrk
+
 def processPlacement(base,rot) :
+    # Different Objects will have adjusted base GDML-FreeCAD
     # rot is rotation or None if default 
     # set angle & axis in case not set by rotation attribute
     axis = FreeCAD.Vector(1,0,0) 
@@ -155,7 +165,20 @@ def processPlacement(base,rot) :
     place = FreeCAD.Placement(base,axis,angle)
     return place
 
-def createBox(solid,px,py,pz,rot) :
+# Return a FreeCAD placement for positionref & rotateref
+def getPlacementFromRefs(ptr) :
+    pos = define.find("[@name='%s']" % getRef(ptr,'positionref'))
+    rot = define.find("[@name='%s']" % getRef(ptr,'rotationref'))
+    base = FreeCAD.Vector(0.0,0.0,0.0)
+    if pos != None :    
+       print pos.attrib
+       x = getVal(pos,'x')
+       y = getVal(pos,'y')
+       z = getVal(pos,'z')
+       base = FreeCAD.Vector(x,y,z)
+    return(processPlacement(base,rot))   
+
+def createBox(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLBox, ViewProvider
     print "CreateBox : "
     print solid.attrib
@@ -163,17 +186,16 @@ def createBox(solid,px,py,pz,rot) :
     x = getVal(solid,'x')
     y = getVal(solid,'y')
     z = getVal(solid,'z')
-    GDMLBox(mycube,x,y,z,"mm","SSteel")
+    GDMLBox(mycube,x,y,z,"mm",material)
     ViewProvider(mycube.ViewObject)
     print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
     mycube.Placement = processPlacement(base,rot)
     print mycube.Placement.Rotation
-    #mycube.ViewObject.DisplayMode = 'Wireframe'
+    if wireFrame : mycube.ViewObject.DisplayMode = 'Wireframe'
     return mycube
 
-def createCylinder(solid) :
-    #mycyl = doc.addObject('Part::Cylinder',solid.get('name')+'_')
+def createCylinder(solid,material,px,py,pz,rot,wireFrame) :
     mycyl=doc.addObject("Part::FeaturePython","GDMLCyl")
     z = getVal(solid,'z')
     r = getVal(solid,'r')
@@ -181,10 +203,17 @@ def createCylinder(solid) :
     deltaphi = getVal(solid,'deltaphi')
     if ('aunit' == 'rad') :
        deltaphi = (180 * deltaphi) / math.pi
-    GDMLCyl(mycyl,r,z,deltaphi,aunit,"SSteel")   
+    mycyl = GDMLCyl(mycyl,r,z,deltaphi,aunit,material)   
+    ViewProvider(mycyl.ViewObject)
+    print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
+    #base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
+    base = FreeCAD.Vector(px,py,pz)
+    mycyl.Placement = processPlacement(base,rot)
+    print mycyl.Placement.Rotation
+    if wireFrame : mycyl.ViewObject.DisplayMode = 'Wireframe'
     return mycyl
 
-def createSphere(solid,px,py,pz,rot) :
+def createSphere(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLSphere, ViewProvider
     print "CreateSphere : "
     print solid.attrib
@@ -195,16 +224,17 @@ def createSphere(solid,px,py,pz,rot) :
     aunit = getText(solid,'aunit','rad')
     lunits = getText(solid,'lunits',"mm")
     mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
-    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit,lunits,"SSteel")
+    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
+               lunits,material)
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
     mysphere.Placement = processPlacement(base,rot)
     print mysphere.Placement.Rotation
     ViewProvider(mysphere.ViewObject)
+    if wireFrame : mysphere.ViewObject.DisplayMode = 'Wireframe'
     return mysphere
 
-
-def createTube(solid,px,py,pz,rot) :
+def createTube(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLTube, ViewProvider
     print "CreateTube : "
     print solid.attrib
@@ -215,30 +245,44 @@ def createTube(solid,px,py,pz,rot) :
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunits = getText(solid,'lunits',"mm")
-    #if ( rmin is None or rmin == 0 ) :
-    #   mytube = makeCylinder(solid,rmax)
-    #else :
-    #   mytube = doc.addObject('Part::Cut','Tube_'+solid.get('name')+'_')
-    #   mytube.Base = makeCylinder(solid,rmax)
-    #   mytube.Tool = makeCylinder(solid,rmin)
-    print "Tube parameters"
     print rmin
     print rmax
     print z
     mytube=doc.addObject("Part::FeaturePython","GDMLTube")
-    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunits,"SSteel")
+    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunits,material)
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
     mytube.Placement = processPlacement(base,rot)
     print mytube.Placement.Rotation
     ViewProvider(mytube.ViewObject)
+    if wireFrame : mytube.ViewObject.DisplayMode = 'Wireframe'
     return mytube
 
-def createCone(solid,px,py,pz,rot) :
+def createCone(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLCone, ViewProvider
     print "CreateCone : "
     print solid.attrib
+    rmin1 = getVal(solid,'rmin1')
+    rmax1 = getVal(solid,'rmax1')
+    rmin2 = getVal(solid,'rmin2')
+    rmax2 = getVal(solid,'rmax2')
+    z = getVal(solid,'z')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunits = getText(solid,'lunits',"mm")
+    mycone=doc.addObject("Part::FeaturePython","GDMLCone")
+    GDMLCone(mycone,rmin1,rmax1,rmin2,rmax2,z, \
+             startphi,deltaphi,aunit,lunits,material)
+    print "CreateCone : "
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mycone.Placement = processPlacement(base,rot)
+    print mycone.Placement.Rotation
+    if wireFrame : mycone.ViewObject.DisplayMode = 'Wireframe'
+    ViewProvider(mycone.ViewObject)
 
-def parseBoolean(solid,objType,px,py,pz,rot) :
+def parseBoolean(solid,objType,material,px,py,pz,rot) :
     from GDMLObjects import ViewProvider
     print solid.tag
     print solid.attrib
@@ -253,55 +297,48 @@ def parseBoolean(solid,objType,px,py,pz,rot) :
        print "second : "+name2nd
        #parseObject(root,tool)
        mybool = doc.addObject(objType,solid.tag)
-       mybool.Base = createSolid(base,0,0,0,None)
+       mybool.Base = createSolid(base,material,0,0,0,None,False)
        #mybool.Base = createSolid(base,px,py,pz,rot)
-       mybool.Tool = createSolid(tool,0,0,0,None)
+       mybool.Tool = createSolid(tool,material,0,0,0,None,False)
        #print "Position : "+str(px)+','+str(py)+','+str(pz)
-       pos = FreeCAD.Vector(px,py,pz)
-       mybool.Placement = processPlacement(pos,rot)
+       mybool.Placement= getPlacementFromRefs(solid) 
        #print mybool.Placement.Rotation
        #ViewProvider(mybool.ViewObject)
        return mybool
 
-def createSolid(solid,px,py,pz,rot) :
+def createSolid(solid,material,px,py,pz,rot,wireFrame) :
     print solid.tag
     while switch(solid.tag) :
         if case('box'):
-           return(createBox(solid,px,py,pz,rot)) 
+           return(createBox(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('cone'):
+           return(createCone(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('sphere'):
-           return(createSphere(solid,px,py,pz,rot)) 
+           return(createSphere(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('tube'):
-           return(createTube(solid,px,py,pz,rot)) 
+           return(createTube(solid,material,px,py,pz,rot,wireFrame)) 
            break
-        #if case('cone'):
-        #   createCone(solid,px,py,pz,rot) 
-        #   break
 
         if case('intersection'):
-           return(parseBoolean(solid,'Part::Common',px,py,pz,rot)) 
+           return(parseBoolean(solid,'Part::Common',material,px,py,pz,rot)) 
            break
 
         if case('union'):
-           return(parseBoolean(solid,'Part::Fuse',px,py,pz,rot)) 
+           return(parseBoolean(solid,'Part::Fuse',material,px,py,pz,rot)) 
            break
 
         if case('subtraction'):
-           return(parseBoolean(solid,'Part::Cut',px,py,pz,rot)) 
+           return(parseBoolean(solid,'Part::Cut',material,px,py,pz,rot)) 
            break
 
         print "Solid : "+solid.tag+" Not yet supported"
         break
-
-# get ref e.g name world, solidref, materialref
-def getRef(ptr, name) :
-    wrk = ptr.find(name)
-    ref = wrk.get('ref')
-    print "ref : " + ref
-    return ref
 
 def getVolSolid(name):
     print "Get Volume Solid"
@@ -320,7 +357,7 @@ def parsePhysVol(physVol,solid,material):
        pos = define.find("position[@name='%s']" % posref )
        print pos.attrib
     else :
-       pos = physvol.find("position")
+       pos = physVol.find("position")
     px = getVal(pos,'x')
     py = getVal(pos,'y')
     pz = getVal(pos,'z')
@@ -332,20 +369,19 @@ def parsePhysVol(physVol,solid,material):
 
     volref = getRef(physVol,"volumeref")
     print "Volume ref : "+volref
-    parseVolume(volref,px,py,pz,rot)
+    parseVolume(volref,px,py,pz,rot,False)
 
 # ParseVolume name - structure is global
 # We get passed position and rotation
-def parseVolume(name,px,py,pz,rot) :
+def parseVolume(name,px,py,pz,rot,wireFrame) :
     print "ParseVolume : "+name
     vol = structure.find("volume[@name='%s']" % name )
     solidref = getRef(vol,"solidref")
     solid  = solids.find("*[@name='%s']" % solidref )
     print solid.tag
-    materialref = getRef(vol,"materialref")
-    print "Material : "+materialref
-    material = materials.find(materialref)
-    createSolid(solid,px,py,pz,rot)
+    # Material is the materialref value
+    material = getRef(vol,"materialref")
+    createSolid(solid,material,px,py,pz,rot,wireFrame)
     # Volume may or maynot contain physvol's
     for pv in vol.findall('physvol') : 
         # create solids at pos & rot in physvols
@@ -477,7 +513,7 @@ def processGDML(filename):
     constDict = processConstants()
     print setup.attrib
     world = getRef(setup,"world")
-    parseVolume(world,0,0,0,None)
+    parseVolume(world,0,0,0,None,True)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")
