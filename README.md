@@ -4,57 +4,59 @@ FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
-## Branches ( git checkout "branch" )
+## Installation Linux
 
-* **workbench** - under development
-  GDML workbench 
-
-   GDML Objects added
-
-      * GDMLBox
-      * GDMLCone
-      * GDMLSphere
-      * GDMLTube
-
-* **master** - GDML import / export
-
-## Installation - To incorporate into FreeCAD linux.
+To incorporate into FreeCAD linux.
 
 Assumes you already have FreeCAD and git installed
 
-* Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
+1) Install lmxl - sudo apt-get install python-lxml
 
-* cd FreeCAD_Python_GDML
+2) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 
-* make sure softLink script is executable
+3) For workbench **git checkout workbench**
 
-* Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
+4) cd FreeCAD_Python_GDML
+
+5) Check paths in softLinks script
+
+6) make sure softLink script is executable - chmod +x softLinks
+
+7) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
    
-   
+## Workbench
+
+Adds support for GDMLBox, GDMLCone, GDMLCylinder, GDMLSphere, GDMLTube
+
 ## Exporter
+
+GDMLObjects are output as straight GDML solids
 
 The following FreeCAD objects are output as GDML equivalents
 
-* Cube     ( GDML - Box )
-* Cone     ( GDML - Cone )
-* Cylinder ( GDML - Tube )
-* Sphere   ( GDML - Sphere )
+1) Cube     ( GDML - Box )
+2) Cone     ( GDML - Cone )
+3) Cylinder ( GDML - Tube )
+4) Sphere   ( GDML - Sphere )
 
 If not handled as above then objects shapes are checked  to see if planar,
 if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
 If not creates a mesh and then a Tessellated solid with 3 vertex. 
-
-Booleans apart from MultiCommon are now implemented for export.
  
 ## Future Development Road Map
+
+  * Workbench Dialog for initial GDML Object values(?)
+  * Handle different Positioning between GDML & FreeCAD
+  * Sort out handling of degrees radians
+  * Add support for quantity
+  * Add further GDML Objects
+  * Design icons for workbench
 
 * Workbench
   * Analize FreeCAD file for direct conversion of object to GDML solid
   * Display mesh for objects that will not directly convert
   * Provide options to control meshing objects that will be Tessellated
   * Icons to Analize and Export
-* Add function for objects that can be directly converted
-* Use lxml rather than etree (Needs apt-get install python-lxml)
 * Tidy softLink script
 * Make FreeCAD installable workbench 
 * Documentation
@@ -64,7 +66,19 @@ Booleans apart from MultiCommon are now implemented for export.
 
 ## Need to sort out AIR definition
 
+## Acknowledgements
+
+Thanks to
+
+* Wouter Deconnick
+
+and the following FreeCAD forum members
+
+* wmayer
+* Joel_graff
+* chrisb
+
 ## Feedback
 
-To contact the author email keith[at]sloan-home.co.uk
+To contact the Author email keith[at]sloan-home.co.uk
 
