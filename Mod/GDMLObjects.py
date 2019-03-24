@@ -1,6 +1,14 @@
 import FreeCAD, FreeCADGui, Part
 from pivy import coin
 
+
+# Get angle in Radians
+def getAngle(aunit,angle) :
+   if aunit == 1 :   # 0 radians 1 Degrees
+      return(angle*180/math.pi)
+   else :
+      return angle
+
 class GDMLBox :
    def __init__(self, obj, x, y, z, lunits, material):
       '''Add some custom properties to our Box feature'''
@@ -38,8 +46,10 @@ class GDMLCone :
       obj.addProperty("App::PropertyLength","z","GDMLCone","Height of Cone").z=z
       obj.addProperty("App::PropertyFloat","startphi","GDMLCone","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
-      obj.addProperty("App::PropertyStringList","aunit","GDMLCone","aunit").aunit=aunit
-      obj.addProperty("App::PropertyStringList","lunits","GDMLCone","lunits").lunits=lunits
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLCone","aunit")
+      obj.aunit=["Rad", "Deg"]
+      obj.aunit=0
+      obj.addProperty("App::PropertyString","lunits","GDMLCone","lunits").lunits=lunits
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
                       "Shape of the Cone")
       obj.addProperty("App::PropertyStringList","material","GDMLCone", \
@@ -89,8 +99,9 @@ class GDMLSphere :
              "Start Theta pos").starttheta=starttheta
       obj.addProperty("App::PropertyFloat","deltatheta","GDMLSphere", \
              "Delta Angle").deltatheta=deltatheta
-      obj.addProperty("App::PropertyString","aunit","GDMLSphere", \
-                      "aunit").aunit=aunit
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLSphere","aunit")
+      obj.aunit=["Rad", "Deg"]
+      obj.aunit=0
       obj.addProperty("App::PropertyString","lunits","GDMLSphere", \
                       "lunits").lunits=lunits
       obj.addProperty("App::PropertyString","material","GDMLSphere", \
@@ -133,7 +144,9 @@ class GDMLTube :
       obj.addProperty("App::PropertyLength","z","GDMLTube","Length z").z=z
       obj.addProperty("App::PropertyFloat","startphi","GDMLTube","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
-      obj.addProperty("App::PropertyString","aunit","GDMLTube","aunit").aunit=aunit
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLTube","aunit")
+      obj.aunit=["Rad", "Deg"]
+      obj.aunit=0
       obj.addProperty("App::PropertyString","lunits","GDMLTube","lunits").lunits=lunits
       obj.addProperty("App::PropertyString","material","GDMLTube","Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Tube")
@@ -151,10 +164,12 @@ class GDMLTube :
        import math
        # Need to add code to check values make a valid Tube
        # Define six vetices for the shape
-       x1 = fp.rmax*math.sin(fp.startphi)
-       y1 = fp.rmax*math.cos(fp.startphi)
-       x2 = fp.rmax*math.sin(fp.startphi+fp.deltaphi)
-       y2 = fp.rmax*math.cos(fp.startphi+fp.deltaphi)
+       startphirad = getAngle(fp.aunit,fp.startphi)
+       deltaphirad = getAngle(fp.aunit,fp.deltaphi)
+       x1 = fp.rmax*math.sin(startphirad)
+       y1 = fp.rmax*math.cos(startphirad)
+       x2 = fp.rmax*math.sin(startphirad+deltaphirad)
+       y2 = fp.rmax*math.cos(startphirad+deltaphirad)
        v1 = FreeCAD.Vector(0,0,0)
        v2 = FreeCAD.Vector(x1,y1,0)
        v3 = FreeCAD.Vector(x2,y2,0)
@@ -199,24 +214,52 @@ class GDMLTube :
 class GDMLFiles :
    def __init__(self,obj) :
       '''Add some custom properties to our Cone feature'''
-      obj.addString("App::PropertyBool","active","GDMLFiles", \
+      obj.addProperty("App::PropertyBool","active","GDMLFiles", \
                     "split option").active=False
-      obj.addString("App::PropertyString","define","GDMLFiles", \
+      obj.addProperty("App::PropertyString","define","GDMLFiles", \
                     "define section").define="Fred"
-      obj.addString("App::PropertyString","materials","GDMLFiles", \
+      obj.addProperty("App::PropertyString","materials","GDMLFiles", \
                     "materials section").materials=""
-      obj.addString("App::PropertyString","solids","GDMLFiles", \
+      obj.addProperty("App::PropertyString","solids","GDMLFiles", \
                     "solids section").solids=""
-      obj.addString("App::PropertyString","structure","GDMLFiles", \
-                    "sructure section").structure=""
+      obj.addProperty("App::PropertyString","structure","GDMLFiles", \
+                    "structure section").structure=""
+      obj.ViewProvider = 0
       obj.Proxy = self
+      self.Object = obj
+      self.Type = 'GDMLFiles'
+  
+#   def execute(self, fp):
+#   '''Do something when doing a recomputation, this method is mandatory'''
 
-   def onChanged(self, fp, prop):
-       '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
+class GDMLMaterials :
+   def __init__(self,obj) :
+      obj.addProperty("App::PropertyString","define","GDMLMaterials")
+      obj.addProperty("App::propertylinklist","GDMLMaterials")
+      #obj.LinkSubList=[(obj1, ['Edge1', 'Edge2', 'Edge3']), (obj2, ['Face1', 'Face2'])]
+      obj.ViewProvider = 0
+      obj.Proxy = self
+      self.Object = obj
+
+class GDMLMaterial :
+   def __init__(self,obj) :
+      obj.addProperty("App::PropertyString","define","GDMLFiles")
+      obj.ViewProvider = 0
+      obj.Proxy = self
+      self.Object = obj
+
+
+class GDMIsotope :
+   def __init__(self,obj) :
+      obj.addProperty("App::PropertyString","name","GDMLIsotope") 
+      obj.addProperty("App::PropertyInteger","N","GDMLIsotope")
+      obj.addProperty("App::PropertyInteger","Z","GDMLIsotope")
+      obj.addProperty("App::PropertyString","unit","GDMLIsotope") 
+      obj.addProperty("App::PropertyFloat","value","GDMLIsotope") 
+      obj.ViewProvider = 0
+      obj.Proxy = self
+      self.Object = obj
 
 # use general ViewProvider if poss
 class ViewProvider:

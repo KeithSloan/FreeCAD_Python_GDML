@@ -492,13 +492,14 @@ def processGDML(filename):
     print filesDict
    
     # Add files object so user can change to organise files
-    #from GDMLObjects import GDMLFiles, ViewProvider
-    #myfiles = doc.addObject("Part::FeaturePython","GDMLFiles")
-    #ViewProvider(myfiles.ViewObject)
+    from GDMLObjects import GDMLFiles, ViewProvider
+    myfiles = doc.addObject("App::FeaturePython","GDMLFiles")
+    print "GDML Files added"
 
-    #import xml.etree.ElementTree as ET
-    #tree = ET.parse(filename)
-    #root = tree.getroot()
+    # Add materials object 
+    from GDMLObjects import GDMLMaterials, ViewProvider
+    myMaterials = doc.addObject("App::FeaturePython","GDMLMaterials")
+    print "GDML Materials added"
 
     global setup, define, materials, solids, structure
    
