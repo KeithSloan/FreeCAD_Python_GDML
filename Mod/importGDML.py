@@ -480,8 +480,8 @@ def preProcessHTML(filename) :
     g.close
 
 def processMaterials() :
-    from GDMLObjects import GDMLmaterial, GDMLfraction
-    materialGrp = doc.addObject("App::DocumentObjectGroup","GDMLMaterials")
+    from GDMLObjects import GDMLmaterial, GDMLfraction, ViewProvider
+    materialGrp = doc.addObject("App::DocumentObjectGroup","Materials")
     for material in materials.findall('material') :
         name = material.get('name')
         T = material.find('T')
@@ -493,11 +493,12 @@ def processMaterials() :
         D = material.find('D')
         Dunit = D.get('unit')
         Dvalue = float(D.get('value'))
-        material = doc.addObject("App::FeaturePython",name)
+        material = materialGrp.newObject("App::FeaturePython",name)
         GDMLmaterial(material,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue)
+        #ViewProvider(GDMLmaterial.ViewObject)
 
 def processIsotopes() :
-    from GDMLObjects import GDMLisotope
+    from GDMLObjects import GDMLisotope, ViewProvider
     isotopesGrp  = doc.addObject("App::DocumentObjectGroup","Isotopes")
     for isotope in materials.findall('isotope') :
         N = int(isotope.get('N'))
@@ -506,8 +507,9 @@ def processIsotopes() :
         atom = isotope.find('atom')
         unit = atom.get('unit')
         value = float(atom.get('value'))
-        isoObj = doc.addObject("App::FeaturePython",name)
+        isoObj = isotopesGrp.newObject("App::FeaturePython",name)
         GDMLisotope(isoObj,name,N,Z,unit,value)
+        #ViewProvider(GDMLisotope.ViewObject)
 
 def processElements() :
     elementsGrp  = doc.addObject("App::DocumentObjectGroup","Elements")
@@ -526,8 +528,10 @@ def processGDML(filename):
    
     # Add files object so user can change to organise files
     from GDMLObjects import GDMLFiles, ViewProvider
-    myfiles = doc.addObject("App::FeaturePython","GDMLFiles")
+    myfiles = doc.addObject("App::FeaturePython","Export_Files")
     GDMLFiles(myfiles)
+    ViewProvider(myfiles.ViewObject)
+
     print "GDML Files added"
 
     global setup, define, materials, solids, structure
