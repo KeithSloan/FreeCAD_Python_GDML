@@ -9,5 +9,5 @@ sudo rm -rf $tgt1/Mod/GDML
 sudo rm -rf $res1/Mod/GDML
 sudo ln -s $src/Mod $tgt1/Mod/GDML
 sudo ln -s $src/Mod $res1/Mod/GDML
-#sudo rm -rf $tgt2/Mod/GDML
-#sudo ln -s $src/Mod $tgt2/Mod/GDML
+sudo rm -rf $tgt2/Mod/GDML
+sudo ln -s $src/Mod $tgt2/Mod/GDML

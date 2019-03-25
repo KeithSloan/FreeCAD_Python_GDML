@@ -217,28 +217,33 @@ class GDMLFiles :
       obj.addProperty("App::PropertyBool","active","GDMLFiles", \
                     "split option").active=False
       obj.addProperty("App::PropertyString","define","GDMLFiles", \
-                    "define section").define="Fred"
+                    "define section").define=""
       obj.addProperty("App::PropertyString","materials","GDMLFiles", \
                     "materials section").materials=""
       obj.addProperty("App::PropertyString","solids","GDMLFiles", \
                     "solids section").solids=""
       obj.addProperty("App::PropertyString","structure","GDMLFiles", \
                     "structure section").structure=""
-      obj.ViewProvider = 0
+      #   obj.ViewProvider = 0
       obj.Proxy = self
       self.Object = obj
       self.Type = 'GDMLFiles'
   
-#   def execute(self, fp):
-#   '''Do something when doing a recomputation, this method is mandatory'''
+   def execute(self, fp):
+      '''Do something when doing a recomputation, this method is mandatory'''
 
+   def onChanged(self, fp, prop):
+      '''Do something when a property has changed'''
+      if not hasattr(fp,'onchange') or not fp.onchange : return
+      self.execute(fp)
+      FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
 class GDMLMaterials :
    def __init__(self,obj) :
       obj.addProperty("App::PropertyString","define","GDMLMaterials")
-      obj.addProperty("App::propertylinklist","GDMLMaterials")
-      #obj.LinkSubList=[(obj1, ['Edge1', 'Edge2', 'Edge3']), (obj2, ['Face1', 'Face2'])]
-      obj.ViewProvider = 0
+      obj.addProperty("App::PropertyStringList","MatList")
+#      obj.addProperty("App::propertylinklist","GDMLMaterials")
+      obj.MatList = ["testA","Testb"]
       obj.Proxy = self
       self.Object = obj
 
@@ -250,14 +255,13 @@ class GDMLMaterial :
       self.Object = obj
 
 
-class GDMIsotope :
-   def __init__(self,obj) :
-      obj.addProperty("App::PropertyString","name","GDMLIsotope") 
-      obj.addProperty("App::PropertyInteger","N","GDMLIsotope")
-      obj.addProperty("App::PropertyInteger","Z","GDMLIsotope")
-      obj.addProperty("App::PropertyString","unit","GDMLIsotope") 
-      obj.addProperty("App::PropertyFloat","value","GDMLIsotope") 
-      obj.ViewProvider = 0
+class GDMLIsotope :
+   def __init__(self,obj,name,N,Z,unit,value) :
+      obj.addProperty("App::PropertyString","name","GDMLIsotope").name = name 
+      obj.addProperty("App::PropertyInteger","N","GDMLIsotope").N=N
+      obj.addProperty("App::PropertyInteger","Z","GDMLIsotope").Z=Z
+      obj.addProperty("App::PropertyString","unit","GDMLIsotope").unit = unit 
+      obj.addProperty("App::PropertyFloat","value","GDMLIsotope").value = value 
       obj.Proxy = self
       self.Object = obj
 

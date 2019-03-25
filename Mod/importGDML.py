@@ -479,6 +479,25 @@ def preProcessHTML(filename) :
     g.write(currentString)
     g.close
 
+def processMaterials() :
+    materialsGrp = doc.addObject("App::DocumentObjectGroup","Materials")
+
+def processIsotopes() :
+    from GDMLObjects import GDMLIsotope
+    isotopesGrp  = doc.addObject("App::DocumentObjectGroup","Isotopes")
+    for isotope in materials.findall('isotope') :
+        N = int(isotope.get('N'))
+        Z = int(isotope.get('Z'))
+        name = isotope.get('name')
+        atom = isotope.find('atom')
+        unit = atom.get('unit')
+        value = float(atom.get('value'))
+        isoObj = doc.addObject("App::FeaturePython","GDMLIsotope")
+        GDMLIsotope(isoObj,name,N,Z,unit,value)
+
+def processElements() :
+    elementsGrp  = doc.addObject("App::DocumentObjectGroup","Elements")
+
 def processGDML(filename):
 
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
@@ -494,12 +513,8 @@ def processGDML(filename):
     # Add files object so user can change to organise files
     from GDMLObjects import GDMLFiles, ViewProvider
     myfiles = doc.addObject("App::FeaturePython","GDMLFiles")
+    GDMLFiles(myfiles)
     print "GDML Files added"
-
-    # Add materials object 
-    from GDMLObjects import GDMLMaterials, ViewProvider
-    myMaterials = doc.addObject("App::FeaturePython","GDMLMaterials")
-    print "GDML Materials added"
 
     global setup, define, materials, solids, structure
    
@@ -510,6 +525,10 @@ def processGDML(filename):
     materials = root.find('materials')
     solids    = root.find('solids')
     structure = root.find('structure')
+
+    processMaterials()
+    processIsotopes()
+    processElements()
 
     constDict = processConstants()
     print setup.attrib
