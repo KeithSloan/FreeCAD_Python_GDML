@@ -247,21 +247,38 @@ class GDMLMaterials :
       obj.Proxy = self
       self.Object = obj
 
-class GDMLMaterial :
-   def __init__(self,obj) :
-      obj.addProperty("App::PropertyString","define","GDMLFiles")
-      obj.ViewProvider = 0
+class GDMLmaterial :
+   def __init__(self,obj,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue) :
+      obj.addProperty("App::PropertyString","name",name).name = name
+      obj.addProperty("App::PropertyString",'Tunit',name).Tunit = Tunit
+      obj.addProperty("App::PropertyFloat",'Tvalue',name).Tvalue = Tvalue
+      obj.addProperty("App::PropertyString",'MEEunit',name).MEEunit = Munit
+      obj.addProperty("App::PropertyFloat",'MEEvalue',name).MEEvalue = Mvalue
+      obj.addProperty("App::PropertyString",'Dunit',name).Dunit = Dunit
+      obj.addProperty("App::PropertyFloat",'Dvalue',name).Dvalue = Dvalue
       obj.Proxy = self
       self.Object = obj
 
 
-class GDMLIsotope :
+class GDMLfraction :
+   def __init__(self,obj,ref,n) :
+      obj.addProperty("App::PropertyFloat",ref,n).n = n 
+      obj.Proxy = self
+      self.Object = obj
+
+class GDMLelement :
+   def __init__(self,obj,name) :
+      obj.addProperty("App::PropertyString","name",name).name = name 
+      obj.Proxy = self
+      self.Object = obj
+
+class GDMLisotope :
    def __init__(self,obj,name,N,Z,unit,value) :
-      obj.addProperty("App::PropertyString","name","GDMLIsotope").name = name 
-      obj.addProperty("App::PropertyInteger","N","GDMLIsotope").N=N
-      obj.addProperty("App::PropertyInteger","Z","GDMLIsotope").Z=Z
-      obj.addProperty("App::PropertyString","unit","GDMLIsotope").unit = unit 
-      obj.addProperty("App::PropertyFloat","value","GDMLIsotope").value = value 
+      obj.addProperty("App::PropertyString","name",name).name = name 
+      obj.addProperty("App::PropertyInteger","N",name).N=N
+      obj.addProperty("App::PropertyInteger","Z",name).Z=Z
+      obj.addProperty("App::PropertyString","unit",name).unit = unit 
+      obj.addProperty("App::PropertyFloat","value",name).value = value 
       obj.Proxy = self
       self.Object = obj
 

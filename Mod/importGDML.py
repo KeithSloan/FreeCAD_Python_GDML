@@ -480,10 +480,24 @@ def preProcessHTML(filename) :
     g.close
 
 def processMaterials() :
-    materialsGrp = doc.addObject("App::DocumentObjectGroup","Materials")
+    from GDMLObjects import GDMLmaterial, GDMLfraction
+    materialGrp = doc.addObject("App::DocumentObjectGroup","GDMLMaterials")
+    for material in materials.findall('material') :
+        name = material.get('name')
+        T = material.find('T')
+        Tunit = T.get('unit')
+        Tvalue = float(T.get('value'))
+        MEE = material.find('MEE')
+        Munit = MEE.get('unit')
+        Mvalue = float(MEE.get('value'))
+        D = material.find('D')
+        Dunit = D.get('unit')
+        Dvalue = float(D.get('value'))
+        material = doc.addObject("App::FeaturePython",name)
+        GDMLmaterial(material,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue)
 
 def processIsotopes() :
-    from GDMLObjects import GDMLIsotope
+    from GDMLObjects import GDMLisotope
     isotopesGrp  = doc.addObject("App::DocumentObjectGroup","Isotopes")
     for isotope in materials.findall('isotope') :
         N = int(isotope.get('N'))
@@ -492,8 +506,8 @@ def processIsotopes() :
         atom = isotope.find('atom')
         unit = atom.get('unit')
         value = float(atom.get('value'))
-        isoObj = doc.addObject("App::FeaturePython","GDMLIsotope")
-        GDMLIsotope(isoObj,name,N,Z,unit,value)
+        isoObj = doc.addObject("App::FeaturePython",name)
+        GDMLisotope(isoObj,name,N,Z,unit,value)
 
 def processElements() :
     elementsGrp  = doc.addObject("App::DocumentObjectGroup","Elements")
