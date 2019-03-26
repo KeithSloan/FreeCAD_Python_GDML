@@ -482,6 +482,7 @@ def preProcessHTML(filename) :
 def processMaterials() :
     from GDMLObjects import GDMLmaterial, GDMLfraction, ViewProvider
     materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
+    materialGrp.Label = "Materials"
     for material in materials.findall('material') :
         name = material.get('name')
         T = material.find('T')
@@ -502,6 +503,9 @@ def processMaterials() :
             fractionObj = materialObj.newObject("App::DocumentObjectGroupPython", \
                     ref)
             GDMLfraction(fractionObj,ref,n)
+            #fractionObj.Label = ref[0:5] +' : '+'{0:0.2f}'.format(n)
+            fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
+
              
 def processIsotopes() :
     from GDMLObjects import GDMLisotope, ViewProvider
@@ -520,9 +524,9 @@ def processIsotopes() :
 def processElements() :
     from GDMLObjects import GDMLelement, GDMLfraction
     elementsGrp  = doc.addObject("App::DocumentObjectGroupPython","Elements")
+    elementsGrp.Label = 'Elements'
     for element in materials.findall('element') :
         name = element.get('name')
-        print "Element : "+name
         elementObj = elementsGrp.newObject("App::DocumentObjectGroupPython", \
                      name)
         GDMLelement(elementObj,name)
@@ -532,6 +536,8 @@ def processElements() :
             #fractObj = elementObj.newObject("App::FeaturePython",ref)
             fractObj = elementObj.newObject("App::DocumentObjectGroupPython",ref)
             GDMLfraction(fractObj,ref,n)
+            #fractObj.Label = ref[0:5]+' : ' + '{0:0.2f}'.format(n)
+            fractObj.Label = ref+' : ' + '{0:0.2f}'.format(n)
 
 def processGDML(filename):
 
