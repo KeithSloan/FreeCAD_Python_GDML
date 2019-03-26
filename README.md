@@ -24,7 +24,18 @@ Assumes you already have FreeCAD and git installed
 6) make sure softLink script is executable - chmod +x softLinks
 
 7) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
-   
+
+## Branch - materials
+
+There is a new branch 'materials' that on an import makes
+the GDML  Material definitions available in FreeCAD document
+( Only limited testing hence the ability to switch in and our via git branch )
+( There is currently no checking the validity of any changed parameters )
+
+   **git checkout -b materials origin/materials**
+
+   You can then switch between branch with **git checkout** 
+
 ## Workbench
 
 Adds support for GDMLBox, GDMLCone, GDMLCylinder, GDMLSphere, GDMLTube
