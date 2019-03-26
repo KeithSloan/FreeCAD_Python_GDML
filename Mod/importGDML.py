@@ -516,7 +516,6 @@ def processIsotopes() :
         #isoObj = isotopesGrp.newObject("App::FeaturePython",name)
         isoObj = isotopesGrp.newObject("App::DocumentObjectGroupPython",name)
         GDMLisotope(isoObj,name,N,Z,unit,value)
-        #ViewProvider(GDMLisotope.ViewObject)
 
 def processElements() :
     from GDMLObjects import GDMLelement, GDMLfraction
