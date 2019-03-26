@@ -481,7 +481,7 @@ def preProcessHTML(filename) :
 
 def processMaterials() :
     from GDMLObjects import GDMLmaterial, GDMLfraction, ViewProvider
-    materialGrp = doc.addObject("App::DocumentObjectGroup","Materials")
+    materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
     for material in materials.findall('material') :
         name = material.get('name')
         T = material.find('T')
@@ -493,13 +493,19 @@ def processMaterials() :
         D = material.find('D')
         Dunit = D.get('unit')
         Dvalue = float(D.get('value'))
-        material = materialGrp.newObject("App::FeaturePython",name)
-        GDMLmaterial(material,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue)
-        #ViewProvider(GDMLmaterial.ViewObject)
-
+        materialObj = materialGrp.newObject("App::DocumentObjectGroupPython", \
+                      name)
+        GDMLmaterial(materialObj,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue)
+        for fraction in material.findall('fraction') :
+            n = float(fraction.get('n'))
+            ref = fraction.get('ref')
+            fractionObj = materialObj.newObject("App::DocumentObjectGroupPython", \
+                    ref)
+            GDMLfraction(fractionObj,ref,n)
+             
 def processIsotopes() :
     from GDMLObjects import GDMLisotope, ViewProvider
-    isotopesGrp  = doc.addObject("App::DocumentObjectGroup","Isotopes")
+    isotopesGrp  = doc.addObject("App::DocumentObjectGroupPython","Isotopes")
     for isotope in materials.findall('isotope') :
         N = int(isotope.get('N'))
         Z = int(isotope.get('Z'))
@@ -507,12 +513,26 @@ def processIsotopes() :
         atom = isotope.find('atom')
         unit = atom.get('unit')
         value = float(atom.get('value'))
-        isoObj = isotopesGrp.newObject("App::FeaturePython",name)
+        #isoObj = isotopesGrp.newObject("App::FeaturePython",name)
+        isoObj = isotopesGrp.newObject("App::DocumentObjectGroupPython",name)
         GDMLisotope(isoObj,name,N,Z,unit,value)
         #ViewProvider(GDMLisotope.ViewObject)
 
 def processElements() :
-    elementsGrp  = doc.addObject("App::DocumentObjectGroup","Elements")
+    from GDMLObjects import GDMLelement, GDMLfraction
+    elementsGrp  = doc.addObject("App::DocumentObjectGroupPython","Elements")
+    for element in materials.findall('element') :
+        name = element.get('name')
+        print "Element : "+name
+        elementObj = elementsGrp.newObject("App::DocumentObjectGroupPython", \
+                     name)
+        GDMLelement(elementObj,name)
+        for fraction in element.findall('fraction') :
+            ref = fraction.get('ref')
+            n = float(fraction.get('n'))
+            #fractObj = elementObj.newObject("App::FeaturePython",ref)
+            fractObj = elementObj.newObject("App::DocumentObjectGroupPython",ref)
+            GDMLfraction(fractObj,ref,n)
 
 def processGDML(filename):
 
@@ -528,7 +548,8 @@ def processGDML(filename):
    
     # Add files object so user can change to organise files
     from GDMLObjects import GDMLFiles, ViewProvider
-    myfiles = doc.addObject("App::FeaturePython","Export_Files")
+    #myfiles = doc.addObject("App::FeaturePython","Export_Files")
+    myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
     GDMLFiles(myfiles)
     ViewProvider(myfiles.ViewObject)
 

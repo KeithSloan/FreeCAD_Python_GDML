@@ -262,7 +262,7 @@ class GDMLmaterial :
 
 class GDMLfraction :
    def __init__(self,obj,ref,n) :
-      obj.addProperty("App::PropertyFloat",ref,n).n = n 
+      obj.addProperty("App::PropertyFloat",'n',ref).n = n 
       obj.Proxy = self
       self.Object = obj
 
