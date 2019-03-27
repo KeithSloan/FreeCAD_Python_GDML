@@ -495,6 +495,10 @@ def processMaterials() :
         materialObj = materialGrp.newObject("App::DocumentObjectGroupPython", \
                       name)
         GDMLmaterial(materialObj,name)
+        formula = material.get('formula')
+        if forumla != None :
+           materialObj.addProperty("App::PropertyString",'forumla', \
+                      name).forumla = forumla
         D = material.find('D')
         if D != None :
            Dvalue = float(D.get('value'))
@@ -526,6 +530,14 @@ def processMaterials() :
             GDMLfraction(fractionObj,ref,n)
             #fractionObj.Label = ref[0:5] +' : '+'{0:0.2f}'.format(n)
             fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
+
+        for composite in material.findall('composite') :
+            n = composite.get('n'))
+            ref = fraction.get('ref')
+            compositeObj = materialObj.newObject("App::DocumentObjectGroupPython", \
+                                                 ref)
+            GDMLcomposite(fractionObj,ref,n)
+            compositeObj.Label = ref +' : '+n
 
              
 def processIsotopes() :

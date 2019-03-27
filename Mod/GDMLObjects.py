@@ -251,6 +251,12 @@ class GDMLfraction :
       obj.Proxy = self
       self.Object = obj
 
+class GDMLcomposite :
+   def __init__(self,obj,ref,n) :
+      obj.addProperty("App::PropertyInteger",'n',ref).n = n 
+      obj.Proxy = self
+      self.Object = obj
+
 class GDMLelement :
    def __init__(self,obj,name) :
       obj.addProperty("App::PropertyString","name",name).name = name 
