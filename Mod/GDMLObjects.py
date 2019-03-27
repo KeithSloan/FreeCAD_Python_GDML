@@ -238,27 +238,12 @@ class GDMLFiles :
       self.execute(fp)
       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
-class GDMLMaterials :
-   def __init__(self,obj) :
-      obj.addProperty("App::PropertyString","define","GDMLMaterials")
-      obj.addProperty("App::PropertyStringList","MatList")
-#      obj.addProperty("App::propertylinklist","GDMLMaterials")
-      obj.MatList = ["testA","Testb"]
-      obj.Proxy = self
-      self.Object = obj
-
 class GDMLmaterial :
-   def __init__(self,obj,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue) :
+   def __init__(self,obj,name) :
+      # Add most properties later 
       obj.addProperty("App::PropertyString","name",name).name = name
-      obj.addProperty("App::PropertyString",'Tunit',name).Tunit = Tunit
-      obj.addProperty("App::PropertyFloat",'Tvalue',name).Tvalue = Tvalue
-      obj.addProperty("App::PropertyString",'MEEunit',name).MEEunit = Munit
-      obj.addProperty("App::PropertyFloat",'MEEvalue',name).MEEvalue = Mvalue
-      obj.addProperty("App::PropertyString",'Dunit',name).Dunit = Dunit
-      obj.addProperty("App::PropertyFloat",'Dvalue',name).Dvalue = Dvalue
       obj.Proxy = self
       self.Object = obj
-
 
 class GDMLfraction :
    def __init__(self,obj,ref,n) :

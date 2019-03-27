@@ -479,29 +479,50 @@ def preProcessHTML(filename) :
     g.write(currentString)
     g.close
 
+def getItem(element, attribute) :
+    item = element.get(attribute)
+    if item != None :
+       return item
+    else :
+       return ""
+
 def processMaterials() :
     from GDMLObjects import GDMLmaterial, GDMLfraction, ViewProvider
     materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
     materialGrp.Label = "Materials"
     for material in materials.findall('material') :
         name = material.get('name')
-        T = material.find('T')
-        Tunit = T.get('unit')
-        Tvalue = float(T.get('value'))
-        MEE = material.find('MEE')
-        Munit = MEE.get('unit')
-        Mvalue = float(MEE.get('value'))
-        D = material.find('D')
-        Dunit = D.get('unit')
-        Dvalue = float(D.get('value'))
         materialObj = materialGrp.newObject("App::DocumentObjectGroupPython", \
                       name)
-        GDMLmaterial(materialObj,name,Tunit,Tvalue,Munit,Mvalue,Dunit,Dvalue)
+        GDMLmaterial(materialObj,name)
+        D = material.find('D')
+        if D != None :
+           Dvalue = float(D.get('value'))
+           Dunit = getItem(D,'unit')
+        Z = material.get('Z')
+        if Z != None :  
+           materialObj.addProperty("App::PropertyString",'Z',name).Z = Z
+        atom = material.find('atom')
+        if atom != None :
+           aVal = float(atom.get('value'))
+           materialObj.addProperty("App::PropertyFloat",'atom',name).atom = aVal
+        T = material.find('T')
+        if T != None :
+           Tunit = T.get('unit')
+           Tvalue = float(T.get('value'))
+           materialObj.addProperty("App::PropertyString",'Tunit',name).Tunit = Tunit
+           materialObj.addProperty("App::PropertyFloat",'Tvalue',name).Tvalue = Tvalue
+        MEE = material.find('MEE')
+        if MEE != None :
+           Munit = MEE.get('unit')
+           Mvalue = float(MEE.get('value'))
+           materialObj.addProperty("App::PropertyString",'MEEunit',name).MEEunit = Munit
+           materialObj.addProperty("App::PropertyFloat",'MEEvalue',name).MEEvalue = Mvalue
         for fraction in material.findall('fraction') :
             n = float(fraction.get('n'))
             ref = fraction.get('ref')
             fractionObj = materialObj.newObject("App::DocumentObjectGroupPython", \
-                    ref)
+                                                 ref)
             GDMLfraction(fractionObj,ref,n)
             #fractionObj.Label = ref[0:5] +' : '+'{0:0.2f}'.format(n)
             fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
