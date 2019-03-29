@@ -422,7 +422,6 @@ class MyHTMLParser(HTMLParser):
                  print words[6]
                  word = words[6].split('"')[1]
                  filesDict[words[4]] = word
-                 FilesEntity = True
                  break
 
               if case(6) :
@@ -444,6 +443,7 @@ class MyHTMLParser(HTMLParser):
         print "Entity reference : "+ name
         #tag = self.get_starttag_text()
         print "Current Section  : "+ currentSection
+        global FilesEntity
         FilesEntity = True
         sectionDict[currentSection] = filesDict[name]
         print self.getpos()
@@ -474,13 +474,11 @@ class MyHTMLParser(HTMLParser):
 def preProcessHTML(filename) :
     # instantiate the parser and fed it some HTML
     f = pythonopen(filename)
-    global constDict, filesDict, sectionDict, FilesEntity, \
-           currentString, currentTag
+    global constDict, filesDict, sectionDict, currentString, currentTag
     constDict = {}
     filesDict = {}
     sectionDict = {}
     currentString = f.read()
-    FilesEntity = False
     parser = MyHTMLParser()
     parser.feed(currentString)
     g = pythonopen("/tmp/dumpString","w")
@@ -585,15 +583,16 @@ def processGDML(filename):
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
     
-    global currentString, pathName
+    global currentString, pathName, FilesEntity
     
     pathName = os.path.dirname(os.path.normpath(filename))
+    FilesEntity = False
     # PreProcessHTML file - sets currentString & filesDict
     preProcessHTML(filename)
     print "Files dictionary"
     print filesDict
    
-    global setup, define, materials, solids, structure, FilesEntity
+    global setup, define, materials, solids, structure
   
   # Add files object so user can change to organise files
     from GDMLObjects import GDMLFiles, ViewProvider
