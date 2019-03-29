@@ -212,23 +212,22 @@ class GDMLTube :
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
 class GDMLFiles :
-   def __init__(self,obj) :
+   def __init__(self,obj,FilesEntity,sectionDict) :
       '''Add some custom properties to our Cone feature'''
+      print "GDML Files"
+      print FilesEntity
       obj.addProperty("App::PropertyBool","active","GDMLFiles", \
-                    "split option").active=False
+                    "split option").active=FilesEntity
       obj.addProperty("App::PropertyString","define","GDMLFiles", \
-                    "define section").define=""
+                    "define section").define=sectionDict.get('define',"")
       obj.addProperty("App::PropertyString","materials","GDMLFiles", \
-                    "materials section").materials=""
+                    "materials section").materials=sectionDict.get('materials',"")
       obj.addProperty("App::PropertyString","solids","GDMLFiles", \
-                    "solids section").solids=""
+                    "solids section").solids=sectionDict.get('solids',"")
       obj.addProperty("App::PropertyString","structure","GDMLFiles", \
-                    "structure section").structure=""
-      #   obj.ViewProvider = 0
+                    "sructure section").structure=sectionDict.get('structure',"")
       obj.Proxy = self
-      self.Object = obj
-      self.Type = 'GDMLFiles'
-  
+
    def execute(self, fp):
       '''Do something when doing a recomputation, this method is mandatory'''
 

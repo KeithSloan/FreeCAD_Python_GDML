@@ -39,7 +39,7 @@ from HTMLParser import HTMLParser
 ##########################
 #constDict = {}
 #filesDict = {}
-#currentTag = None
+#currentSection = None
 #currentString = ""
 #global setup, define, materials, solids, structure
 #globals constDict, filesDict, currentString
@@ -405,8 +405,10 @@ class MyHTMLParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         #print "Encountered a start tag:", tag
-        global currentTag
-        currentTag = tag
+        # Entity may not be in latest tag so handle outselves
+        global currentSection
+        if tag in ["define","materials","solids","structure"] :
+           currentSection = tag
 
     def handle_decl(self, decl):    
         # This gets called when the entity is declared
@@ -420,7 +422,9 @@ class MyHTMLParser(HTMLParser):
                  # const that refers to a file
                  print words[4]
                  print words[6]
-                 filesDict[words[4]] = words[6].split('"')[1]
+                 word = words[6].split('"')[1]
+                 filesDict[words[4]] = word
+                 FilesEntity = True
                  break
 
               if case(6) :
@@ -438,14 +442,17 @@ class MyHTMLParser(HTMLParser):
     
     def handle_entityref(self, name):
         # This gets called when the entity is referenced
+        # starttag may not be a section
         print "Entity reference : "+ name
-        tag = self.get_starttag_text()
-        print "Current Section  : "+ tag
+        #tag = self.get_starttag_text()
+        print "Current Section  : "+ currentSection
+        FilesEntity = True
+        sectionDict[currentSection] = filesDict[name]
         print self.getpos()
         search = "&"+name
         print "Search : "+search
         print "Include file "
-        insertFile = str(filesDict[name])
+        insertFile = os.path.join(pathName,str(filesDict[name]))
         print insertFile
         f = pythonopen(insertFile)
         insertString = f.read()
@@ -469,10 +476,14 @@ class MyHTMLParser(HTMLParser):
 def preProcessHTML(filename) :
     # instantiate the parser and fed it some HTML
     f = pythonopen(filename)
-    global constDict, filesDict, currentString
+    global constDict, filesDict, sectionDict, FilesEntity, \
+           currentString, currentTag, pathName
+    pathName = os.path.dirname(os.path.normpath(filename))
     constDict = {}
     filesDict = {}
+    sectionDict = {}
     currentString = f.read()
+    FilesEntity = False
     parser = MyHTMLParser()
     parser.feed(currentString)
     g = pythonopen("/tmp/dumpString","w")
@@ -496,7 +507,7 @@ def processMaterials() :
                       name)
         GDMLmaterial(materialObj,name)
         formula = material.get('formula')
-        if forumla != None :
+        if formula != None :
            materialObj.addProperty("App::PropertyString",'forumla', \
                       name).forumla = forumla
         D = material.find('D')
@@ -532,7 +543,7 @@ def processMaterials() :
             fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
 
         for composite in material.findall('composite') :
-            n = composite.get('n'))
+            n = composite.get('n')
             ref = fraction.get('ref')
             compositeObj = materialObj.newObject("App::DocumentObjectGroupPython", \
                                                  ref)
@@ -577,7 +588,7 @@ def processGDML(filename):
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
     
-    global currentString, filesDict
+    global currentString
 
     # PreProcessHTML file - sets currentString & filesDict
     preProcessHTML(filename)
@@ -586,14 +597,11 @@ def processGDML(filename):
    
     # Add files object so user can change to organise files
     from GDMLObjects import GDMLFiles, ViewProvider
-    #myfiles = doc.addObject("App::FeaturePython","Export_Files")
-    myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
-    GDMLFiles(myfiles)
-    ViewProvider(myfiles.ViewObject)
+    myfiles = doc.addObject("App::FeaturePython","Export_Files")
+    #myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
+    GDMLFiles(myfiles,FilesEntity,sectionDict)
 
-    print "GDML Files added"
-
-    global setup, define, materials, solids, structure
+    global setup, define, materials, solids, structure, FilesEntity
    
     from lxml import etree
     root = etree.fromstring(currentString)
