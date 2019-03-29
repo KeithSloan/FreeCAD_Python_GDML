@@ -72,7 +72,6 @@ if open.__module__ == '__builtin__':
 def open(filename):
     "called when freecad opens a file."
     global doc
-    global pathName
     docname = os.path.splitext(os.path.basename(filename))[0]
     doc = FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
@@ -82,7 +81,6 @@ def open(filename):
 def insert(filename,docname):
     "called when freecad imports a file"
     global doc
-    global pathName
     groupname = os.path.splitext(os.path.basename(filename))[0]
     try:
         doc=FreeCAD.getDocument(docname)
@@ -445,7 +443,7 @@ class MyHTMLParser(HTMLParser):
         search = "&"+name
         print "Search : "+search
         print "Include file "
-        insertFile = str(filesDict[name])
+        insertFile = os.path.join(pathName,str(filesDict[name]))
         print insertFile
         f = pythonopen(insertFile)
         insertString = f.read()
@@ -484,8 +482,9 @@ def processGDML(filename):
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
     
-    global currentString, filesDict
+    global currentString, pathName
 
+    pathName = pathName = os.path.dirname(os.path.normpath(filename))
     # PreProcessHTML file - sets currentString & filesDict
     preProcessHTML(filename)
     print "Files dictionary"
