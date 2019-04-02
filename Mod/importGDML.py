@@ -39,7 +39,7 @@ from HTMLParser import HTMLParser
 ##########################
 #constDict = {}
 #filesDict = {}
-#currentTag = None
+#currentSection = None
 #currentString = ""
 #global setup, define, materials, solids, structure
 #globals constDict, filesDict, currentString
@@ -184,7 +184,8 @@ def createBox(solid,material,px,py,pz,rot,wireFrame) :
     x = getVal(solid,'x')
     y = getVal(solid,'y')
     z = getVal(solid,'z')
-    GDMLBox(mycube,x,y,z,"mm",material)
+    lunit = getText(solid,'lunit',"mm")
+    GDMLBox(mycube,x,y,z,lunit,material)
     ViewProvider(mycube.ViewObject)
     print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
@@ -192,69 +193,6 @@ def createBox(solid,material,px,py,pz,rot,wireFrame) :
     print mycube.Placement.Rotation
     if wireFrame : mycube.ViewObject.DisplayMode = 'Wireframe'
     return mycube
-
-def createCylinder(solid,material,px,py,pz,rot,wireFrame) :
-    mycyl=doc.addObject("Part::FeaturePython","GDMLCyl")
-    z = getVal(solid,'z')
-    r = getVal(solid,'r')
-    aunit = getText(solid,'aunit','rad')
-    deltaphi = getVal(solid,'deltaphi')
-    if ('aunit' == 'rad') :
-       deltaphi = (180 * deltaphi) / math.pi
-    mycyl = GDMLCyl(mycyl,r,z,deltaphi,aunit,material)   
-    ViewProvider(mycyl.ViewObject)
-    print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
-    #base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
-    base = FreeCAD.Vector(px,py,pz)
-    mycyl.Placement = processPlacement(base,rot)
-    print mycyl.Placement.Rotation
-    if wireFrame : mycyl.ViewObject.DisplayMode = 'Wireframe'
-    return mycyl
-
-def createSphere(solid,material,px,py,pz,rot,wireFrame) :
-    from GDMLObjects import GDMLSphere, ViewProvider
-    print "CreateSphere : "
-    print solid.attrib
-    rmin = getVal(solid,'rmin')
-    rmax = getVal(solid,'rmax')
-    startphi = getVal(solid,'startphi')
-    deltaphi = getVal(solid,'deltaphi')
-    aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunits',"mm")
-    mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
-    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
-               lunits,material)
-    print "Position : "+str(px)+','+str(py)+','+str(pz)
-    base = FreeCAD.Vector(px,py,pz)
-    mysphere.Placement = processPlacement(base,rot)
-    print mysphere.Placement.Rotation
-    ViewProvider(mysphere.ViewObject)
-    if wireFrame : mysphere.ViewObject.DisplayMode = 'Wireframe'
-    return mysphere
-
-def createTube(solid,material,px,py,pz,rot,wireFrame) :
-    from GDMLObjects import GDMLTube, ViewProvider
-    print "CreateTube : "
-    print solid.attrib
-    rmin = getVal(solid,'rmin')
-    rmax = getVal(solid,'rmax')
-    z = getVal(solid,'z')
-    startphi = getVal(solid,'startphi')
-    deltaphi = getVal(solid,'deltaphi')
-    aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunits',"mm")
-    print rmin
-    print rmax
-    print z
-    mytube=doc.addObject("Part::FeaturePython","GDMLTube")
-    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunits,material)
-    print "Position : "+str(px)+','+str(py)+','+str(pz)
-    base = FreeCAD.Vector(px,py,pz)
-    mytube.Placement = processPlacement(base,rot)
-    print mytube.Placement.Rotation
-    ViewProvider(mytube.ViewObject)
-    if wireFrame : mytube.ViewObject.DisplayMode = 'Wireframe'
-    return mytube
 
 def createCone(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLCone, ViewProvider
@@ -268,10 +206,10 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     startphi = getVal(solid,'startphi')
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunits',"mm")
+    lunits = getText(solid,'lunit',"mm")
     mycone=doc.addObject("Part::FeaturePython","GDMLCone")
     GDMLCone(mycone,rmin1,rmax1,rmin2,rmax2,z, \
-             startphi,deltaphi,aunit,lunits,material)
+             startphi,deltaphi,aunit,lunit,material)
     print "CreateCone : "
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
@@ -279,6 +217,78 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     print mycone.Placement.Rotation
     if wireFrame : mycone.ViewObject.DisplayMode = 'Wireframe'
     ViewProvider(mycone.ViewObject)
+
+def createSphere(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLSphere, ViewProvider
+    print "CreateSphere : "
+    print solid.attrib
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
+    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
+               lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mysphere.Placement = processPlacement(base,rot)
+    print mysphere.Placement.Rotation
+    ViewProvider(mysphere.ViewObject)
+    if wireFrame : mysphere.ViewObject.DisplayMode = 'Wireframe'
+    return mysphere
+
+def createTrap(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLTrap, ViewProvider
+    print "CreateTrap : "
+    print solid.attrib
+    z  = getVal(solid,'z')
+    x1 = getVal(solid,'x1')
+    x2 = getVal(solid,'x2')
+    x3 = getVal(solid,'x3')
+    x4 = getVal(solid,'x4')
+    y1 = getVal(solid,'y1')
+    y2 = getVal(solid,'y2')
+    theta = getVal(solid,'theta')
+    phi = getVal(solid,'phi')
+    alpha = getVal(solid,'alpah1')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    #print z
+    mytrap=doc.addObject("Part::FeaturePython","GDMLTrap")
+    GDMLTrap(mytrap,z,theta,phi,x1,x2,x3,x4,y1,y2,alpha,aunit,lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mytrap.Placement = processPlacement(base,rot)
+    print mytrap.Placement.Rotation
+    ViewProvider(mytrap.ViewObject)
+    if wireFrame : mytrap.ViewObject.DisplayMode = 'Wireframe'
+    return mytrap
+
+def createTube(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLTube, ViewProvider
+    print "CreateTube : "
+    print solid.attrib
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    z = getVal(solid,'z')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    print rmin
+    print rmax
+    print z
+    mytube=doc.addObject("Part::FeaturePython","GDMLTube")
+    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mytube.Placement = processPlacement(base,rot)
+    print mytube.Placement.Rotation
+    ViewProvider(mytube.ViewObject)
+    if wireFrame : mytube.ViewObject.DisplayMode = 'Wireframe'
+    return mytube
 
 def parseBoolean(solid,objType,material,px,py,pz,rot) :
     from GDMLObjects import ViewProvider
@@ -317,6 +327,10 @@ def createSolid(solid,material,px,py,pz,rot,wireFrame) :
 
         if case('sphere'):
            return(createSphere(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('trap_dimensions'):
+           return(createTrap(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('tube'):
@@ -403,8 +417,10 @@ class MyHTMLParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         #print "Encountered a start tag:", tag
-        global currentTag
-        currentTag = tag
+        # Entity may not be in latest tag so handle outselves
+        global currentSection
+        if tag in ["define","materials","solids","structure"] :
+           currentSection = tag
 
     def handle_decl(self, decl):    
         # This gets called when the entity is declared
@@ -418,7 +434,8 @@ class MyHTMLParser(HTMLParser):
                  # const that refers to a file
                  print words[4]
                  print words[6]
-                 filesDict[words[4]] = words[6].split('"')[1]
+                 word = words[6].split('"')[1]
+                 filesDict[words[4]] = word
                  break
 
               if case(6) :
@@ -436,9 +453,13 @@ class MyHTMLParser(HTMLParser):
     
     def handle_entityref(self, name):
         # This gets called when the entity is referenced
+        # starttag may not be a section
         print "Entity reference : "+ name
-        tag = self.get_starttag_text()
-        print "Current Section  : "+ tag
+        #tag = self.get_starttag_text()
+        print "Current Section  : "+ currentSection
+        global FilesEntity
+        FilesEntity = True
+        sectionDict[currentSection] = filesDict[name]
         print self.getpos()
         search = "&"+name
         print "Search : "+search
@@ -467,9 +488,10 @@ class MyHTMLParser(HTMLParser):
 def preProcessHTML(filename) :
     # instantiate the parser and fed it some HTML
     f = pythonopen(filename)
-    global constDict, filesDict, currentString
+    global constDict, filesDict, sectionDict, currentString, currentTag
     constDict = {}
     filesDict = {}
+    sectionDict = {}
     currentString = f.read()
     parser = MyHTMLParser()
     parser.feed(currentString)
@@ -477,30 +499,120 @@ def preProcessHTML(filename) :
     g.write(currentString)
     g.close
 
+def getItem(element, attribute) :
+    item = element.get(attribute)
+    if item != None :
+       return item
+    else :
+       return ""
+
+def processMaterials() :
+    from GDMLObjects import GDMLmaterial, GDMLfraction, ViewProvider
+    materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
+    materialGrp.Label = "Materials"
+    for material in materials.findall('material') :
+        name = material.get('name')
+        materialObj = materialGrp.newObject("App::DocumentObjectGroupPython", \
+                      name)
+        GDMLmaterial(materialObj,name)
+        formula = material.get('formula')
+        if formula != None :
+           materialObj.addProperty("App::PropertyString",'forumla', \
+                      name).forumla = forumla
+        D = material.find('D')
+        if D != None :
+           Dvalue = float(D.get('value'))
+           Dunit = getItem(D,'unit')
+        Z = material.get('Z')
+        if Z != None :  
+           materialObj.addProperty("App::PropertyString",'Z',name).Z = Z
+        atom = material.find('atom')
+        if atom != None :
+           aVal = float(atom.get('value'))
+           materialObj.addProperty("App::PropertyFloat",'atom',name).atom = aVal
+        T = material.find('T')
+        if T != None :
+           Tunit = T.get('unit')
+           Tvalue = float(T.get('value'))
+           materialObj.addProperty("App::PropertyString",'Tunit',name).Tunit = Tunit
+           materialObj.addProperty("App::PropertyFloat",'Tvalue',name).Tvalue = Tvalue
+        MEE = material.find('MEE')
+        if MEE != None :
+           Munit = MEE.get('unit')
+           Mvalue = float(MEE.get('value'))
+           materialObj.addProperty("App::PropertyString",'MEEunit',name).MEEunit = Munit
+           materialObj.addProperty("App::PropertyFloat",'MEEvalue',name).MEEvalue = Mvalue
+        for fraction in material.findall('fraction') :
+            n = float(fraction.get('n'))
+            ref = fraction.get('ref')
+            fractionObj = materialObj.newObject("App::DocumentObjectGroupPython", \
+                                                 ref)
+            GDMLfraction(fractionObj,ref,n)
+            #fractionObj.Label = ref[0:5] +' : '+'{0:0.2f}'.format(n)
+            fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
+
+        for composite in material.findall('composite') :
+            n = composite.get('n')
+            ref = fraction.get('ref')
+            compositeObj = materialObj.newObject("App::DocumentObjectGroupPython", \
+                                                 ref)
+            GDMLcomposite(fractionObj,ref,n)
+            compositeObj.Label = ref +' : '+n
+
+             
+def processIsotopes() :
+    from GDMLObjects import GDMLisotope, ViewProvider
+    isotopesGrp  = doc.addObject("App::DocumentObjectGroupPython","Isotopes")
+    for isotope in materials.findall('isotope') :
+        N = int(isotope.get('N'))
+        Z = int(isotope.get('Z'))
+        name = isotope.get('name')
+        atom = isotope.find('atom')
+        unit = atom.get('unit')
+        value = float(atom.get('value'))
+        #isoObj = isotopesGrp.newObject("App::FeaturePython",name)
+        isoObj = isotopesGrp.newObject("App::DocumentObjectGroupPython",name)
+        GDMLisotope(isoObj,name,N,Z,unit,value)
+
+def processElements() :
+    from GDMLObjects import GDMLelement, GDMLfraction
+    elementsGrp  = doc.addObject("App::DocumentObjectGroupPython","Elements")
+    elementsGrp.Label = 'Elements'
+    for element in materials.findall('element') :
+        name = element.get('name')
+        elementObj = elementsGrp.newObject("App::DocumentObjectGroupPython", \
+                     name)
+        GDMLelement(elementObj,name)
+        for fraction in element.findall('fraction') :
+            ref = fraction.get('ref')
+            n = float(fraction.get('n'))
+            #fractObj = elementObj.newObject("App::FeaturePython",ref)
+            fractObj = elementObj.newObject("App::DocumentObjectGroupPython",ref)
+            GDMLfraction(fractObj,ref,n)
+            #fractObj.Label = ref[0:5]+' : ' + '{0:0.2f}'.format(n)
+            fractObj.Label = ref+' : ' + '{0:0.2f}'.format(n)
+
 def processGDML(filename):
 
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
     
-    global currentString, pathName
+    pathName = os.path.dirname(os.path.normpath(filename))
+    FilesEntity = False
 
-    pathName = pathName = os.path.dirname(os.path.normpath(filename))
     # PreProcessHTML file - sets currentString & filesDict
     preProcessHTML(filename)
     print "Files dictionary"
     print filesDict
    
-    # Add files object so user can change to organise files
-    #from GDMLObjects import GDMLFiles, ViewProvider
-    #myfiles = doc.addObject("Part::FeaturePython","GDMLFiles")
-    #ViewProvider(myfiles.ViewObject)
-
-    #import xml.etree.ElementTree as ET
-    #tree = ET.parse(filename)
-    #root = tree.getroot()
-
     global setup, define, materials, solids, structure
-   
+  
+  # Add files object so user can change to organise files
+    from GDMLObjects import GDMLFiles, ViewProvider
+    myfiles = doc.addObject("App::FeaturePython","Export_Files")
+    #myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
+    GDMLFiles(myfiles,FilesEntity,sectionDict)
+
     from lxml import etree
     root = etree.fromstring(currentString)
     setup     = root.find('setup')
@@ -508,6 +620,10 @@ def processGDML(filename):
     materials = root.find('materials')
     solids    = root.find('solids')
     structure = root.find('structure')
+
+    processMaterials()
+    processIsotopes()
+    processElements()
 
     constDict = processConstants()
     print setup.attrib

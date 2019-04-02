@@ -97,6 +97,37 @@ class SphereFeature:
                 QtCore.QT_TRANSLATE_NOOP('GDMLSphereFeature',\
                 'Sphere Object')}
 
+class TrapFeature:
+    def IsActive(self):
+        return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
+
+    def Activated(self):
+        from GDMLObjects import GDMLTrap, ViewProvider
+        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLTrap")
+        print("GDMLTrap Object - added")
+        # obj z, theta, phi, x1, x2, x3, x4, y1, y2,
+        # pAlp2, aunits, lunits, material
+        GDMLTrap(a,10.0,0.0,0.0,6.0,6.0,6.0,6.0,7.0,7.0,0.0,"rad","mm","SSteel")
+        print("GDMLTrap initiated")
+        ViewProvider(a.ViewObject)
+        print("GDMLTrap ViewProvided - added")
+        FreeCAD.ActiveDocument.recompute()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
+
+    def IsActive(self):
+        if FreeCAD.ActiveDocument == None:
+           return False
+        else:
+           return True
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDMLTrapFeature', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLTrapFeature',\
+                'Trap Object'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLTrapFeature',\
+                'Trap Object')}
+
+
 class TubeFeature:
     def IsActive(self):
         return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
@@ -130,4 +161,5 @@ class TubeFeature:
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('ConeCommand',ConeFeature())
 FreeCADGui.addCommand('SphereCommand',SphereFeature())
+FreeCADGui.addCommand('TrapCommand',TrapFeature())
 FreeCADGui.addCommand('TubeCommand',TubeFeature())
