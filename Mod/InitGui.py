@@ -44,30 +44,14 @@ class GDML_Workbench ( Workbench ):
             return text
         
         import GDMLCommands
-        commands=['BoxCommand','ConeCommand','SphereCommand','TubeCommand']
-        toolbarcommands=['BoxCommand','ConeCommand','SphereCommand','TubeCommand']
+        commands=['BoxCommand','ConeCommand','SphereCommand', \
+                  'TrapCommand','TubeCommand']
+        toolbarcommands=['BoxCommand','ConeCommand','SphereCommand', \
+                  'TrapCommand','TubeCommand']
 
         import PartGui
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common',\
             'Part_Extrude',"Part_Revolve"]
-        #import FreeCAD
-        #param = FreeCAD.ParamGet(\
-        #    "User parameter:BaseApp/Preferences/Mod/OpenSCAD")
-        #openscadfilename = param.GetString('openscadexecutable')
-        #if not openscadfilename:
-
-        #    import OpenSCADUtils
-        #    openscadfilename = OpenSCADUtils.searchforopenscadexe()
-        #    if openscadfilename: #automatic search was succsessful
-        #        FreeCAD.addImportType("OpenSCAD Format (*.scad)","importCSG")
-        #        param.SetString('openscadexecutable',openscadfilename) #save the result
-       #if openscadfilename:
-       #     commands.extend(['OpenSCAD_AddOpenSCADElement',
-       #         'OpenSCAD_MeshBoolean','OpenSCAD_Hull','OpenSCAD_Minkowski'])
-       #     toolbarcommands.extend(['OpenSCAD_AddOpenSCADElement',
-       #         'OpenSCAD_MeshBoolean','OpenSCAD_Hull','OpenSCAD_Minkowski'])
-       # else:
-       #     FreeCAD.Console.PrintWarning('OpenSCAD executable not found\n')
 
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbench','GDMLTools'),toolbarcommands)
         self.appendMenu('GDML',commands)
@@ -79,7 +63,6 @@ class GDML_Workbench ( Workbench ):
         #FreeCADGui.addPreferencePage(":/ui/openscadprefs-base.ui","OpenSCAD")
 
     def GetClassName(self):
-        #return "OpenSCADGui::Workbench"
         return "Gui::PythonWorkbench"
 
 Gui.addWorkbench(GDML_Workbench())

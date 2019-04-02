@@ -10,13 +10,13 @@ def getAngle(aunit,angle) :
       return angle
 
 class GDMLBox :
-   def __init__(self, obj, x, y, z, lunits, material):
+   def __init__(self, obj, x, y, z, lunit, material):
       '''Add some custom properties to our Box feature'''
       print "GDMLBox init"
       obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
       obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
-      obj.addProperty("App::PropertyString","lunits","GDMLBox","lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","lunit","GDMLBox","lunit").lunit=lunit
       obj.addProperty("App::PropertyString","material","GDMLBox","Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLBox", "Shape of the Box")
       obj.Proxy = self
@@ -37,7 +37,7 @@ class GDMLBox :
 
 class GDMLCone :
    def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,aunit, \
-                lunits, material):
+                lunit, material):
       '''Add some custom properties to our Cone feature'''
       obj.addProperty("App::PropertyDistance","rmin1","GDMLCone","Min Radius 1").rmin1=rmin1
       obj.addProperty("App::PropertyDistance","rmax1","GDMLCone","Max Radius 1").rmax1=rmax1
@@ -47,9 +47,9 @@ class GDMLCone :
       obj.addProperty("App::PropertyFloat","startphi","GDMLCone","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLCone","aunit")
-      obj.aunit=["Rad", "Deg"]
+      obj.aunit=["rad", "deg"]
       obj.aunit=0
-      obj.addProperty("App::PropertyString","lunits","GDMLCone","lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","lunit","GDMLCone","lunit").lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
                       "Shape of the Cone")
       obj.addProperty("App::PropertyStringList","material","GDMLCone", \
@@ -84,7 +84,7 @@ class GDMLCone :
 
 class GDMLSphere :
    def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
-                deltatheta, aunit, lunits, material):
+                deltatheta, aunit, lunit, material):
       '''Add some custom properties to our Sphere feature'''
       print "GDMLSphere init"
       obj.addProperty("App::PropertyLength","rmin","GDMLSphere", \
@@ -100,10 +100,10 @@ class GDMLSphere :
       obj.addProperty("App::PropertyFloat","deltatheta","GDMLSphere", \
              "Delta Angle").deltatheta=deltatheta
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLSphere","aunit")
-      obj.aunit=["Rad", "Deg"]
+      obj.aunit=["rad", "deg"]
       obj.aunit=0
-      obj.addProperty("App::PropertyString","lunits","GDMLSphere", \
-                      "lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","lunit","GDMLSphere", \
+                      "lunit").lunit=lunit
       obj.addProperty("App::PropertyString","material","GDMLSphere", \
                        "Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLSphere", \
@@ -134,10 +134,119 @@ class GDMLSphere :
        fp.Shape = sphere2
        FreeCAD.Console.PrintMessage("Recompute GDML Sphere Object \n")
 
+class GDMLTrap :
+   def __init__(self, obj, z, theta, phi, x1, x2, x3, x4, y1, y2, alpha, \
+                aunit, lunit, material):
+      '''Add some custom properties to our Tube feature'''
+      obj.addProperty("App::PropertyLength","z","GDMLTrap","z").z=z
+      obj.addProperty("App::PropertyFloat","theta","GDMLTrap","theta"). \
+                       theta=theta
+      obj.addProperty("App::PropertyFloat","phi","GDMLTrap","phi").phi=phi
+      obj.addProperty("App::PropertyLength","x1","GDMLTrap", \
+                      "Length x at y= -y1 face -z").x1=x1
+      obj.addProperty("App::PropertyLength","x2","GDMLTrap", \
+                      "Length x at y= +y1 face -z").x2=x2
+      obj.addProperty("App::PropertyLength","x3","GDMLTrap", \
+                      "Length x at y= -y1 face +z").x3=x3
+      obj.addProperty("App::PropertyLength","x4","GDMLTrap", \
+                      "Length x at y= +y1 face +z").x4=x4
+      obj.addProperty("App::PropertyLength","y1","GDMLTrap", \
+                      "Length y at face -z").y1=y1
+      obj.addProperty("App::PropertyLength","y2","GDMLTrap", \
+                      "Length y at face +z").y2=y2
+      obj.addProperty("App::PropertyFloat","alpha","GDMLTrap","alpha"). \
+                     alpha=alpha
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLTrap","aunit")
+      obj.aunit=["rad", "deg"]
+      obj.aunit=0
+      obj.addProperty("App::PropertyString","lunit","GDMLTrap","lunit"). \
+                       lunit=lunit
+      obj.addProperty("App::PropertyString","material","GDMLTrap","Material"). \
+                       material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLTrap", \
+                      "Shape of the Trap")
+      obj.Proxy = self
+      self.Type = 'GDMLTrap'
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+   
+   def make_face4(self,v1,v2,v3,v4):
+       # helper mehod to create the faces
+       wire = Part.makePolygon([v1,v2,v3,v4,v1])
+       face = Part.Face(wire)
+       return face
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+       import math
+       # Define six vetices for the shape
+       alpha = getAngle(fp.aunit,fp.alpha)
+       theta = getAngle(fp.aunit,fp.theta)
+       phi   = getAngle(fp.aunit,fp.phi)
+       dx = fp.y1*math.sin(alpha)
+       dy = fp.y1*(1.0 - math.cos(alpha))
+       print "Delta adjustments"
+       print "dx : "+str(dx)+" dy : "+str(dy)
+       y1m = dy - fp.y1
+       y1p = dy + fp.y1
+       x1m = dx - fp.x1
+       x1p = dx + fp.x1
+       z    = fp.z
+       print "y1m : "+str(y1m)
+       print "y1p : "+str(y1p)
+       print "z   : "+str(z)
+       print "x1  : "+str(fp.x1)
+       print "x2  : "+str(fp.x2)
+
+       v1    = FreeCAD.Vector(x1m, y1m, -z)
+       v2    = FreeCAD.Vector(x1p, y1m, -z)
+       v3    = FreeCAD.Vector(x1p, y1p, -z)
+       v4    = FreeCAD.Vector(x1m, y1p, -z)
+
+       # x,y of centre of top surface
+       dr = z*math.tan(theta)
+       tx = dr*math.cos(phi)
+       ty = dr*math.cos(phi)
+       print "Coord of top surface centre"
+       print "x : "+str(tx)+" y : "+str(ty)
+       py2 = ty + fp.y2
+       my2 = ty - fp.y2
+       px3 = tx + fp.x3
+       mx3 = tx - fp.x3
+       px4 = tx + fp.x4
+       mx4 = tx - fp.x4
+       print "px3 : "+str(px3)
+       print "py2 : "+str(py2)
+       print "my2 : "+str(my2)
+
+       v5 = FreeCAD.Vector(mx3, my2, z)
+       v6 = FreeCAD.Vector(px3, my2, z)
+       v7 = FreeCAD.Vector(px3, py2, z)
+       v8 = FreeCAD.Vector(mx3, py2, z)
+
+       # Make the wires/faces
+       f1 = self.make_face4(v1,v2,v3,v4)
+       f2 = self.make_face4(v1,v2,v6,v5)
+       f3 = self.make_face4(v2,v3,v7,v6)
+       f4 = self.make_face4(v3,v4,v8,v7)
+       f5 = self.make_face4(v1,v4,v8,v5)
+       f6 = self.make_face4(v5,v6,v7,v8)
+       shell=Part.makeShell([f1,f2,f3,f4,f5,f6])
+       solid=Part.makeSolid(shell)
+
+       #solid = Part.makePolygon([v1,v2,v3,v4,v5,v6,v7,v1])
+
+       fp.Shape = solid
+       FreeCAD.Console.PrintMessage("Recompute GDML Trap Object \n")
+
 
 class GDMLTube :
    def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \
-                lunits, material):
+                lunit, material):
       '''Add some custom properties to our Tube feature'''
       obj.addProperty("App::PropertyLength","rmin","GDMLTube","Inside Radius").rmin=rmin
       obj.addProperty("App::PropertyLength","rmax","GDMLTube","Outside Radius").rmax=rmax
@@ -145,9 +254,9 @@ class GDMLTube :
       obj.addProperty("App::PropertyFloat","startphi","GDMLTube","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLTube","aunit")
-      obj.aunit=["Rad", "Deg"]
+      obj.aunit=["rad", "deg"]
       obj.aunit=0
-      obj.addProperty("App::PropertyString","lunits","GDMLTube","lunits").lunits=lunits
+      obj.addProperty("App::PropertyString","lunit","GDMLTube","lunit").lunit=lunit
       obj.addProperty("App::PropertyString","material","GDMLTube","Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Tube")
       obj.Proxy = self

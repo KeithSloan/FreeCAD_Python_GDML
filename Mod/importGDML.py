@@ -184,7 +184,8 @@ def createBox(solid,material,px,py,pz,rot,wireFrame) :
     x = getVal(solid,'x')
     y = getVal(solid,'y')
     z = getVal(solid,'z')
-    GDMLBox(mycube,x,y,z,"mm",material)
+    lunit = getText(solid,'lunit',"mm")
+    GDMLBox(mycube,x,y,z,lunit,material)
     ViewProvider(mycube.ViewObject)
     print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
@@ -192,69 +193,6 @@ def createBox(solid,material,px,py,pz,rot,wireFrame) :
     print mycube.Placement.Rotation
     if wireFrame : mycube.ViewObject.DisplayMode = 'Wireframe'
     return mycube
-
-def createCylinder(solid,material,px,py,pz,rot,wireFrame) :
-    mycyl=doc.addObject("Part::FeaturePython","GDMLCyl")
-    z = getVal(solid,'z')
-    r = getVal(solid,'r')
-    aunit = getText(solid,'aunit','rad')
-    deltaphi = getVal(solid,'deltaphi')
-    if ('aunit' == 'rad') :
-       deltaphi = (180 * deltaphi) / math.pi
-    mycyl = GDMLCyl(mycyl,r,z,deltaphi,aunit,material)   
-    ViewProvider(mycyl.ViewObject)
-    print "Logical Position : "+str(px)+','+str(py)+','+str(pz)
-    #base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
-    base = FreeCAD.Vector(px,py,pz)
-    mycyl.Placement = processPlacement(base,rot)
-    print mycyl.Placement.Rotation
-    if wireFrame : mycyl.ViewObject.DisplayMode = 'Wireframe'
-    return mycyl
-
-def createSphere(solid,material,px,py,pz,rot,wireFrame) :
-    from GDMLObjects import GDMLSphere, ViewProvider
-    print "CreateSphere : "
-    print solid.attrib
-    rmin = getVal(solid,'rmin')
-    rmax = getVal(solid,'rmax')
-    startphi = getVal(solid,'startphi')
-    deltaphi = getVal(solid,'deltaphi')
-    aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunits',"mm")
-    mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
-    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
-               lunits,material)
-    print "Position : "+str(px)+','+str(py)+','+str(pz)
-    base = FreeCAD.Vector(px,py,pz)
-    mysphere.Placement = processPlacement(base,rot)
-    print mysphere.Placement.Rotation
-    ViewProvider(mysphere.ViewObject)
-    if wireFrame : mysphere.ViewObject.DisplayMode = 'Wireframe'
-    return mysphere
-
-def createTube(solid,material,px,py,pz,rot,wireFrame) :
-    from GDMLObjects import GDMLTube, ViewProvider
-    print "CreateTube : "
-    print solid.attrib
-    rmin = getVal(solid,'rmin')
-    rmax = getVal(solid,'rmax')
-    z = getVal(solid,'z')
-    startphi = getVal(solid,'startphi')
-    deltaphi = getVal(solid,'deltaphi')
-    aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunits',"mm")
-    print rmin
-    print rmax
-    print z
-    mytube=doc.addObject("Part::FeaturePython","GDMLTube")
-    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunits,material)
-    print "Position : "+str(px)+','+str(py)+','+str(pz)
-    base = FreeCAD.Vector(px,py,pz)
-    mytube.Placement = processPlacement(base,rot)
-    print mytube.Placement.Rotation
-    ViewProvider(mytube.ViewObject)
-    if wireFrame : mytube.ViewObject.DisplayMode = 'Wireframe'
-    return mytube
 
 def createCone(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLCone, ViewProvider
@@ -268,10 +206,10 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     startphi = getVal(solid,'startphi')
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunits',"mm")
+    lunits = getText(solid,'lunit',"mm")
     mycone=doc.addObject("Part::FeaturePython","GDMLCone")
     GDMLCone(mycone,rmin1,rmax1,rmin2,rmax2,z, \
-             startphi,deltaphi,aunit,lunits,material)
+             startphi,deltaphi,aunit,lunit,material)
     print "CreateCone : "
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
@@ -279,6 +217,78 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     print mycone.Placement.Rotation
     if wireFrame : mycone.ViewObject.DisplayMode = 'Wireframe'
     ViewProvider(mycone.ViewObject)
+
+def createSphere(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLSphere, ViewProvider
+    print "CreateSphere : "
+    print solid.attrib
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    mysphere=doc.addObject("Part::FeaturePython","GDMLSphere")
+    GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
+               lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mysphere.Placement = processPlacement(base,rot)
+    print mysphere.Placement.Rotation
+    ViewProvider(mysphere.ViewObject)
+    if wireFrame : mysphere.ViewObject.DisplayMode = 'Wireframe'
+    return mysphere
+
+def createTrap(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLTrap, ViewProvider
+    print "CreateTrap : "
+    print solid.attrib
+    z  = getVal(solid,'z')
+    x1 = getVal(solid,'x1')
+    x2 = getVal(solid,'x2')
+    x3 = getVal(solid,'x3')
+    x4 = getVal(solid,'x4')
+    y1 = getVal(solid,'y1')
+    y2 = getVal(solid,'y2')
+    theta = getVal(solid,'theta')
+    phi = getVal(solid,'phi')
+    alpha = getVal(solid,'alpah1')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    #print z
+    mytrap=doc.addObject("Part::FeaturePython","GDMLTrap")
+    GDMLTrap(mytrap,z,theta,phi,x1,x2,x3,x4,y1,y2,alpha,aunit,lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mytrap.Placement = processPlacement(base,rot)
+    print mytrap.Placement.Rotation
+    ViewProvider(mytrap.ViewObject)
+    if wireFrame : mytrap.ViewObject.DisplayMode = 'Wireframe'
+    return mytrap
+
+def createTube(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLTube, ViewProvider
+    print "CreateTube : "
+    print solid.attrib
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    z = getVal(solid,'z')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    print rmin
+    print rmax
+    print z
+    mytube=doc.addObject("Part::FeaturePython","GDMLTube")
+    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mytube.Placement = processPlacement(base,rot)
+    print mytube.Placement.Rotation
+    ViewProvider(mytube.ViewObject)
+    if wireFrame : mytube.ViewObject.DisplayMode = 'Wireframe'
+    return mytube
 
 def parseBoolean(solid,objType,material,px,py,pz,rot) :
     from GDMLObjects import ViewProvider
@@ -317,6 +327,10 @@ def createSolid(solid,material,px,py,pz,rot,wireFrame) :
 
         if case('sphere'):
            return(createSphere(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('trap_dimensions'):
+           return(createTrap(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('tube'):

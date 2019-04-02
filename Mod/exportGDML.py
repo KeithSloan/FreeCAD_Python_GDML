@@ -688,8 +688,30 @@ def processGDMLSphereObject(obj, addVolsFlag) :
                            'lunit' : 'mm'})
     if addVolsFlag :
        createLVandPV(obj,obj.Name,sphereName)
-
     return(sphereName)
+
+def processGDMLTrapObject(obj, addVolsFlag) :
+    # Needs unique Name
+    trapName = 'Trap' + obj.Name
+    ET.SubElement(solids, 'trap_dimensions',{'name': trapName, \
+                           'z': str(obj.z.Value),  \
+                           'theta': str(obj.theta),  \
+                           'phi': str(obj.phi), \
+                           'x1': str(obj.x1.Value),  \
+                           'x2': str(obj.x2.Value),  \
+                           'x3': str(obj.x3.Value),  \
+                           'x4': str(obj.x4.Value),  \
+                           'y1': str(obj.y1.Value),  \
+                           'y2': str(obj.y2.Value),  \
+                           'alpha1': str(obj.alpha), \
+                           'alpha2': str(obj.alpha), \
+                           'aunit': obj.aunit, \
+                           'lunit': obj.lunit})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, trapName, delta)
+    return(trapName)
 
 
 def processGDMLTubeObject(obj, addVolsFlag) :
@@ -809,6 +831,11 @@ def processObject(obj, addVolsFlag) :
              if case("GDMLSphere") :
                 print("GDMLSphere") 
                 return(processGDMLSphereObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLTrap") :
+                print("GDMLTrap") 
+                return(processGDMLTrapObject(obj, addVolsFlag))
                 break
 
              if case("GDMLTube") :
