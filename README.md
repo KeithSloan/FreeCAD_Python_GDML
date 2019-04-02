@@ -24,20 +24,9 @@ Assumes you already have FreeCAD and git installed
 
 7) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
 
-## Branch - materials
-
-There is a new branch 'materials' that on an import makes
-the GDML  Material definitions available in FreeCAD document
-( Only limited testing hence the ability to switch in and our via git branch )
-( There is currently no checking the validity of any changed parameters )
-
-   **git checkout -b materials origin/materials**
-
-   You can then switch between branch with **git checkout** 
-
 ## Workbench
 
-Adds support for GDMLBox, GDMLCone, GDMLCylinder, GDMLSphere, GDMLTube
+Adds support for GDMLBox, GDMLCone, GDMLCylinder, GDMLSphere, GDMLTrap, GDMLTube
 
 ## Exporter
 
@@ -58,7 +47,6 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
 
   * Workbench Dialog for initial GDML Object values(?)
   * Handle different Positioning between GDML & FreeCAD
-  * Sort out handling of degrees radians
   * Add support for quantity
   * Add further GDML Objects
   * Design icons for workbench
