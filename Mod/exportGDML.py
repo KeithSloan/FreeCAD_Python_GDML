@@ -693,7 +693,7 @@ def processGDMLSphereObject(obj, addVolsFlag) :
 def processGDMLTrapObject(obj, addVolsFlag) :
     # Needs unique Name
     trapName = 'Trap' + obj.Name
-    ET.SubElement(solids, 'trap_dimensions',{'name': trapName, \
+    ET.SubElement(solids, 'trap',{'name': trapName, \
                            'z': str(obj.z.Value),  \
                            'theta': str(obj.theta),  \
                            'phi': str(obj.phi), \

@@ -206,13 +206,14 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     startphi = getVal(solid,'startphi')
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
-    lunits = getText(solid,'lunit',"mm")
+    lunit = getText(solid,'lunit',"mm")
     mycone=doc.addObject("Part::FeaturePython","GDMLCone")
     GDMLCone(mycone,rmin1,rmax1,rmin2,rmax2,z, \
              startphi,deltaphi,aunit,lunit,material)
     print "CreateCone : "
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(px,py,pz-z/2)
     mycone.Placement = processPlacement(base,rot)
     print mycone.Placement.Rotation
     if wireFrame : mycone.ViewObject.DisplayMode = 'Wireframe'
@@ -329,6 +330,10 @@ def createSolid(solid,material,px,py,pz,rot,wireFrame) :
            return(createSphere(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
+        if case('trap'):
+           return(createTrap(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
         if case('trap_dimensions'):
            return(createTrap(solid,material,px,py,pz,rot,wireFrame)) 
            break
@@ -370,9 +375,12 @@ def parsePhysVol(physVol,solid,material):
        print pos.attrib
     else :
        pos = physVol.find("position")
-    px = getVal(pos,'x')
-    py = getVal(pos,'y')
-    pz = getVal(pos,'z')
+    if posref is not None :
+       px = getVal(pos,'x')
+       py = getVal(pos,'y')
+       pz = getVal(pos,'z')
+    else :
+       px = py = pz = 0 
     rotref = getRef(physVol,"rotationref")
     if rotref is not None :
        rot = define.find("rotation[@name='%s']" % rotref )
