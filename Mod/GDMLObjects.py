@@ -82,6 +82,90 @@ class GDMLCone :
           fp.Shape = cone1
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
+class GDMLEllipsoid :
+   def __init__(self, obj, ax, by, cz, zcut1, zcut2, lunit, material) :
+      '''Add some custom properties to our Elliptical Tube feature'''
+      obj.addProperty("App::PropertyDistance","ax","GDMLEllipsoid", \
+                       "x semi axis1").ax=ax
+      obj.addProperty("App::PropertyDistance","by","GDMLEllipsoid", \
+                       "y semi axis1").by=by
+      obj.addProperty("App::PropertyDistance","cz","GDMLEllipsoid", \
+                       "z semi axis1").cz=cz
+      obj.addProperty("App::PropertyDistance","zcut1","GDMLEllipsoid", \
+                       "z semi axis1").zcut1=zcut1
+      obj.addProperty("App::PropertyDistance","zcut2","GDMLEllipsoid", \
+                       "z semi axis1").zcut2=zcut2
+      obj.addProperty("App::PropertyString","lunit","GDMLEllipsoid","lunit"). \
+                        lunit=lunit
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLEllipsoid", \
+                      "Shape of the Ellipsoid")
+      obj.addProperty("App::PropertyStringList","material","GDMLEllipsoid", \
+                       "Material").material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLEllipsoid", \
+                      "Shape of the Ellipsoid")
+      self.Type = 'GDMLEllipsoid'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+       ellipsoid = Part.makeSphere(100)
+       mat = FreeCAD.Matrix()
+       mat.unity()
+       mat.A11 = fp.ax / 100
+       mat.A22 = fp.by / 100
+       mat.A33 = fp.cz / 100
+       mat.A44 = 100
+       #print mat
+       newellipsoid = ellipsoid.transformGeometry(mat) 
+       fp.Shape = newellipsoid
+       FreeCAD.Console.PrintMessage("Recompute GDML Ellipsoid Object \n")
+
+class GDMLElTube :
+   def __init__(self, obj, dx, dy, dz, lunit, material) :
+      '''Add some custom properties to our Elliptical Tube feature'''
+      obj.addProperty("App::PropertyDistance","dx","GDMLElTube", \
+                       "x semi axis1").dx=dx
+      obj.addProperty("App::PropertyDistance","dy","GDMLElTube", \
+                       "y semi axis1").dy=dy
+      obj.addProperty("App::PropertyDistance","dz","GDMLElTube", \
+                       "z semi axis1").dz=dz
+      obj.addProperty("App::PropertyString","lunit","GDMLElTube","lunit"). \
+                        lunit=lunit
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLElTube", \
+                      "Shape of the Cone")
+      obj.addProperty("App::PropertyStringList","material","GDMLElTube", \
+                       "Material").material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLElTube", \
+                      "Shape of the ElTube")
+      self.Type = 'GDMLElTube'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+       tube = Part.makeCylinder(100,100)
+       mat = FreeCAD.Matrix()
+       mat.unity()
+       mat.A11 = fp.dx / 100
+       mat.A22 = fp.dy / 100
+       mat.A33 = fp.dz / 100
+       mat.A44 = 100
+       #print mat
+       newtube = tube.transformGeometry(mat) 
+       fp.Shape = newtube
+       FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
+
 class GDMLSphere :
    def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
                 deltatheta, aunit, lunit, material):

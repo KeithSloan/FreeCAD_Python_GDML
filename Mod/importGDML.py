@@ -212,12 +212,50 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
              startphi,deltaphi,aunit,lunit,material)
     print "CreateCone : "
     print "Position : "+str(px)+','+str(py)+','+str(pz)
-    base = FreeCAD.Vector(px,py,pz)
     base = FreeCAD.Vector(px,py,pz-z/2)
     mycone.Placement = processPlacement(base,rot)
     print mycone.Placement.Rotation
     if wireFrame : mycone.ViewObject.DisplayMode = 'Wireframe'
     ViewProvider(mycone.ViewObject)
+
+def createEllipsoid(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLEllipsoid, ViewProvider
+    print "CreateElTube : "
+    print solid.attrib
+    ax = getVal(solid,'ax')
+    by = getVal(solid,'by')
+    cz = getVal(solid,'cz')
+    lunit = getText(solid,'lunit',"mm")
+    myelli=doc.addObject("Part::FeaturePython","GDMLEllipsoid")
+    # cuts 0 for now
+    GDMLEllipsoid(myelli,ax, by, cz,0,0,lunit,material)
+    print "CreateEllipsoid : "
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    #base = FreeCAD.Vector(px,py,pz-z/2)
+    myelli.Placement = processPlacement(base,rot)
+    print myelli.Placement.Rotation
+    if wireFrame : myelli.ViewObject.DisplayMode = 'Wireframe'
+    ViewProvider(myelli.ViewObject)
+
+def createEltube(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLElTube, ViewProvider
+    print "CreateElTube : "
+    print solid.attrib
+    dx = getVal(solid,'dx')
+    dy = getVal(solid,'dy')
+    dz = getVal(solid,'dz')
+    lunit = getText(solid,'lunit',"mm")
+    myeltube=doc.addObject("Part::FeaturePython","GDMLElTube")
+    GDMLElTube(myeltube,dx, dy, dz,lunit,material)
+    print "CreateElTube : "
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    #base = FreeCAD.Vector(px,py,pz-z/2)
+    myeltube.Placement = processPlacement(base,rot)
+    print myeltube.Placement.Rotation
+    if wireFrame : myeltube.ViewObject.DisplayMode = 'Wireframe'
+    ViewProvider(myeltube.ViewObject)
 
 def createSphere(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLSphere, ViewProvider
@@ -324,6 +362,14 @@ def createSolid(solid,material,px,py,pz,rot,wireFrame) :
 
         if case('cone'):
            return(createCone(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('ellipsoid'):
+           return(createEllipsoid(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('eltube'):
+           return(createEltube(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('sphere'):
@@ -525,8 +571,8 @@ def processMaterials() :
         GDMLmaterial(materialObj,name)
         formula = material.get('formula')
         if formula != None :
-           materialObj.addProperty("App::PropertyString",'forumla', \
-                      name).forumla = forumla
+           materialObj.addProperty("App::PropertyString",'formula', \
+                      name).formula = formula
         D = material.find('D')
         if D != None :
            Dvalue = float(D.get('value'))
@@ -605,6 +651,7 @@ def processGDML(filename):
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
     if printverbose: print ('ImportGDML Version 0.1')
     
+    global pathName
     pathName = os.path.dirname(os.path.normpath(filename))
     FilesEntity = False
 
