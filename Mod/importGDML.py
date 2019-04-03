@@ -219,6 +219,25 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     ViewProvider(mycone.ViewObject)
     return(mycone)
 
+def createElcone(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLElCone, ViewProvider
+    print "CreateElCone : "
+    dx = getVal(solid,'dx')
+    dy = getVal(solid,'dy')
+    zmax = getVal(solid,'zmax')
+    zcut = getVal(solid,'zcut')
+    lunit = getText(solid,'lunit',"mm")
+    myelcone=doc.addObject("Part::FeaturePython","GDMLElCone")
+    GDMLElCone(myelcone,dx,dy,zmax,zcut,lunit,material)
+    print "CreateElCone : "
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz-zmax/2)
+    myelcone.Placement = processPlacement(base,rot)
+    print myelcone.Placement.Rotation
+    if wireFrame : myelcone.ViewObject.DisplayMode = 'Wireframe'
+    ViewProvider(myelcone.ViewObject)
+    return(myelcone)
+
 def createEllipsoid(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLEllipsoid, ViewProvider
     print "CreateElTube : "
@@ -413,6 +432,10 @@ def createSolid(solid,material,px,py,pz,rot,wireFrame) :
 
         if case('cone'):
            return(createCone(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('elcone'):
+           return(createElcone(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('ellipsoid'):

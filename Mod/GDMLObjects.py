@@ -82,6 +82,59 @@ class GDMLCone :
           fp.Shape = cone1
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
+class GDMLElCone :
+   def __init__(self, obj, dx, dy, zmax, zcut, lunit, material) :
+      '''Add some custom properties to our ElCone feature'''
+      obj.addProperty("App::PropertyDistance","dx","GDMLElCone", \
+                      "x semi axis").dx = dx
+      obj.addProperty("App::PropertyDistance","dy","GDMLElCone", \
+                      "y semi axis").dy = dy
+      obj.addProperty("App::PropertyDistance","zmax","GDMLElCone", \
+                      "z length").zmax = zmax
+      obj.addProperty("App::PropertyDistance","zcut","GDMLElCone", \
+                      "z cut").zcut = zcut
+      obj.addProperty("App::PropertyString","lunit","GDMLElCone", \
+                      "lunit").lunit=lunit
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLElCone", \
+                      "Shape of the Cone")
+      obj.addProperty("App::PropertyStringList","material","GDMLElCone", \
+                       "Material").material=material
+      self.Type = 'GDMLElCone'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+
+       cone1 = Part.makeCone(100,0,100)
+       mat = FreeCAD.Matrix()
+       mat.unity()
+       # Semi axis values so need to double
+       dx = 2*fp.dx
+       dy = 2*fp.dy
+       zcut = fp.zcut
+       zmax = fp.zmax
+       mat.A11 = dx / 100
+       mat.A22 = dy / 100
+       mat.A33 = zmax / 100
+       mat.A44 = 1
+       cone2 = cone1.transformGeometry(mat)
+       if zcut != None :
+          box = Part.makeBox(dx,dy,zcut)
+          pl = FreeCAD.Placement()
+          # Only need to move to semi axis
+          pl.move(FreeCAD.Vector(-fp.dx,-fp.dy,zmax-zcut))
+          box.Placement = pl
+          fp.Shape = cone2.cut(box)
+       else :
+          fp.Shape = cone2
+       FreeCAD.Console.PrintMessage("Recompute GDML ElCone Object \n")
+
 class GDMLEllipsoid :
    def __init__(self, obj, ax, by, cz, zcut1, zcut2, lunit, material) :
       '''Add some custom properties to our Elliptical Tube feature'''
@@ -124,7 +177,7 @@ class GDMLEllipsoid :
        mat.A11 = ax / 100
        mat.A22 = by / 100
        mat.A33 = cz / 100
-       mat.A44 = 100
+       mat.A44 = 1
        zcut1 = abs(fp.zcut1)
        zcut2 = abs(fp.zcut2)
        print "zcut2 : "+str(zcut2)
@@ -182,7 +235,7 @@ class GDMLElTube :
        mat.A11 = fp.dx / 100
        mat.A22 = fp.dy / 100
        mat.A33 = fp.dz / 50
-       mat.A44 = 100
+       mat.A44 = 1
        #print mat
        newtube = tube.transformGeometry(mat)
        fp.Shape = newtube
