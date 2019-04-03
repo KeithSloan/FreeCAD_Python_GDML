@@ -27,8 +27,7 @@ Assumes you already have FreeCAD and git installed
 ## Workbench
 
 Adds support for :-
-    GDMLBox, GDMLCone, GDMLElCone, GDMLEllipsoid, GDMLElTube
-    GDMLSphere, GDMLTrap, GDMLTrd, GDMLTube
+    GDMLBox, GDMLCone, GDMLElCone, GDMLEllipsoid, GDMLElTube, GDMLSphere, GDMLTrap, GDMLTrd, GDMLTube
 
 ## Exporter
 
