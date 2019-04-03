@@ -226,10 +226,12 @@ def createEllipsoid(solid,material,px,py,pz,rot,wireFrame) :
     ax = getVal(solid,'ax')
     by = getVal(solid,'by')
     cz = getVal(solid,'cz')
+    zcut1 = getVal(solid,'zcut1')
+    zcut2 = getVal(solid,'zcut2')
     lunit = getText(solid,'lunit',"mm")
     myelli=doc.addObject("Part::FeaturePython","GDMLEllipsoid")
     # cuts 0 for now
-    GDMLEllipsoid(myelli,ax, by, cz,0,0,lunit,material)
+    GDMLEllipsoid(myelli,ax, by, cz,zcut1,zcut2,lunit,material)
     print "CreateEllipsoid : "
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)

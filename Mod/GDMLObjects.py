@@ -114,16 +114,38 @@ class GDMLEllipsoid :
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
-       ellipsoid = Part.makeSphere(100)
+       sphere = Part.makeSphere(100)
+       ax = fp.ax
+       by = fp.by
+       cz = fp.cz
        mat = FreeCAD.Matrix()
        mat.unity()
-       mat.A11 = fp.ax / 100
-       mat.A22 = fp.by / 100
-       mat.A33 = fp.cz / 100
+       # Semi axis values so need to double
+       mat.A11 = ax / 100
+       mat.A22 = by / 100
+       mat.A33 = cz / 100
        mat.A44 = 100
-       #print mat
-       newellipsoid = ellipsoid.transformGeometry(mat) 
-       fp.Shape = newellipsoid
+       zcut1 = abs(fp.zcut1)
+       zcut2 = abs(fp.zcut2)
+       print "zcut2 : "+str(zcut2)
+       t1ellipsoid = sphere.transformGeometry(mat) 
+       if zcut2 != None :   # Remove from upper z
+          box1 = Part.makeBox(2*ax,2*by,zcut2)
+          pl = FreeCAD.Placement()
+          # Only need to move to semi axis
+          pl.move(FreeCAD.Vector(-ax,-by,cz-zcut2))
+          box1.Placement = pl
+          t2ellipsoid = t1ellipsoid.cut(box1)
+       else :
+          t2ellipsoid = t1ellipsoid 
+       if zcut1 != None :   # Remove from lower z, seems to be a negative number
+          box2 = Part.makeBox(2*ax,2*by,zcut1)
+          pl = FreeCAD.Placement()
+          pl.move(FreeCAD.Vector(-ax,-by,-cz))
+          box2.Placement = pl
+          fp.Shape = t2ellipsoid.cut(box2)
+       else :  
+          fp.Shape = t2ellipsoid
        FreeCAD.Console.PrintMessage("Recompute GDML Ellipsoid Object \n")
 
 class GDMLElTube :
@@ -159,10 +181,10 @@ class GDMLElTube :
        mat.unity()
        mat.A11 = fp.dx / 100
        mat.A22 = fp.dy / 100
-       mat.A33 = fp.dz / 100
+       mat.A33 = fp.dz / 50
        mat.A44 = 100
        #print mat
-       newtube = tube.transformGeometry(mat) 
+       newtube = tube.transformGeometry(mat)
        fp.Shape = newtube
        FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
 
