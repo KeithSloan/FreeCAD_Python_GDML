@@ -349,6 +349,72 @@ class GDMLTrap :
        fp.Shape = solid
        FreeCAD.Console.PrintMessage("Recompute GDML Trap Object \n")
 
+class GDMLTrd :
+   def __init__(self, obj, z, x1, x2,  y1, y2, lunit, material) :
+      '''Add some custom properties to our Tube feature'''
+      obj.addProperty("App::PropertyLength","z","GDMLTrd`","z").z=z
+      obj.addProperty("App::PropertyLength","x1","GDMLTrd", \
+                      "Length x at y= -y1 face -z").x1=x1
+      obj.addProperty("App::PropertyLength","x2","GDMLTrd", \
+                      "Length x at y= +y1 face -z").x2=x2
+      obj.addProperty("App::PropertyLength","y1","GDMLTrd", \
+                      "Length y at face -z").y1=y1
+      obj.addProperty("App::PropertyLength","y2","GDMLTrd", \
+                      "Length y at face +z").y2=y2
+      obj.addProperty("App::PropertyString","lunit","GDMLTrd","lunit"). \
+                       lunit=lunit
+      obj.addProperty("App::PropertyString","material","GDMLTrd","Material"). \
+                       material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLTrd", \
+                      "Shape of the Trap")
+      obj.Proxy = self
+      self.Type = 'GDMLTrd'
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+   
+   def make_face4(self,v1,v2,v3,v4):
+       # helper mehod to create the faces
+       wire = Part.makePolygon([v1,v2,v3,v4,v1])
+       face = Part.Face(wire)
+       return face
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+       import math
+       print "x2  : "+str(fp.x2)
+
+       x1 = fp.x1/2
+       x2 = fp.x2/2
+       y1 = fp.y1/2
+       y2 = fp.y2/2
+       z  = fp.z
+       v1 = FreeCAD.Vector(-x1, -y1, -z)
+       v2 = FreeCAD.Vector(-x1, +y1, -z)
+       v3 = FreeCAD.Vector(x1,  +y1, -z)
+       v4 = FreeCAD.Vector(x1,  -y1, -z)
+
+       v5 = FreeCAD.Vector(-x2, -y2,  z)
+       v6 = FreeCAD.Vector(-x2, +y2,  z)
+       v7 = FreeCAD.Vector(x2,  +y2,  z)
+       v8 = FreeCAD.Vector(x2,  -y2,  z)
+       # Make the wires/faces
+       f1 = self.make_face4(v1,v2,v3,v4)
+       f2 = self.make_face4(v1,v2,v6,v5)
+       f3 = self.make_face4(v2,v3,v7,v6)
+       f4 = self.make_face4(v3,v4,v8,v7)
+       f5 = self.make_face4(v1,v4,v8,v5)
+       f6 = self.make_face4(v5,v6,v7,v8)
+       shell=Part.makeShell([f1,f2,f3,f4,f5,f6])
+       solid=Part.makeSolid(shell)
+
+       #solid = Part.makePolygon([v1,v2,v3,v4,v5,v6,v7,v1])
+
+       fp.Shape = solid
+       FreeCAD.Console.PrintMessage("Recompute GDML Trd Object \n")
 
 class GDMLTube :
    def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \

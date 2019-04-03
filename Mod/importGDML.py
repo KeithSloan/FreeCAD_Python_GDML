@@ -310,6 +310,52 @@ def createTrap(solid,material,px,py,pz,rot,wireFrame) :
     if wireFrame : mytrap.ViewObject.DisplayMode = 'Wireframe'
     return mytrap
 
+def createTrd(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLTrd, ViewProvider
+    print "CreateTrd : "
+    print solid.attrib
+    z  = getVal(solid,'z')
+    x1 = getVal(solid,'x1')
+    x2 = getVal(solid,'x2')
+    y1 = getVal(solid,'y1')
+    y2 = getVal(solid,'y2')
+    lunit = getText(solid,'lunit',"mm")
+    #print z
+    mytrd=doc.addObject("Part::FeaturePython","GDMLTrd")
+    GDMLTrd(mytrd,z,x1,x2,y1,y2,lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mytrd.Placement = processPlacement(base,rot)
+    print mytrd.Placement.Rotation
+    ViewProvider(mytrd.ViewObject)
+    if wireFrame : mytrd.ViewObject.DisplayMode = 'Wireframe'
+    return mytrd
+
+def createTube(solid,material,px,py,pz,rot,wireFrame) :
+    from GDMLObjects import GDMLTube, ViewProvider
+    print "CreateTube : "
+    print solid.attrib
+    rmin = getVal(solid,'rmin')
+    rmax = getVal(solid,'rmax')
+    z = getVal(solid,'z')
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    print rmin
+    print rmax
+    print z
+    mytube=doc.addObject("Part::FeaturePython","GDMLTube")
+    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mytube.Placement = processPlacement(base,rot)
+    print mytube.Placement.Rotation
+    ViewProvider(mytube.ViewObject)
+    if wireFrame : mytube.ViewObject.DisplayMode = 'Wireframe'
+    return mytube
+
+
 def createTube(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLTube, ViewProvider
     print "CreateTube : "
@@ -387,6 +433,10 @@ def createSolid(solid,material,px,py,pz,rot,wireFrame) :
 
         if case('trap_dimensions'):
            return(createTrap(solid,material,px,py,pz,rot,wireFrame)) 
+           break
+
+        if case('trd'):
+           return(createTrd(solid,material,px,py,pz,rot,wireFrame)) 
            break
 
         if case('tube'):
