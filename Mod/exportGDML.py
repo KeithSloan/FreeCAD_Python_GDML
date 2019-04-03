@@ -595,23 +595,6 @@ def processBoxObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, boxName, delta)
     return(boxName)
 
-def processGDMLBoxObject(obj, addVolsFlag) :
-    # Needs unique Name
-    boxName = 'Box' + obj.Name
-    ET.SubElement(solids, 'box',{'name': boxName, \
-                           'x': str(obj.x.Value),  \
-                           'y': str(obj.y.Value),  \
-                           'z': str(obj.z.Value),  \
-                           'lunit' : 'mm'})
-    if addVolsFlag :
-       # Adjustment for position in GDML
-       delta = FreeCAD.Vector(obj.x.Value / 2, \
-                           obj.y.Value / 2,  \
-                           obj.z.Value / 2)
-
-       createAdjustedLVandPV(obj, obj.Name, boxName, delta)
-    return(boxName)
-
 def processCylinderObject(obj, addVolsFlag) :
     # Needs unique Name
     cylName = 'Cyl-' + obj.Name
@@ -643,6 +626,35 @@ def processConeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, coneName, delta)
     return(coneName)
 
+def processSphereObject(obj, addVolsFlag) :
+    # Needs unique Name
+    sphereName = 'Sphere' + obj.Name
+    ET.SubElement(solids, 'sphere',{'name': sphereName, \
+                           'rmax': str(obj.Radius.Value), \
+                           'starttheta': str(90.-float(obj.Angle2)), \
+                           'deltatheta': str(float(obj.Angle2-obj.Angle1)), \
+                           'deltaphi': str(float(obj.Angle3)), \
+                           'aunit': 'deg',
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       createLVandPV(obj,obj.Name,sphereName)
+    return(sphereName)
+
+def processGDMLBoxObject(obj, addVolsFlag) :
+    # Needs unique Name
+    boxName = 'Box' + obj.Name
+    ET.SubElement(solids, 'box',{'name': boxName, \
+                           'x': str(obj.x.Value),  \
+                           'y': str(obj.y.Value),  \
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(obj.x.Value / 2, \
+                           obj.y.Value / 2,  \
+                           obj.z.Value / 2)
+    return (boxName)
+
 def processGDMLConeObject(obj, addVolsFlag) :
     # Needs unique Name
     coneName = 'Cone' + obj.Name
@@ -662,19 +674,36 @@ def processGDMLConeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, coneName, delta)
     return(coneName)
 
-def processSphereObject(obj, addVolsFlag) :
+def processGDMLEllipsoidObject(obj, addVolsFlag) :
     # Needs unique Name
-    sphereName = 'Sphere' + obj.Name
-    ET.SubElement(solids, 'sphere',{'name': sphereName, \
-                           'rmax': str(obj.Radius.Value), \
-                           'starttheta': str(90.-float(obj.Angle2)), \
-                           'deltatheta': str(float(obj.Angle2-obj.Angle1)), \
-                           'deltaphi': str(float(obj.Angle3)), \
-                           'aunit': 'deg',
+    ellipsoidName = 'Ellipsoid' + obj.Name
+    ET.SubElement(solids, 'ellipsoid',{'name': ellipsoidName, \
+                           'ax': str(obj.ax.Value),  \
+                           'by': str(obj.by.Value),  \
+                           'cz': str(obj.cz.Value),  \
+                           'zcut1': str(obj.zcut1.Value),  \
+                           'zcut2': str(obj.zcut2.Value),  \
                            'lunit' : 'mm'})
     if addVolsFlag :
-       createLVandPV(obj,obj.Name,sphereName)
-    return(sphereName)
+       # Adjustment for position in GDML
+       #delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       delta = FreeCAD.Vector(0, 0, 0)
+       createAdjustedLVandPV(obj, obj.Name, ellipsoidName, delta)
+    return(ellipsoidName)
+
+def processGDMLElTubeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    eltubeName = 'Cone' + obj.Name
+    ET.SubElement(solids, 'eltube',{'name': eltubeName, \
+                           'dx': str(obj.dx.Value),  \
+                           'dy': str(obj.dy.Value),  \
+                           'dz': str(obj.dz.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.dz.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, eltubeName, delta)
+    return(eltubeName)
 
 def processGDMLSphereObject(obj, addVolsFlag) :
     # Needs unique Name
@@ -821,6 +850,16 @@ def processObject(obj, addVolsFlag) :
              if case("GDMLBox") :
                 print("GDMLBox") 
                 return(processGDMLBoxObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLEllipsoid") :
+                print("GDMLEllipsoid") 
+                return(processGDMLEllipsoidObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLElTube") :
+                print("GDMLElTube") 
+                return(processGDMLElTubeObject(obj, addVolsFlag))
                 break
 
              if case("GDMLCone") :

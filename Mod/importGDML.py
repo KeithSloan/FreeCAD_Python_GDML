@@ -217,6 +217,7 @@ def createCone(solid,material,px,py,pz,rot,wireFrame) :
     print mycone.Placement.Rotation
     if wireFrame : mycone.ViewObject.DisplayMode = 'Wireframe'
     ViewProvider(mycone.ViewObject)
+    return(mycone)
 
 def createEllipsoid(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLEllipsoid, ViewProvider
@@ -237,6 +238,7 @@ def createEllipsoid(solid,material,px,py,pz,rot,wireFrame) :
     print myelli.Placement.Rotation
     if wireFrame : myelli.ViewObject.DisplayMode = 'Wireframe'
     ViewProvider(myelli.ViewObject)
+    return myelli
 
 def createEltube(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLElTube, ViewProvider
@@ -256,6 +258,7 @@ def createEltube(solid,material,px,py,pz,rot,wireFrame) :
     print myeltube.Placement.Rotation
     if wireFrame : myeltube.ViewObject.DisplayMode = 'Wireframe'
     ViewProvider(myeltube.ViewObject)
+    return myeltube
 
 def createSphere(solid,material,px,py,pz,rot,wireFrame) :
     from GDMLObjects import GDMLSphere, ViewProvider

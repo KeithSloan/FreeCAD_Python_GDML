@@ -15,6 +15,7 @@ Assumes you already have FreeCAD and git installed
 2) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 
 3) cd FreeCAD_Python_GDML
+<<<<<<< HEAD
 
 4) Clone workbench branch from repository **git checkout -b workbench origin/workbench**
 
@@ -27,6 +28,28 @@ Assumes you already have FreeCAD and git installed
 ## Workbench
 
 Adds support for GDMLBox, GDMLCone, GDMLCylinder, GDMLSphere, GDMLTube
+
+=======
+
+4) Clone workbench branch from repository **git checkout -b workbench origin/workbench**
+
+5) Check paths in softLinks script
+
+6) make sure softLink script is executable - chmod +x softLinks
+
+7) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
+
+## Workbench
+
+Adds support for 
+
+GDMLBox
+GDMLCone
+GDMLElTube
+GDMLEllipsoid
+GDMLSphere
+GDMLTrap
+GDMLTube
 
 ## Exporter
 
@@ -47,7 +70,6 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
 
   * Workbench Dialog for initial GDML Object values(?)
   * Handle different Positioning between GDML & FreeCAD
-  * Sort out handling of degrees radians
   * Add support for quantity
   * Add further GDML Objects
   * Design icons for workbench

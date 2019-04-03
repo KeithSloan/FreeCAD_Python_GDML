@@ -86,15 +86,15 @@ class GDMLEllipsoid :
    def __init__(self, obj, ax, by, cz, zcut1, zcut2, lunit, material) :
       '''Add some custom properties to our Elliptical Tube feature'''
       obj.addProperty("App::PropertyDistance","ax","GDMLEllipsoid", \
-                       "x semi axis1").ax=ax
+                       "x semi axis").ax=ax
       obj.addProperty("App::PropertyDistance","by","GDMLEllipsoid", \
-                       "y semi axis1").by=by
+                       "y semi axis").by=by
       obj.addProperty("App::PropertyDistance","cz","GDMLEllipsoid", \
-                       "z semi axis1").cz=cz
+                       "z semi axis").cz=cz
       obj.addProperty("App::PropertyDistance","zcut1","GDMLEllipsoid", \
-                       "z semi axis1").zcut1=zcut1
+                       "z axis cut1").zcut1=zcut1
       obj.addProperty("App::PropertyDistance","zcut2","GDMLEllipsoid", \
-                       "z semi axis1").zcut2=zcut2
+                       "z axis1 cut2").zcut2=zcut2
       obj.addProperty("App::PropertyString","lunit","GDMLEllipsoid","lunit"). \
                         lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLEllipsoid", \

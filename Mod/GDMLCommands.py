@@ -9,6 +9,35 @@ This Script includes the GUI Commands of the GDML module
 import FreeCAD,FreeCADGui
 from PySide import QtCore, QtGui
 
+class BoxFeature:
+    def IsActive(self):
+        return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
+
+    def Activated(self):
+        from GDMLObjects import GDMLBox, ViewProvider
+        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLBox")
+        print("GDMLBox Object - added")
+        # obj, x, y, z, lunits, material
+        GDMLBox(a,10.0,10.0,10.0,"mm","SSteel")
+        print("GDMLBox initiated")
+        ViewProvider(a.ViewObject)
+        print("GDMLBox ViewProvided - added")
+        FreeCAD.ActiveDocument.recompute()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
+
+    def IsActive(self):
+        if FreeCAD.ActiveDocument == None:
+           return False
+        else:
+           return True
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDMLBoxFeature', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLBoxFeature',\
+                'Box Object'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLBoxFeature',\
+                'Box Object')}
+
 class ConeFeature:
     def IsActive(self):
         return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
@@ -38,19 +67,20 @@ class ConeFeature:
                 QtCore.QT_TRANSLATE_NOOP('GDMLConeFeature',\
                 'Cone Object')}
 
-class BoxFeature:
+class EllispoidFeature:
     def IsActive(self):
         return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
 
     def Activated(self):
-        from GDMLObjects import GDMLBox, ViewProvider
-        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLBox")
-        print("GDMLBox Object - added")
-        # obj, x, y, z, lunits, material
-        GDMLBox(a,10.0,10.0,10.0,"mm","SSteel")
-        print("GDMLBox initiated")
+        from GDMLObjects import GDMLEllipsoid, ViewProvider
+        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython", \
+                  "GDMLEllipsoid")
+        print("GDMLEllipsoid Object - added")
+        #  obj,ax, by, cz, zcut1, zcut2, lunit,material
+        GDMLEllipsoid(a,10,20,30,0,0,"mm","SSteal")
+        print("GDMLEllipsoid initiated")
         ViewProvider(a.ViewObject)
-        print("GDMLBox ViewProvided - added")
+        print("GDMLEllipsoid ViewProvided - added")
         FreeCAD.ActiveDocument.recompute()
         FreeCADGui.SendMsgToActiveView("ViewFit")
 
@@ -61,11 +91,41 @@ class BoxFeature:
            return True
 
     def GetResources(self):
-        return {'Pixmap'  : 'GDMLBoxFeature', 'MenuText': \
-                QtCore.QT_TRANSLATE_NOOP('GDMLBoxFeature',\
-                'Box Object'), 'ToolTip': \
-                QtCore.QT_TRANSLATE_NOOP('GDMLBoxFeature',\
-                'Box Object')}
+        return {'Pixmap'  : 'GDMLEllipsoidFeature', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLEllipsoidFeature',\
+                'Ellipsoid Object'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLEllipsoidFeature',\
+                'Ellipsoid Object')}
+
+class ElliTubeFeature:
+    def IsActive(self):
+        return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
+
+    def Activated(self):
+        from GDMLObjects import GDMLElTube, ViewProvider
+        a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython", \
+                  "GDMLElTube")
+        print("GDMLElTube Object - added")
+        #  obj,dx, dy, dz, lunit, material
+        GDMLElTube(a,10,20,30,"mm","SSteal")
+        print("GDMLElTube initiated")
+        ViewProvider(a.ViewObject)
+        print("GDMLElTube ViewProvided - added")
+        FreeCAD.ActiveDocument.recompute()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
+
+    def IsActive(self):
+        if FreeCAD.ActiveDocument == None:
+           return False
+        else:
+           return True
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDMLElTubeFeature', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLElTubeFeature',\
+                'ElTube Object'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDMLElTubeFeature',\
+                'ElTube Object')}
 
 class SphereFeature:
     def IsActive(self):
@@ -159,6 +219,8 @@ class TubeFeature:
 
 
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
+FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())
+FreeCADGui.addCommand('ElTubeCommand',ElliTubeFeature())
 FreeCADGui.addCommand('ConeCommand',ConeFeature())
 FreeCADGui.addCommand('SphereCommand',SphereFeature())
 FreeCADGui.addCommand('TrapCommand',TrapFeature())
