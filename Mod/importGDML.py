@@ -490,7 +490,8 @@ def getVolSolid(name):
     solid = solids.find("*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(physVol,solid,material):
+#def parsePhysVol(group,physVol,solid,material):
+def parsePhysVol(group,physVol) :
     print "ParsePhyVol"
 
     posref = getRef(physVol,"positionref")
@@ -513,23 +514,25 @@ def parsePhysVol(physVol,solid,material):
 
     volref = getRef(physVol,"volumeref")
     print "Volume ref : "+volref
-    parseVolume(volref,px,py,pz,rot,False)
+    parseVolume(group,volref,px,py,pz,rot,False)
 
 # ParseVolume name - structure is global
 # We get passed position and rotation
-def parseVolume(name,px,py,pz,rot,wireFrame) :
+def parseVolume(parent,name,px,py,pz,rot,wireFrame) :
     print "ParseVolume : "+name
+    volgrp = parent.newObject("App::DocumentObjectGroupPython",name) 
     vol = structure.find("volume[@name='%s']" % name )
-    solidref = getRef(vol,"solidref")
-    solid  = solids.find("*[@name='%s']" % solidref )
-    print solid.tag
+    #solidref = getRef(vol,"solidref")
+    #solid  = solids.find("*[@name='%s']" % solidref )
+    #print solid.tag
     # Material is the materialref value
-    material = getRef(vol,"materialref")
-    createSolid(solid,material,px,py,pz,rot,wireFrame)
+    #material = getRef(vol,"materialref")
+    #createSolid(solid,material,px,py,pz,rot,wireFrame)
     # Volume may or maynot contain physvol's
     for pv in vol.findall('physvol') : 
         # create solids at pos & rot in physvols
-        parsePhysVol(pv,solid,material)
+        #parsePhysVol(volGrp,pv,solid,material)
+        parsePhysVol(volgrp,pv)
 
 def processConstants():
     print "Process Constants"
@@ -760,8 +763,10 @@ def processGDML(filename):
 
     constDict = processConstants()
     print setup.attrib
+
+    volumeGrp = doc.addObject("App::DocumentObjectGroupPython","Volumes")
     world = getRef(setup,"world")
-    parseVolume(world,0,0,0,None,True)
+    parseVolume(volumeGrp,world,0,0,0,None,True)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")

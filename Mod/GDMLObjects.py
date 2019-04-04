@@ -571,6 +571,11 @@ class GDMLFiles :
       self.execute(fp)
       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
+class GDMLvolume :
+   def __init__(self,obj) :
+      obj.Proxy = self
+      self.Object = obj
+
 class GDMLmaterial :
    def __init__(self,obj,name) :
       # Add most properties later 

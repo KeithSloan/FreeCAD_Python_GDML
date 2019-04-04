@@ -217,11 +217,31 @@ class TubeFeature:
                 QtCore.QT_TRANSLATE_NOOP('GDMLTubeFeature',\
                 'Tube Object')}
 
+class ImportFeature :
+    #def IsActive(self):
+    # return FreeCADGui.Selection.countObjectsOfType('Part::Feature') > 0
+    
+    def Activated(self) :
 
+        def importVol(obj) :
+            print obj.Label
+
+        for obj in FreeCADGui.Selection.getSelection() :
+            #if len(obj.InList) == 0: # allowed only for for top level objects
+            importVol(obj)
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDML_Import_Volume', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_ImportVolume',\
+                'Import Volume'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_ImportVolume',\
+                'Import Volume')}       
+    
+FreeCADGui.addCommand('ImportCommand',ImportFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
+FreeCADGui.addCommand('ConeCommand',ConeFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())
 FreeCADGui.addCommand('ElTubeCommand',ElliTubeFeature())
-FreeCADGui.addCommand('ConeCommand',ConeFeature())
 FreeCADGui.addCommand('SphereCommand',SphereFeature())
 FreeCADGui.addCommand('TrapCommand',TrapFeature())
 FreeCADGui.addCommand('TubeCommand',TubeFeature())
