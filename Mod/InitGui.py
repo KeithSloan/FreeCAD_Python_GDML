@@ -52,8 +52,7 @@ class GDML_Workbench ( Workbench ):
                          'TrapCommand','TubeCommand']
 
         import PartGui
-        parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common',\
-            'Part_Extrude',"Part_Revolve"]
+        parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common']
 
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbench','GDMLTools'),toolbarcommands)
         self.appendMenu('GDML',commands)
