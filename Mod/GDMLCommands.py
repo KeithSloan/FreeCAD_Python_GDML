@@ -225,6 +225,8 @@ class ImportFeature :
 
         def importVol(obj) :
             print obj.Label
+            from GDMLImportVol import parseVolume, structure
+            parseVolume(obj.Label,0,0,0,None,False)
 
         for obj in FreeCADGui.Selection.getSelection() :
             #if len(obj.InList) == 0: # allowed only for for top level objects
