@@ -165,12 +165,15 @@ def processPlacement(base,rot) :
 
 # Return a FreeCAD placement for positionref & rotateref
 def getPlacementFromRefs(ptr) :
-    pos = define.find("[@name='%s']" % getRef(ptr,'positionref'))
-    rot = define.find("[@name='%s']" % getRef(ptr,'rotationref'))
+    print "getPlacementFromRef"
+    pos = define.find("position[@name='%s']" % getRef(ptr,'positionref'))
+    print pos
+    rot = define.find("rotation[@name='%s']" % getRef(ptr,'rotationref'))
     base = FreeCAD.Vector(0.0,0.0,0.0)
     if pos != None :    
        print pos.attrib
        x = getVal(pos,'x')
+       print x
        y = getVal(pos,'y')
        z = getVal(pos,'z')
        base = FreeCAD.Vector(x,y,z)
@@ -425,10 +428,13 @@ def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
        mybool = volObj.newObject(objType,solid.tag)
        mybool.Base = createSolid(volObj,base,material,0,0,0,None,displayMode)
        #mybool.Base = createSolid(base,px,py,pz,rot)
+       # second solid is placed at position and rotation relative to first
        mybool.Tool = createSolid(volObj,tool,material,0,0,0,None,displayMode)
-       #print "Position : "+str(px)+','+str(py)+','+str(pz)
-       mybool.Placement= getPlacementFromRefs(solid) 
-       #print mybool.Placement.Rotation
+       mybool.Tool.Placement= getPlacementFromRefs(solid) 
+       # Okay deal with position of boolean
+       print "Position : "+str(px)+','+str(py)+','+str(pz)
+       base = FreeCAD.Vector(px,py,pz)
+       mybool.Placement = processPlacement(base,rot)
        #ViewProvider(mybool.ViewObject)
        return mybool
 

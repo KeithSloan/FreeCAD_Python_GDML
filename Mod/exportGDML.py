@@ -760,10 +760,17 @@ def processGDMLTubeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
     return(tubeName)
 
-def addPositionAndRotation(element,obj):
+# Need to add position of object2 relative to object1
+# Need to add rotation ??? !!!!
+def addBooleanPositionAndRotation(element,obj1,obj2):
+    print "addBooleanPosition"
+    print "Position obj1"
+    print obj1.Placement.Base
+    print "Position obj2"
+    print obj2.Placement.Base
     global defineCnt
     positionName = 'Pos'+str(defineCnt)
-    pos = obj.Placement.Base
+    pos = obj2.Placement.Base - obj1.Placement.Base
     # Need to add rotation ??? !!!!
     ET.SubElement(define, 'position', {'name': positionName, \
             'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]), \
@@ -789,7 +796,9 @@ def processObject(obj, addVolsFlag) :
          subtract = ET.SubElement(solids,'subtraction',{'name': cutName })
          ET.SubElement(subtract,'first', {'ref': ref1})
          ET.SubElement(subtract,'second',{'ref': ref2})
-         addPositionAndRotation(subtract,obj)
+         addBooleanPositionAndRotation(subtract,obj.Base,obj.Tool)
+         if addVolsFlag :
+            createLVandPV(obj, obj.Name, cutName)
          return cutName
          break
 
@@ -801,7 +810,10 @@ def processObject(obj, addVolsFlag) :
          union = ET.SubElement(solids,'union',{'name': unionName })
          ET.SubElement(union,'first', {'ref': ref1})
          ET.SubElement(union,'second',{'ref': ref2})
-         addPositionAndRotation(union,obj)
+         addBooleanPositionAndRotation(union,obj.Base,obj.Tool)
+         #addPositionAndRotation(union,obj)
+         if addVolsFlag :
+            createLVandPV(obj, obj.Name, unionName)
          return unionName
          break
 
@@ -813,7 +825,10 @@ def processObject(obj, addVolsFlag) :
          intersect = ET.SubElement(solids,'intersection',{'name': intersectName })
          ET.SubElement(intersect,'first', {'ref': ref1})
          ET.SubElement(intersect,'second',{'ref': ref2})
-         addPositionAndRotation(intersect,obj)
+         addBooleanPositionAndRotation(intersect,obj.Base,obj.Tool)
+         #addPositionAndRotation(intersect,obj)
+         if addVolsFlag :
+            createLVandPV(obj, obj.Name, intersectName)
          return intersectName
          break
 
@@ -826,9 +841,11 @@ def processObject(obj, addVolsFlag) :
             node = ET.SubElement(multUnion,'multiUnionNode', \
                {'MF-Node' : 'Node-'+solidName})
             ET.SubElement(node,'solid', {'ref': solidName})
-            addPositionAndRotation(node,subobj)
-         solids.append(multUnion)   
-         createLVandPV(obj,obj.Name,multName)
+            addBooleanPositionAndRotation(node,subobj.Base,subobj.Tool)
+            #addPositionAndRotation(node,subobj)
+         solids.append(multUnion) 
+         if addVolsFlag :
+            createLVandPV(obj,obj.Name,multName)
          return multName
          break
 
