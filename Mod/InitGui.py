@@ -44,11 +44,11 @@ class GDML_Workbench ( Workbench ):
             return text
         
         import GDMLCommands
-        commands=['BoxCommand','ConeCommand','ElTubeCommand', \
+        commands=['ToggleCommand','BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
                   'TrapCommand','TubeCommand']
-        toolbarcommands=['BoxCommand','ConeCommand','ElTubeCommand', \
-                         'EllipsoidCommand','SphereCommand', \
+        toolbarcommands=['ToggleCommand','BoxCommand','ConeCommand', \
+                         'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
                          'TrapCommand','TubeCommand']
 
         import PartGui
