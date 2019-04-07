@@ -222,8 +222,8 @@ class ToggleFeature :
     def Activated(self) :
         
         def toggle(obj) :
-            #print obj.Label
-            #print dir(obj)
+            print obj.Label
+            print dir(obj)
             # Is this a group i.e. Volumes
             if hasattr(obj,'Group') :
                for s in obj.Group :

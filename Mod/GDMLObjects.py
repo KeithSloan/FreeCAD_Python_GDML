@@ -241,6 +241,57 @@ class GDMLElTube :
        fp.Shape = newtube
        FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
 
+class GDMLzplane :
+   def __init__(self, obj, rmin, rmax, z):
+      obj.addProperty("App::PropertyLength","rmin","zplane", \
+              "Inside Radius").rmin=rmin
+      obj.addProperty("App::PropertyLength","rmax","zplane", \
+              "Outside Radius").rmax=rmax
+      obj.addProperty("App::PropertyLength","z","zplane","z").z=z
+      self.Type = 'zplane'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
+      
+
+class GDMLPolycone :
+   def __init__(self, obj, startphi, deltaphi, aunit, lunit, material) :
+      '''Add some custom properties to our Polycone feature'''
+      
+      obj.addExtension('App::OriginGroupExtensionPython', self)
+
+      obj.addProperty("App::PropertyFloat","startphi","GDMLPolycone", \
+              "Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyFloat","deltaphi","GDMLPolycone", \
+             "Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolycone","aunit")
+      obj.aunit=["rad", "deg"]
+      obj.aunit=0
+      obj.addProperty("App::PropertyString","lunit","GDMLPolycone", \
+                      "lunit").lunit=lunit
+      obj.addProperty("App::PropertyString","material","GDMLPolycone", \
+                       "Material").material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolycone", \
+                      "Shape of the Polycone")
+      self.Type = 'GDMLPolycone'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if not hasattr(fp,'onchange') or not fp.onchange : return
+       self.execute(fp)
+       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       FreeCAD.Console.PrintMessage("Recompute GDMLPolycone Object \n")
+
 class GDMLSphere :
    def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
                 deltatheta, aunit, lunit, material):

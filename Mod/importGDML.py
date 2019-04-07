@@ -293,6 +293,34 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     ViewProvider(myeltube.ViewObject)
     return myeltube
 
+def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
+    from GDMLObjects import GDMLPolycone, GDMLzplane,ViewProvider
+    print "Create Polycone : "
+    print solid.attrib
+    startphi = getVal(solid,'startphi')
+    deltaphi = getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    mypolycone=volObj.newObject("Part::FeaturePython","GDMLPolycone")
+    GDMLPolycone(mypolycone,startphi,deltaphi,aunit,lunit,material)
+    print solid.findall('zplane')
+    for zplane in solid.findall('zplane') : 
+        print zplane
+        rmin = getVal(zplane,'rmin')
+        rmax = getVal(zplane,'rmax')
+        z = getVal(zplane,'z')
+        myzplane=mypolycone.newObject('App::DocumentObjectGroupPython','zplane') 
+        #myzplane=mypolycone.addObject(zplane) 
+        GDMLzplane(myzplane,rmin,rmax,z)
+
+    print "Position : "+str(px)+','+str(py)+','+str(pz)
+    base = FreeCAD.Vector(px,py,pz)
+    mypolycone.Placement = processPlacement(base,rot)
+    print mypolycone.Placement.Rotation
+    ViewProvider(mypolycone.ViewObject)
+    setDisplayMode(mypolycone,displayMode)
+    return mypolycone
+
 def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLSphere, ViewProvider
     print "CreateSphere : "
@@ -308,7 +336,7 @@ def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
                lunit,material)
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
-    mysphere.Placement = processPlacement(base,rot)
+    mysphere.Placement = prcessPlacement(base,rot)
     print mysphere.Placement.Rotation
     ViewProvider(mysphere.ViewObject)
     setDisplayMode(mysphere,displayMode)
@@ -459,6 +487,10 @@ def createSolid(volObj,solid,material,px,py,pz,rot,displayMode) :
 
         if case('eltube'):
            return(createEltube(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           break
+
+        if case('polycone'):
+           return(createPolycone(volObj,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('sphere'):
