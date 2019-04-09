@@ -258,7 +258,7 @@ class GDMLzplane :
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
-       FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
+       FreeCAD.Console.PrintMessage("Recompute GDML zplane Object \n")
       
 
 class GDMLPolycone :
@@ -281,6 +281,7 @@ class GDMLPolycone :
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolycone", \
                       "Shape of the Polycone")
       self.Type = 'GDMLPolycone'
+      self.Object = obj
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
@@ -290,6 +291,26 @@ class GDMLPolycone :
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
+       startphi = getAngle(fp.aunit,fp.startphi)
+       deltaphi = getAngle(fp.aunit,fp.deltaphi)
+       print "Start phi : "+str(startphi)
+       print "Delta phi : "+str(deltaphi) 
+       zplanes = self.Object.OutList
+       cones = []
+       for i in range(0,len(zplanes)-1) :
+           coneInner = Part.makeCone(zplanes[i].rmin,zplanes[i+1].rmin, \
+                 zplanes[i+1].z - zplanes[i].z)
+           coneOuter = Part.makeCone(zplanes[i].rmax,zplanes[i+1].rmax, \
+                 zplanes[i+1].z - zplanes[i].z)
+           cones.append(coneOuter.cut(coneInner))
+
+       cone = cones[0]
+       print "Number of cones : "+str(len(cones))
+       if len(cones) > 1 :
+          for merge in cones[1:] :
+              cone = cone.fuse(merge)
+
+       fp.Shape = cone    
        FreeCAD.Console.PrintMessage("Recompute GDMLPolycone Object \n")
 
 class GDMLSphere :
@@ -663,6 +684,32 @@ class GDMLisotope :
       obj.Proxy = self
       self.Object = obj
 
+class ViewProviderExtension :
+   def __init__(self, obj):
+	obj.addExtension("Gui::ViewProviderGeoFeatureGroupExtensionPython", self)
+	obj.Proxy = self
+
+   def getDisplayModes(self,obj):
+       '''Return a list of display modes.'''
+       modes=[]
+       modes.append("Shaded")
+       modes.append("Wireframe")
+       return modes
+
+   def updateData(self, fp, prop):
+       '''If a property of the handled feature has changed we have the chance to handle this here'''
+       # fp is the handled feature, prop is the name of the property that has changed
+       #l = fp.getPropertyByName("Length")
+       #w = fp.getPropertyByName("Width")
+       #h = fp.getPropertyByName("Height")
+       #self.scale.scaleFactor.setValue(float(l),float(w),float(h))
+       pass
+
+   def getDefaultDisplayMode(self):
+       '''Return the name of the default display mode. It must be defined in getDisplayModes.'''
+       return "Shaded"
+ 
+
 # use general ViewProvider if poss
 class ViewProvider:
    def __init__(self, obj):
@@ -741,7 +788,6 @@ class ViewProvider:
        '''When restoring the serialized object from document we have the chance to set some internals here.\
                Since no data were serialized nothing needs to be done here.'''
        return None
-
 
 #
 #   Need to add variables to these functions or delete?

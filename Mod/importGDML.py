@@ -29,7 +29,8 @@ __url__ = ["https://github.com/KeithSloan/FreeCAD_GDML"]
 
 printverbose = False
 
-import FreeCAD, os, sys, re, math
+import FreeCAD 
+import os, sys, re, math
 import Part, PartGui
 
 from HTMLParser import HTMLParser
@@ -294,7 +295,8 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     return myeltube
 
 def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
-    from GDMLObjects import GDMLPolycone, GDMLzplane,ViewProvider
+    from GDMLObjects import GDMLPolycone, GDMLzplane, \
+            ViewProvider, ViewProviderExtension
     print "Create Polycone : "
     print solid.attrib
     startphi = getVal(solid,'startphi')
@@ -302,22 +304,24 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
     mypolycone=volObj.newObject("Part::FeaturePython","GDMLPolycone")
+    mypolycone.addExtension("App::OriginGroupExtensionPython", None)
     GDMLPolycone(mypolycone,startphi,deltaphi,aunit,lunit,material)
+    ViewProviderExtension(mypolycone.ViewObject)
     print solid.findall('zplane')
     for zplane in solid.findall('zplane') : 
         print zplane
         rmin = getVal(zplane,'rmin')
         rmax = getVal(zplane,'rmax')
         z = getVal(zplane,'z')
-        myzplane=mypolycone.newObject('App::DocumentObjectGroupPython','zplane') 
-        #myzplane=mypolycone.addObject(zplane) 
+        myzplane=FreeCAD.ActiveDocument.addObject('App::FeaturePython','zplane') 
+        mypolycone.addObject(myzplane)
+        #myzplane=mypolycone.newObject('App::FeaturePython','zplane') 
         GDMLzplane(myzplane,rmin,rmax,z)
 
     print "Position : "+str(px)+','+str(py)+','+str(pz)
     base = FreeCAD.Vector(px,py,pz)
     mypolycone.Placement = processPlacement(base,rot)
     print mypolycone.Placement.Rotation
-    ViewProvider(mypolycone.ViewObject)
     setDisplayMode(mypolycone,displayMode)
     return mypolycone
 
