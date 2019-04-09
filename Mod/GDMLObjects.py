@@ -182,7 +182,7 @@ class GDMLEllipsoid :
        zcut2 = abs(fp.zcut2)
        print ("zcut2 : "+str(zcut2))
        t1ellipsoid = sphere.transformGeometry(mat) 
-       if zcut2 != None :   # Remove from upper z
+       if zcut2 != None and zcut2 > 0 :   # Remove from upper z
           box1 = Part.makeBox(2*ax,2*by,zcut2)
           pl = FreeCAD.Placement()
           # Only need to move to semi axis
@@ -191,7 +191,8 @@ class GDMLEllipsoid :
           t2ellipsoid = t1ellipsoid.cut(box1)
        else :
           t2ellipsoid = t1ellipsoid 
-       if zcut1 != None :   # Remove from lower z, seems to be a negative number
+       if zcut1 != None and zcut1 > 0 :
+          # Remove from lower z, seems to be a negative number
           box2 = Part.makeBox(2*ax,2*by,zcut1)
           pl = FreeCAD.Placement()
           pl.move(FreeCAD.Vector(-ax,-by,-cz))
@@ -621,7 +622,7 @@ class GDMLFiles :
    def __init__(self,obj,FilesEntity,sectionDict) :
       '''Add some custom properties to our Cone feature'''
       print ("GDML Files")
-      print FilesEntity
+      print (FilesEntity)
       obj.addProperty("App::PropertyBool","active","GDMLFiles", \
                     "split option").active=FilesEntity
       obj.addProperty("App::PropertyString","define","GDMLFiles", \
@@ -686,8 +687,8 @@ class GDMLisotope :
 
 class ViewProviderExtension :
    def __init__(self, obj):
-	obj.addExtension("Gui::ViewProviderGeoFeatureGroupExtensionPython", self)
-	obj.Proxy = self
+       obj.addExtension("Gui::ViewProviderGeoFeatureGroupExtensionPython", self)
+       obj.Proxy = self
 
    def getDisplayModes(self,obj):
        '''Return a list of display modes.'''

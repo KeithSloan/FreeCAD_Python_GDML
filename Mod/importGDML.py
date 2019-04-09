@@ -152,13 +152,13 @@ def processPlacement(base,rot) :
         print ("Rotation : ")
         print (rot.attrib)
         if 'y' in rot.attrib :
-	    axis = FreeCAD.Vector(0,1,0) 
+            axis = FreeCAD.Vector(0,1,0) 
             angle = float(rot.attrib['y'])
         if 'x' in rot.attrib :
        	    axis = FreeCAD.Vector(1,0,0) 
             angle = float(rot.attrib['x'])
         if 'z' in rot.attrib :
-	    axis = FreeCAD.Vector(0,0,1) 
+            axis = FreeCAD.Vector(0,0,1) 
             angle = float(rot.attrib['z'])
     print (angle) 
     place = FreeCAD.Placement(base,axis,angle)
