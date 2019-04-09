@@ -12,7 +12,7 @@ def getAngle(aunit,angle) :
 class GDMLBox :
    def __init__(self, obj, x, y, z, lunit, material):
       '''Add some custom properties to our Box feature'''
-      print "GDMLBox init"
+      print ("GDMLBox init")
       obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
       obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
@@ -180,7 +180,7 @@ class GDMLEllipsoid :
        mat.A44 = 1
        zcut1 = abs(fp.zcut1)
        zcut2 = abs(fp.zcut2)
-       print "zcut2 : "+str(zcut2)
+       print ("zcut2 : "+str(zcut2))
        t1ellipsoid = sphere.transformGeometry(mat) 
        if zcut2 != None :   # Remove from upper z
           box1 = Part.makeBox(2*ax,2*by,zcut2)
@@ -293,8 +293,8 @@ class GDMLPolycone :
    def execute(self, fp):
        startphi = getAngle(fp.aunit,fp.startphi)
        deltaphi = getAngle(fp.aunit,fp.deltaphi)
-       print "Start phi : "+str(startphi)
-       print "Delta phi : "+str(deltaphi) 
+       print ("Start phi : "+str(startphi))
+       print ("Delta phi : "+str(deltaphi)) 
        zplanes = self.Object.OutList
        cones = []
        for i in range(0,len(zplanes)-1) :
@@ -305,7 +305,7 @@ class GDMLPolycone :
            cones.append(coneOuter.cut(coneInner))
 
        cone = cones[0]
-       print "Number of cones : "+str(len(cones))
+       print ("Number of cones : "+str(len(cones)))
        if len(cones) > 1 :
           for merge in cones[1:] :
               cone = cone.fuse(merge)
@@ -317,7 +317,7 @@ class GDMLSphere :
    def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
                 deltatheta, aunit, lunit, material):
       '''Add some custom properties to our Sphere feature'''
-      print "GDMLSphere init"
+      print ("GDMLSphere init")
       obj.addProperty("App::PropertyLength","rmin","GDMLSphere", \
               "Inside Radius").rmin=rmin
       obj.addProperty("App::PropertyLength","rmax","GDMLSphere", \
@@ -420,18 +420,18 @@ class GDMLTrap :
        phi   = getAngle(fp.aunit,fp.phi)
        dx = fp.y1*math.sin(alpha)
        dy = fp.y1*(1.0 - math.cos(alpha))
-       print "Delta adjustments"
-       print "dx : "+str(dx)+" dy : "+str(dy)
+       print ("Delta adjustments")
+       print ("dx : "+str(dx)+" dy : "+str(dy))
        y1m = dy - fp.y1
        y1p = dy + fp.y1
        x1m = dx - fp.x1
        x1p = dx + fp.x1
        z    = fp.z
-       print "y1m : "+str(y1m)
-       print "y1p : "+str(y1p)
-       print "z   : "+str(z)
-       print "x1  : "+str(fp.x1)
-       print "x2  : "+str(fp.x2)
+       print ("y1m : "+str(y1m))
+       print ("y1p : "+str(y1p))
+       print ("z   : "+str(z))
+       print ("x1  : "+str(fp.x1))
+       print ("x2  : "+str(fp.x2))
 
        v1    = FreeCAD.Vector(x1m, y1m, -z)
        v2    = FreeCAD.Vector(x1p, y1m, -z)
@@ -442,17 +442,17 @@ class GDMLTrap :
        dr = z*math.tan(theta)
        tx = dr*math.cos(phi)
        ty = dr*math.cos(phi)
-       print "Coord of top surface centre"
-       print "x : "+str(tx)+" y : "+str(ty)
+       print ("Coord of top surface centre")
+       print ("x : "+str(tx)+" y : "+str(ty))
        py2 = ty + fp.y2
        my2 = ty - fp.y2
        px3 = tx + fp.x3
        mx3 = tx - fp.x3
        px4 = tx + fp.x4
        mx4 = tx - fp.x4
-       print "px3 : "+str(px3)
-       print "py2 : "+str(py2)
-       print "my2 : "+str(my2)
+       print ("px3 : "+str(px3))
+       print ("py2 : "+str(py2))
+       print ("my2 : "+str(my2))
 
        v5 = FreeCAD.Vector(mx3, my2, z)
        v6 = FreeCAD.Vector(px3, my2, z)
@@ -510,7 +510,7 @@ class GDMLTrd :
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
        import math
-       print "x2  : "+str(fp.x2)
+       print ("x2  : "+str(fp.x2))
 
        x1 = fp.x1/2
        x2 = fp.x2/2
@@ -620,7 +620,7 @@ class GDMLTube :
 class GDMLFiles :
    def __init__(self,obj,FilesEntity,sectionDict) :
       '''Add some custom properties to our Cone feature'''
-      print "GDML Files"
+      print ("GDML Files")
       print FilesEntity
       obj.addProperty("App::PropertyBool","active","GDMLFiles", \
                     "split option").active=FilesEntity

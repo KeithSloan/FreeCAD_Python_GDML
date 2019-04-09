@@ -335,7 +335,7 @@ def createLVandPV(obj, name, solidName):
     pos  = obj.Placement.Base
     angles = obj.Placement.Rotation.toEuler()
     print ("Angles")
-    print angles
+    print (angles)
     lvol = ET.SubElement(structure,'volume', {'name':pvName})
     ET.SubElement(lvol, 'materialref', {'ref': 'SSteel0x56070ee87d10'})
     ET.SubElement(lvol, 'solidref', {'ref': solidName})
@@ -375,8 +375,8 @@ def reportObject(obj) :
       if case("Part::FeaturePython") : 
          print("Part::FeaturePython")
          if hasattr(obj.Proxy,'Type'):
-            print obj.Proxy.Type
-            print obj.Name
+            print (obj.Proxy.Type)
+            print (obj.Name)
          else :
             print("Not a GDML Feature")
             
@@ -440,7 +440,7 @@ def reportObject(obj) :
       break
 
 def processPlanar(obj, shape, name ) :
-    print 'Polyhedron ????'
+    print ('Polyhedron ????')
     global defineCnt
     #
     print("Add tessellated Solid")
@@ -488,14 +488,14 @@ def mesh2Tessellate(mesh, name) :
      global defineCnt
 
      baseVrt = defineCnt
-     print "mesh"
-     print mesh
-     print dir(mesh)
-     print "Facets"
-     print mesh.Facets
-     print "mesh topology"
-     print dir(mesh.Topology)
-     print mesh.Topology
+     print ("mesh")
+     print (mesh)
+     print (dir(mesh))
+     print ("Facets")
+     print (mesh.Facets)
+     print ("mesh topology")
+     print (dir(mesh.Topology))
+     print (mesh.Topology)
 #
 #    mesh.Topology[0] = points
 #    mesh.Topology[1] = faces
@@ -547,7 +547,7 @@ def processObjectShape(obj) :
     print(obj)
     print(obj.PropertiesList)
     shape = obj.Shape
-    print shape
+    print (shape)
     print(shape.ShapeType)
     while switch(shape.ShapeType) : 
 
@@ -763,11 +763,11 @@ def processGDMLTubeObject(obj, addVolsFlag) :
 # Need to add position of object2 relative to object1
 # Need to add rotation ??? !!!!
 def addBooleanPositionAndRotation(element,obj1,obj2):
-    print "addBooleanPosition"
-    print "Position obj1"
-    print obj1.Placement.Base
-    print "Position obj2"
-    print obj2.Placement.Base
+    print ("addBooleanPosition")
+    print ("Position obj1")
+    print (obj1.Placement.Base)
+    print ("Position obj2")
+    print (obj2.Placement.Base)
     global defineCnt
     positionName = 'Pos'+str(defineCnt)
     pos = obj2.Placement.Base - obj1.Placement.Base

@@ -99,8 +99,10 @@ and the following FreeCAD forum members
 * wmayer
 * Joel_graff
 * chrisb
+* DeepSOIC
+* ickby
 
 ## Feedback
 
-To contact the Author email keith[at]sloan-home.co.uk
+To contact the author email keith[at]sloan-home.co.uk
 

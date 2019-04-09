@@ -222,31 +222,34 @@ class ToggleFeature :
     def Activated(self) :
         
         def toggle(obj) :
-            print obj.Label
-            print dir(obj)
-            # Is this a group i.e. Volumes
-            if hasattr(obj,'Group') :
+            print ("Toggle : "+ obj.Label)
+            #print dir(obj)
+            #print obj.isDerivedFrom('App::DocumentObjectGroupPython')
+            # Is this a genuine group i.e. Volumes
+            # Not Parts with Groups i.e. GDMLPolycone
+            if obj.isDerivedFrom('App::DocumentObjectGroupPython') :
+               #print "Toggle Group" 
                for s in obj.Group :
                    #print s
                    toggle(s)
 
             # Cycle through display options
             elif hasattr(obj,'ViewObject') :
-               #print "toggle"
-               #print obj.ViewObject.DisplayMode
-               #print obj.ViewObject.Visibility
-               if obj.ViewObject.Visibility == False :
-                  obj.ViewObject.DisplayMode = 'Shaded'
-                  obj.ViewObject.Visibility = True
-               else :
-                  if obj.ViewObject.DisplayMode == 'Shaded' :
-                     obj.ViewObject.DisplayMode = 'Wireframe'
-                  else :
-                     obj.ViewObject.Visibility = False 
+                 #print "Toggle "+obj.Label
+                 #print obj.ViewObject.DisplayMode
+                 #print obj.ViewObject.Visibility
+                 if obj.ViewObject.Visibility == False :
+                    obj.ViewObject.DisplayMode = 'Shaded'
+                    obj.ViewObject.Visibility = True
+                 else :
+                    if obj.ViewObject.DisplayMode == 'Shaded' :
+                       obj.ViewObject.DisplayMode = 'Wireframe'
+                    else :
+                       obj.ViewObject.Visibility = False 
 
             # Is this a boolean Object
             if hasattr(obj,'Base') and hasattr(obj,'Tool') :
-               print "Boolean" 
+               print ("Boolean") 
                toggle(obj.Base)
                toggle(obj.Tool)
 
