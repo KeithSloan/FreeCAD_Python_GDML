@@ -10,7 +10,7 @@ To incorporate into FreeCAD linux.
 
 Assumes you already have FreeCAD and git installed
 
-1) Install lmxl - sudo apt-get install python-lxml
+1) Install lmxl - sudo apt-get install python3-lxml
 
 2) Clone repository **git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git**
 

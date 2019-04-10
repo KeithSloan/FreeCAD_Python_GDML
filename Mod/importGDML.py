@@ -30,10 +30,10 @@ __url__ = ["https://github.com/KeithSloan/FreeCAD_GDML"]
 printverbose = False
 
 import FreeCAD 
-import os, sys, re, math
+import os, io, sys, re, math
 import Part, PartGui
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 ##########################
 # Globals Dictionarys    #
@@ -679,17 +679,18 @@ class MyHTMLParser(HTMLParser):
 
 def preProcessHTML(filename) :
     # instantiate the parser and fed it some HTML
-    f = pythonopen(filename)
+    #f = pythonopen(filename)
+    #f = io.open(filename)
     global constDict, filesDict, sectionDict, currentString, currentTag
     constDict = {}
     filesDict = {}
     sectionDict = {}
-    currentString = f.read()
-    parser = MyHTMLParser()
-    parser.feed(currentString)
-    g = pythonopen("/tmp/dumpString","w")
-    g.write(currentString)
-    g.close
+    #currentString = f.read()
+    #parser = MyHTMLParser()
+    #parser.feed(currentString)
+    #g = io.open("/tmp/dumpString","w")
+    #g.write(currentString)
+    #g.close
 
 def getItem(element, attribute) :
     item = element.get(attribute)
@@ -797,8 +798,8 @@ def processGDML(filename):
 
     # PreProcessHTML file - sets currentString & filesDict
     preProcessHTML(filename)
-    print ("Files dictionary")
-    print (filesDict)
+    #print ("Files dictionary")
+    #print (filesDict)
    
     global setup, define, materials, solids, structure
   
@@ -806,10 +807,13 @@ def processGDML(filename):
     from GDMLObjects import GDMLFiles, ViewProvider
     myfiles = doc.addObject("App::FeaturePython","Export_Files")
     #myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
-    GDMLFiles(myfiles,FilesEntity,sectionDict)
+    #GDMLFiles(myfiles,FilesEntity,sectionDict)
 
     from lxml import etree
-    root = etree.fromstring(currentString)
+    #root = etree.fromstring(currentString)
+    parser = etree.XMLParser(resolve_entities=True)
+    root = etree.parse(filename, parser=parser)
+
     setup     = root.find('setup')
     define    = root.find('define')
     materials = root.find('materials')
