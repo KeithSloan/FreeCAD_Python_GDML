@@ -274,6 +274,14 @@ def defineMaterials():
                    'ref': "O0x56070eea0370"})
     ET.SubElement(sst,'fraction', {'n': '0.01', \
                      'ref': "Ar0x56070eea07c0"})
+
+    sst = ET.SubElement(materials, 'material', \
+            {'Z': '1' , 'name': 'G4_Galactic', 'state': 'gas'})
+    ET.SubElement(sst,'T', {'unit': "K", 'value': '2.73'})
+    ET.SubElement(sst,'P', {'unit': "pascal", 'value': '3e-18'})
+    ET.SubElement(sst,'D', {'unit': "g/cm3", 'value': '1e-25'})
+    ET.SubElement(sst,'atom', {'unit': "g/mole", 'value': '1.01'})
+
     #ET.ElementTree(gdml).write("test6", 'utf-8', True)
    
 def defineWorldBox(exportList,bbox):
@@ -301,7 +309,7 @@ def constructWorld():
     #ET.ElementTree(gdml).write("test9b", 'utf-8', True)
     # world volume needs to be added to structure after all other volumes
     worldVOL = ET.Element('volume', {'name': 'worldVOL'})
-    ET.SubElement(worldVOL, 'materialref',{'ref': 'G4_AIR0x56070ee81710'})
+    ET.SubElement(worldVOL, 'materialref',{'ref': 'G4_Galactic'})
     ET.SubElement(worldVOL, 'solidref',{'ref': 'WorldBox'})
     # WorldBox is set in defineWorldBox
     #ET.SubElement(solids, 'box',{'name': 'WorldBox','x': '1000','y': '1000','z': '1000','lunit' : 'mm'})
@@ -327,7 +335,7 @@ def createLVandPV(obj, name, solidName):
     pos  = obj.Placement.Base
     angles = obj.Placement.Rotation.toEuler()
     print ("Angles")
-    print angles
+    print (angles)
     lvol = ET.SubElement(structure,'volume', {'name':pvName})
     ET.SubElement(lvol, 'materialref', {'ref': 'SSteel0x56070ee87d10'})
     ET.SubElement(lvol, 'solidref', {'ref': solidName})
@@ -361,6 +369,24 @@ def reportObject(obj) :
     
     while switch(obj.TypeId) :
 
+      ###########################################
+      # FreeCAD GDML Parts                      #
+      ###########################################
+      if case("Part::FeaturePython") : 
+         print("Part::FeaturePython")
+         if hasattr(obj.Proxy,'Type'):
+            print (obj.Proxy.Type)
+            print (obj.Name)
+         else :
+            print("Not a GDML Feature")
+            
+         #print dir(obj)
+         #print dir(obj.Proxy)
+         #print("cylinder : Height "+str(obj.Height)+ " Radius "+str(obj.Radius))
+         break
+      ###########################################
+      # FreeCAD Parts                           #
+      ###########################################
       if case("Part::Sphere") :
          print("Sphere Radius : "+str(obj.Radius))
          break
@@ -414,7 +440,7 @@ def reportObject(obj) :
       break
 
 def processPlanar(obj, shape, name ) :
-    print 'Polyhedron ????'
+    print ('Polyhedron ????')
     global defineCnt
     #
     print("Add tessellated Solid")
@@ -462,14 +488,14 @@ def mesh2Tessellate(mesh, name) :
      global defineCnt
 
      baseVrt = defineCnt
-     print "mesh"
-     print mesh
-     print dir(mesh)
-     print "Facets"
-     print mesh.Facets
-     print "mesh topology"
-     print dir(mesh.Topology)
-     print mesh.Topology
+     print ("mesh")
+     print (mesh)
+     print (dir(mesh))
+     print ("Facets")
+     print (mesh.Facets)
+     print ("mesh topology")
+     print (dir(mesh.Topology))
+     print (mesh.Topology)
 #
 #    mesh.Topology[0] = points
 #    mesh.Topology[1] = faces
@@ -521,7 +547,7 @@ def processObjectShape(obj) :
     print(obj)
     print(obj.PropertiesList)
     shape = obj.Shape
-    print shape
+    print (shape)
     print(shape.ShapeType)
     while switch(shape.ShapeType) : 
 
@@ -614,10 +640,137 @@ def processSphereObject(obj, addVolsFlag) :
        createLVandPV(obj,obj.Name,sphereName)
     return(sphereName)
 
-def addPositionAndRotation(element,obj):
+def processGDMLBoxObject(obj, addVolsFlag) :
+    # Needs unique Name
+    boxName = 'Box' + obj.Name
+    ET.SubElement(solids, 'box',{'name': boxName, \
+                           'x': str(obj.x.Value),  \
+                           'y': str(obj.y.Value),  \
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(obj.x.Value / 2, \
+                           obj.y.Value / 2,  \
+                           obj.z.Value / 2)
+    return (boxName)
+
+def processGDMLConeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    coneName = 'Cone' + obj.Name
+    ET.SubElement(solids, 'cone',{'name': coneName, \
+                           'rmin1': str(obj.rmin1.Value),  \
+                           'rmin2': str(obj.rmin2.Value),  \
+                           'rmax1': str(obj.rmax1.Value),  \
+                           'rmax2': str(obj.rmax2.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, coneName, delta)
+    return(coneName)
+
+def processGDMLEllipsoidObject(obj, addVolsFlag) :
+    # Needs unique Name
+    ellipsoidName = 'Ellipsoid' + obj.Name
+    ET.SubElement(solids, 'ellipsoid',{'name': ellipsoidName, \
+                           'ax': str(obj.ax.Value),  \
+                           'by': str(obj.by.Value),  \
+                           'cz': str(obj.cz.Value),  \
+                           'zcut1': str(obj.zcut1.Value),  \
+                           'zcut2': str(obj.zcut2.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       #delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       delta = FreeCAD.Vector(0, 0, 0)
+       createAdjustedLVandPV(obj, obj.Name, ellipsoidName, delta)
+    return(ellipsoidName)
+
+def processGDMLElTubeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    eltubeName = 'Cone' + obj.Name
+    ET.SubElement(solids, 'eltube',{'name': eltubeName, \
+                           'dx': str(obj.dx.Value),  \
+                           'dy': str(obj.dy.Value),  \
+                           'dz': str(obj.dz.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.dz.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, eltubeName, delta)
+    return(eltubeName)
+
+def processGDMLSphereObject(obj, addVolsFlag) :
+    # Needs unique Name
+    sphereName = 'Sphere' + obj.Name
+    ET.SubElement(solids, 'sphere',{'name': sphereName, \
+                           'rmin': str(obj.rmin.Value),  \
+                           'rmax': str(obj.rmax.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       createLVandPV(obj,obj.Name,sphereName)
+    return(sphereName)
+
+def processGDMLTrapObject(obj, addVolsFlag) :
+    # Needs unique Name
+    trapName = 'Trap' + obj.Name
+    ET.SubElement(solids, 'trap',{'name': trapName, \
+                           'z': str(obj.z.Value),  \
+                           'theta': str(obj.theta),  \
+                           'phi': str(obj.phi), \
+                           'x1': str(obj.x1.Value),  \
+                           'x2': str(obj.x2.Value),  \
+                           'x3': str(obj.x3.Value),  \
+                           'x4': str(obj.x4.Value),  \
+                           'y1': str(obj.y1.Value),  \
+                           'y2': str(obj.y2.Value),  \
+                           'alpha1': str(obj.alpha), \
+                           'alpha2': str(obj.alpha), \
+                           'aunit': obj.aunit, \
+                           'lunit': obj.lunit})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, trapName, delta)
+    return(trapName)
+
+
+def processGDMLTubeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    tubeName = 'Tube' + obj.Name
+    ET.SubElement(solids, 'tube',{'name': tubeName, \
+                           'rmin': str(obj.rmin.Value),  \
+                           'rmax': str(obj.rmax.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
+    return(tubeName)
+
+# Need to add position of object2 relative to object1
+# Need to add rotation ??? !!!!
+def addBooleanPositionAndRotation(element,obj1,obj2):
+    print ("addBooleanPosition")
+    print ("Position obj1")
+    print (obj1.Placement.Base)
+    print ("Position obj2")
+    print (obj2.Placement.Base)
     global defineCnt
     positionName = 'Pos'+str(defineCnt)
-    pos = obj.Placement.Base
+    pos = obj2.Placement.Base - obj1.Placement.Base
     # Need to add rotation ??? !!!!
     ET.SubElement(define, 'position', {'name': positionName, \
             'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]), \
@@ -643,7 +796,9 @@ def processObject(obj, addVolsFlag) :
          subtract = ET.SubElement(solids,'subtraction',{'name': cutName })
          ET.SubElement(subtract,'first', {'ref': ref1})
          ET.SubElement(subtract,'second',{'ref': ref2})
-         addPositionAndRotation(subtract,obj)
+         addBooleanPositionAndRotation(subtract,obj.Base,obj.Tool)
+         if addVolsFlag :
+            createLVandPV(obj, obj.Name, cutName)
          return cutName
          break
 
@@ -655,7 +810,10 @@ def processObject(obj, addVolsFlag) :
          union = ET.SubElement(solids,'union',{'name': unionName })
          ET.SubElement(union,'first', {'ref': ref1})
          ET.SubElement(union,'second',{'ref': ref2})
-         addPositionAndRotation(union,obj)
+         addBooleanPositionAndRotation(union,obj.Base,obj.Tool)
+         #addPositionAndRotation(union,obj)
+         if addVolsFlag :
+            createLVandPV(obj, obj.Name, unionName)
          return unionName
          break
 
@@ -664,10 +822,13 @@ def processObject(obj, addVolsFlag) :
          intersectName = 'Intersect'+obj.Name
          ref1 = processObject(obj.Base,False)
          ref2 = processObject(obj.Tool,False)
-         intersect = ET.SubElement(solids,'intersect',{'name': intersectName })
+         intersect = ET.SubElement(solids,'intersection',{'name': intersectName })
          ET.SubElement(intersect,'first', {'ref': ref1})
          ET.SubElement(intersect,'second',{'ref': ref2})
-         addPositionAndRotation(intersect,obj)
+         addBooleanPositionAndRotation(intersect,obj.Base,obj.Tool)
+         #addPositionAndRotation(intersect,obj)
+         if addVolsFlag :
+            createLVandPV(obj, obj.Name, intersectName)
          return intersectName
          break
 
@@ -680,9 +841,11 @@ def processObject(obj, addVolsFlag) :
             node = ET.SubElement(multUnion,'multiUnionNode', \
                {'MF-Node' : 'Node-'+solidName})
             ET.SubElement(node,'solid', {'ref': solidName})
-            addPositionAndRotation(node,subobj)
-         solids.append(multUnion)   
-         createLVandPV(obj,obj.Name,multName)
+            addBooleanPositionAndRotation(node,subobj.Base,subobj.Tool)
+            #addPositionAndRotation(node,subobj)
+         solids.append(multUnion) 
+         if addVolsFlag :
+            createLVandPV(obj,obj.Name,multName)
          return multName
          break
 
@@ -696,6 +859,49 @@ def processObject(obj, addVolsFlag) :
          print("Mesh Feature") 
          return(processMesh(obj, obj.Mesh, obj.Name))
          break
+
+      if case("Part::FeaturePython"):
+          print("Python Feature")
+          if hasattr(obj.Proxy, 'Type') :
+             switch(obj.Proxy.Type)
+             if case("GDMLBox") :
+                print("GDMLBox") 
+                return(processGDMLBoxObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLEllipsoid") :
+                print("GDMLEllipsoid") 
+                return(processGDMLEllipsoidObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLElTube") :
+                print("GDMLElTube") 
+                return(processGDMLElTubeObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLCone") :
+                print("GDMLCone") 
+                return(processGDMLConeObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLSphere") :
+                print("GDMLSphere") 
+                return(processGDMLSphereObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLTrap") :
+                print("GDMLTrap") 
+                return(processGDMLTrapObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLTube") :
+                print("GDMLTube") 
+                return(processGDMLTubeObject(obj, addVolsFlag))
+                break
+          else :
+             print("Not a GDML Feature")
+          break  
+
       #
       #  Now deal with objects that map to GDML solids
       #
