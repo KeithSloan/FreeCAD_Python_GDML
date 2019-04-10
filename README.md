@@ -27,7 +27,7 @@ Assumes you already have FreeCAD and git installed
 
 6) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
 
-## Installation Window
+## Installation Windows
 
 1) Contents of Mod directory should be copied to a sub directory named
 GDML in the windows FreeCAD Mod directory
@@ -58,9 +58,12 @@ The cycle is Solid -> WireFrame -> Not Displayed -> Solid
 
 This directory contains some sample gdml files. 
 
-One in particular is lhcbvelo.gdml. This file takes a LONG time to import/open, but does eventually load. You might have to okay the odd wait.
+One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, but does eventually load. You might have to okay the odd wait.
 
-If when it is displayed you go down the Volumes tree  ...
+If when it is displayed you go down the Volumes tree to VelovVelo under Word then click on the toggle icon ( 1st GDML icon in the workbench)
+Again wait patiently and the display will change to wireframe. You can
+then decend further down the Volumes tree, select one and again use the toggle icon and that volume and children will change to Solid. In this
+way various parts in different volumes can be examind.
 
 ## Exporter
 
@@ -79,6 +82,7 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
  
 ## Future Development Road Map
 
+  * Icons for workbench designed
   * Workbench Dialog for initial GDML Object values(?)
   * Handle different Positioning between GDML & FreeCAD
   * Add support for quantity
