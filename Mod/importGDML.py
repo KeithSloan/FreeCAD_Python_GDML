@@ -1,28 +1,28 @@
 # -*- coding: utf8 -*-
-#***************************************************************************
-#*                                                                         *
-#*   Copyright (c) 2017 Keith Sloan <keith@sloan-home.co.uk>               *
-#*                                                                         *
-#*   This program is free software; you can redistribute it and/or modify  *
-#*   it under the terms of the GNU Lesser General Public License (LGPL)    *
-#*   as published by the Free Software Foundation; either version 2 of     *
-#*   the License, or (at your option) any later version.                   *
-#*   for detail see the LICENCE text file.                                 *
-#*                                                                         *
-#*   This program is distributed in the hope that it will be useful,       *
-#*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-#*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-#*   GNU Library General Public License for more details.                  *
-#*                                                                         *
-#*   You should have received a copy of the GNU Library General Public     *
-#*   License along with this program; if not, write to the Free Software   *
-#*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
-#*   USA                                                                   *
-#*                                                                         * 
-#*   Acknowledgements :                                                    *
-#*                                                                         *
-#*                                                                         *
-#***************************************************************************
+#**************************************************************************
+#*                                                                        *
+#*   Copyright (c) 2017 Keith Sloan <keith@sloan-home.co.uk>              *
+#*                                                                        *
+#*   This program is free software; you can redistribute it and/or modify *
+#*   it under the terms of the GNU Lesser General Public License (LGPL)   *
+#*   as published by the Free Software Foundation; either version 2 of    *
+#*   the License, or (at your option) any later version.                  *
+#*   for detail see the LICENCE text file.                                *
+#*                                                                        *
+#*   This program is distributed in the hope that it will be useful,      *
+#*   but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+#*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+#*   GNU Library General Public License for more details.                 *
+#*                                                                        *
+#*   You should have received a copy of the GNU Library General Public    *
+#*   License along with this program; if not, write to the Free Software  *
+#*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 *
+#*   USA                                                                  *
+#*                                                                        *
+#*   Acknowledgements :                                                   *
+#*                                                                        *
+#*                                                                        *
+#**************************************************************************
 __title__="FreeCAD - GDML importer"
 __author__ = "Keith Sloan <keith@sloan-home.co.uk>"
 __url__ = ["https://github.com/KeithSloan/FreeCAD_GDML"]
@@ -33,17 +33,11 @@ import FreeCAD
 import os, io, sys, re, math
 import Part, PartGui
 
-from html.parser import HTMLParser
-
 ##########################
 # Globals Dictionarys    #
 ##########################
-#constDict = {}
-#filesDict = {}
-#currentSection = None
-#currentString = ""
 #global setup, define, materials, solids, structure
-#globals constDict, filesDict, currentString
+#globals constDict, filesDict 
 
 if FreeCAD.GuiUp:
     import FreeCADGui
@@ -421,31 +415,6 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytube,displayMode)
     return mytube
 
-
-def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
-    from GDMLObjects import GDMLTube, ViewProvider
-    print ("CreateTube : ")
-    print (solid.attrib)
-    rmin = getVal(solid,'rmin')
-    rmax = getVal(solid,'rmax')
-    z = getVal(solid,'z')
-    startphi = getVal(solid,'startphi')
-    deltaphi = getVal(solid,'deltaphi')
-    aunit = getText(solid,'aunit','rad')
-    lunit = getText(solid,'lunit',"mm")
-    print (rmin)
-    print (rmax)
-    print (z)
-    mytube=volObj.newObject("Part::FeaturePython","GDMLTube")
-    GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
-    print ("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
-    mytube.Placement = processPlacement(base,rot)
-    print (mytube.Placement.Rotation)
-    ViewProvider(mytube.ViewObject)
-    setDisplayMode(mytube,displayMode)
-    return mytube
-
 def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import ViewProvider
     print (solid.tag)
@@ -592,6 +561,8 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
         parsePhysVol(volgrp,pv,solid,material,displayMode)
 
 def processConstants():
+    global constDict
+    constDict = {}
     print ("Process Constants")
     for cdefine in define.findall('constant') :
         #print cdefine.attrib
@@ -603,94 +574,6 @@ def processConstants():
     print ("Constant Dictionary")    
     print (constDict)
     return(constDict)
-
-# create a subclass and override the handler methods
-class MyHTMLParser(HTMLParser):
-
-    def handle_starttag(self, tag, attrs):
-        #print "Encountered a start tag:", tag
-        # Entity may not be in latest tag so handle outselves
-        global currentSection
-        if tag in ["define","materials","solids","structure"] :
-           currentSection = tag
-
-    def handle_decl(self, decl):    
-        # This gets called when the entity is declared
-        print ("Encountered a declaration ", decl)
-        words = decl.split()
-        wlen  = len(words)
-        print (words)
-        if words[3] == "<!ENTITY":
-           while switch(wlen):
-              if case(7):
-                 # const that refers to a file
-                 print (words[4])
-                 print (words[6])
-                 word = words[6].split('"')[1]
-                 filesDict[words[4]] = word
-                 break
-
-              if case(6) :
-                 # Constant definition - Add to dict 
-                 print (words[4])
-                 print (words[5])
-                 constDict[words[4]] = words[5]
-                 break
-
-              print ("Not yet handled : "+str(words[1]))
-              break
-
-        else :
-          print ("Not Handled - Not an Entity")
-    
-    def handle_entityref(self, name):
-        # This gets called when the entity is referenced
-        # starttag may not be a section
-        print ("Entity reference : "+ name)
-        #tag = self.get_starttag_text()
-        print ("Current Section  : "+ currentSection)
-        global FilesEntity
-        FilesEntity = True
-        sectionDict[currentSection] = filesDict[name]
-        print (self.getpos())
-        search = "&"+name
-        print ("Search : "+search)
-        print ("Include file ")
-        insertFile = os.path.join(pathName,str(filesDict[name]))
-        print (insertFile)
-        f = pythonopen(insertFile)
-        insertString = f.read()
-        lsearch = len(search)+1 # trailing ;
-        print (lsearch)
-        global currentString
-        l = currentString.find(search)
-        print ("Pos in string    : "+str(l))
-        newString = currentString[:l] + insertString + currentString[l+lsearch:]
-        currentString = newString
-
-#    def handle_endtag(self, tag):
-#        print "Encountered an end tag :", tag
-
-#    def handle_data(self, data):
-#        print "Encountered some data  :", data
-
-    def unknown_decl(data):
-        print ("Encountered unknown data  :", data)
-
-def preProcessHTML(filename) :
-    # instantiate the parser and fed it some HTML
-    #f = pythonopen(filename)
-    #f = io.open(filename)
-    global constDict, filesDict, sectionDict, currentString, currentTag
-    constDict = {}
-    filesDict = {}
-    sectionDict = {}
-    #currentString = f.read()
-    #parser = MyHTMLParser()
-    #parser.feed(currentString)
-    #g = io.open("/tmp/dumpString","w")
-    #g.write(currentString)
-    #g.close
 
 def getItem(element, attribute) :
     item = element.get(attribute)
@@ -796,16 +679,11 @@ def processGDML(filename):
     pathName = os.path.dirname(os.path.normpath(filename))
     FilesEntity = False
 
-    # PreProcessHTML file - sets currentString & filesDict
-    preProcessHTML(filename)
-    #print ("Files dictionary")
-    #print (filesDict)
-   
     global setup, define, materials, solids, structure
   
   # Add files object so user can change to organise files
-    from GDMLObjects import GDMLFiles, ViewProvider
-    myfiles = doc.addObject("App::FeaturePython","Export_Files")
+  #  from GDMLObjects import GDMLFiles, ViewProvider
+  #  myfiles = doc.addObject("App::FeaturePython","Export_Files")
     #myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
     #GDMLFiles(myfiles,FilesEntity,sectionDict)
 
