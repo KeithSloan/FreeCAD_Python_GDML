@@ -9,7 +9,23 @@ def getAngle(aunit,angle) :
    else :
       return angle
 
-class GDMLBox :
+
+class GDMLcommon :
+   def __init__(self, obj):
+       '''Init'''
+
+   def __getstate__(self):
+        '''When saving the document this object gets stored using Python's json module.\
+                Since we have some un-serializable parts here -- the Coin stuff -- we must define this method\
+                to return a tuple of all serializable objects or None.'''
+        return None
+ 
+   def __setstate__(self,state):
+        '''When restoring the serialized object from document we have the chance to set some internals here.\
+                Since no data were serialized nothing needs to be done here.'''
+        return None
+
+class GDMLBox(GDMLcommon) :
    def __init__(self, obj, x, y, z, lunit, material):
       '''Add some custom properties to our Box feature'''
       print ("GDMLBox init")
@@ -35,7 +51,7 @@ class GDMLBox :
        fp.Shape = box
        FreeCAD.Console.PrintMessage("Recompute GDML Box Object \n")
 
-class GDMLCone :
+class GDMLCone(GDMLcommon) :
    def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,aunit, \
                 lunit, material):
       '''Add some custom properties to our Cone feature'''
@@ -82,7 +98,7 @@ class GDMLCone :
           fp.Shape = cone1
        FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
 
-class GDMLElCone :
+class GDMLElCone(GDMLcommon) :
    def __init__(self, obj, dx, dy, zmax, zcut, lunit, material) :
       '''Add some custom properties to our ElCone feature'''
       obj.addProperty("App::PropertyDistance","dx","GDMLElCone", \
@@ -135,7 +151,7 @@ class GDMLElCone :
           fp.Shape = cone2
        FreeCAD.Console.PrintMessage("Recompute GDML ElCone Object \n")
 
-class GDMLEllipsoid :
+class GDMLEllipsoid(GDMLcommon) :
    def __init__(self, obj, ax, by, cz, zcut1, zcut2, lunit, material) :
       '''Add some custom properties to our Elliptical Tube feature'''
       obj.addProperty("App::PropertyDistance","ax","GDMLEllipsoid", \
@@ -202,7 +218,7 @@ class GDMLEllipsoid :
           fp.Shape = t2ellipsoid
        FreeCAD.Console.PrintMessage("Recompute GDML Ellipsoid Object \n")
 
-class GDMLElTube :
+class GDMLElTube(GDMLcommon) :
    def __init__(self, obj, dx, dy, dz, lunit, material) :
       '''Add some custom properties to our Elliptical Tube feature'''
       obj.addProperty("App::PropertyDistance","dx","GDMLElTube", \
@@ -242,7 +258,7 @@ class GDMLElTube :
        fp.Shape = newtube
        FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
 
-class GDMLzplane :
+class GDMLzplane(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z):
       obj.addProperty("App::PropertyLength","rmin","zplane", \
               "Inside Radius").rmin=rmin
@@ -262,12 +278,10 @@ class GDMLzplane :
        FreeCAD.Console.PrintMessage("Recompute GDML zplane Object \n")
       
 
-class GDMLPolycone :
+class GDMLPolycone(GDMLcommon) :
    def __init__(self, obj, startphi, deltaphi, aunit, lunit, material) :
       '''Add some custom properties to our Polycone feature'''
-      
       obj.addExtension('App::OriginGroupExtensionPython', self)
-
       obj.addProperty("App::PropertyFloat","startphi","GDMLPolycone", \
               "Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLPolycone", \
@@ -314,7 +328,7 @@ class GDMLPolycone :
        fp.Shape = cone    
        FreeCAD.Console.PrintMessage("Recompute GDMLPolycone Object \n")
 
-class GDMLSphere :
+class GDMLSphere(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
                 deltatheta, aunit, lunit, material):
       '''Add some custom properties to our Sphere feature'''
@@ -366,7 +380,7 @@ class GDMLSphere :
        fp.Shape = sphere2
        FreeCAD.Console.PrintMessage("Recompute GDML Sphere Object \n")
 
-class GDMLTrap :
+class GDMLTrap(GDMLcommon) :
    def __init__(self, obj, z, theta, phi, x1, x2, x3, x4, y1, y2, alpha, \
                 aunit, lunit, material):
       '''Add some custom properties to our Tube feature'''
@@ -475,7 +489,7 @@ class GDMLTrap :
        fp.Shape = solid
        FreeCAD.Console.PrintMessage("Recompute GDML Trap Object \n")
 
-class GDMLTrd :
+class GDMLTrd(GDMLcommon) :
    def __init__(self, obj, z, x1, x2,  y1, y2, lunit, material) :
       '''Add some custom properties to our Tube feature'''
       obj.addProperty("App::PropertyLength","z","GDMLTrd`","z").z=z
@@ -542,7 +556,7 @@ class GDMLTrd :
        fp.Shape = solid
        FreeCAD.Console.PrintMessage("Recompute GDML Trd Object \n")
 
-class GDMLTube :
+class GDMLTube(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \
                 lunit, material):
       '''Add some custom properties to our Tube feature'''
@@ -618,7 +632,7 @@ class GDMLTube :
        self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
-class GDMLFiles :
+class GDMLFiles(GDMLcommon) :
    def __init__(self,obj,FilesEntity,sectionDict) :
       '''Add some custom properties to our Cone feature'''
       print ("GDML Files")
@@ -649,32 +663,32 @@ class GDMLvolume :
       obj.Proxy = self
       self.Object = obj
 
-class GDMLmaterial :
+class GDMLmaterial(GDMLcommon) :
    def __init__(self,obj,name) :
       # Add most properties later 
       obj.addProperty("App::PropertyString","name",name).name = name
       obj.Proxy = self
       self.Object = obj
 
-class GDMLfraction :
+class GDMLfraction(GDMLcommon) :
    def __init__(self,obj,ref,n) :
       obj.addProperty("App::PropertyFloat",'n',ref).n = n 
       obj.Proxy = self
       self.Object = obj
 
-class GDMLcomposite :
+class GDMLcomposite(GDMLcommon) :
    def __init__(self,obj,ref,n) :
       obj.addProperty("App::PropertyInteger",'n',ref).n = n 
       obj.Proxy = self
       self.Object = obj
 
-class GDMLelement :
+class GDMLelement(GDMLcommon) :
    def __init__(self,obj,name) :
       obj.addProperty("App::PropertyString","name",name).name = name 
       obj.Proxy = self
       self.Object = obj
 
-class GDMLisotope :
+class GDMLisotope(GDMLcommon) :
    #def __init__(self,obj,name,N,Z,unit,value) :
    def __init__(self,obj,name,N,Z,value) :
       obj.addProperty("App::PropertyString","name",name).name = name 
@@ -685,7 +699,7 @@ class GDMLisotope :
       obj.Proxy = self
       self.Object = obj
 
-class ViewProviderExtension :
+class ViewProviderExtension(GDMLcommon) :
    def __init__(self, obj):
        obj.addExtension("Gui::ViewProviderGeoFeatureGroupExtensionPython", self)
        obj.Proxy = self
@@ -712,7 +726,7 @@ class ViewProviderExtension :
  
 
 # use general ViewProvider if poss
-class ViewProvider:
+class ViewProvider(GDMLcommon):
    def __init__(self, obj):
        '''Set this object to the proxy object of the actual view provider'''
        obj.Proxy = self
