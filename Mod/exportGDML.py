@@ -1,26 +1,26 @@
 #***************************************************************************
-#*                                                                         *
-#*   Copyright (c) 2019 Keith Sloan <keith@sloan-home.co.uk>               *
-#*                                                                         *
-#*   This program is free software; you can redistribute it and/or modify  *
-#*   it under the terms of the GNU Lesser General Public License (LGPL)    *
-#*   as published by the Free Software Foundation; either version 2 of     *
-#*   the License, or (at your option) any later version.                   *
-#*   for detail see the LICENCE text file.                                 *
-#*                                                                         *
-#*   This program is distributed in the hope that it will be useful,       *
-#*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-#*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-#*   GNU Library General Public License for more details.                  *
-#*                                                                         *
-#*   You should have received a copy of the GNU Library General Public     *
-#*   License along with this program; if not, write to the Free Software   *
-#*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  *
-#*   USA                                                                   *
-#*                                                                         * 
-#*   Acknowledgements : Ideas & code copied from			   * 
-#*                      https://github.com/ignamv/geanTipi		   *
-#*                                                                         *
+#*                                                                         
+#*   Copyright (c) 2019 Keith Sloan <keith@sloan-home.co.uk>              *
+#*                                                                        *
+#*   This program is free software; you can redistribute it and/or modify *
+#*   it under the terms of the GNU Lesser General Public License (LGPL)   *
+#*   as published by the Free Software Foundation; either version 2 of    *
+#*   the License, or (at your option) any later version.                  *
+#*   for detail see the LICENCE text file.                                *
+#*                                                                        *
+#*   This program is distributed in the hope that it will be useful,      *
+#*   but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+#*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+#*   GNU Library General Public License for more details.                 *
+#*                                                                        *
+#*   You should have received a copy of the GNU Library General Public    *
+#*   License along with this program; if not, write to the Free Software  *
+#*   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 *
+#*   USA                                                                  *
+#*                                                                        *
+#*   Acknowledgements : Ideas & code copied from                          *
+#*                      https://github.com/ignamv/geanTipi                *
+#*                                                                        *
 #***************************************************************************
 __title__="FreeCAD - GDML exporter Version"
 __author__ = "Keith Sloan <keith@sloan-home.co.uk>"
@@ -550,24 +550,23 @@ def processObjectShape(obj) :
     print (shape)
     print(shape.ShapeType)
     while switch(shape.ShapeType) : 
+      if case("Mesh::Feature") :
+         print("Mesh - Should not occur should have been handled")
+         #print("Mesh")
+         #tessellate = mesh2Tessellate(mesh) 
+         #return(tessellate)
+         #break
 
-         if case("Mesh::Feature") :
-            print("Mesh - Should not occur should have been handled")
-            #print("Mesh")
-	    #tessellate = mesh2Tessellate(mesh) 
-            #return(tessellate)
-            #break
-
-	 print("ShapeType Not handled")
+         print("ShapeType Not handled")
          print(shape.ShapeType)
          break
 
 #   Dropped through to here
 #   Need to check has Shape
 
-    print 'Check if All planar'
+    print('Check if All planar')
     planar = checkShapeAllPlanar(shape)
-    print planar
+    print(planar)
 
     if planar :
        return(processPlanar(obj,shape,obj.Name))

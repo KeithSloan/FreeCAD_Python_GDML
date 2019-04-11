@@ -224,6 +224,7 @@ class ToggleFeature :
         def toggle(obj) :
             print ("Toggle : "+ obj.Label)
             #print dir(obj)
+            
             #print obj.isDerivedFrom('App::DocumentObjectGroupPython')
             # Is this a genuine group i.e. Volumes
             # Not Parts with Groups i.e. GDMLPolycone
@@ -247,11 +248,11 @@ class ToggleFeature :
                     else :
                        obj.ViewObject.Visibility = False 
 
-            # Is this a boolean Object
             if hasattr(obj,'Base') and hasattr(obj,'Tool') :
                print ("Boolean") 
                toggle(obj.Base)
                toggle(obj.Tool)
+            
 
         for obj in FreeCADGui.Selection.getSelection():
             #if len(obj.InList) == 0: # allowed only for for top level objects

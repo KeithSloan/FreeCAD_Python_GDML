@@ -40,8 +40,9 @@ class GDMLBox(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       #if not hasattr(fp,'onchange') or not fp.onchange : return
+       if prop in ['x','y','z','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -75,8 +76,9 @@ class GDMLCone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['rmin1','rmax1','rmin2','rmax2','z','startphi','deltaphi' \
+               ,'aunit', 'lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -120,8 +122,8 @@ class GDMLElCone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['dx','dy','zmax','zcut','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -177,8 +179,8 @@ class GDMLEllipsoid(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['ax','by','cz','zcut1','zcut2','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -240,8 +242,8 @@ class GDMLElTube(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['dx','dy','dz','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -270,8 +272,8 @@ class GDMLzplane(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['rmin','rmax','z'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -301,8 +303,8 @@ class GDMLPolycone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['startphi','deltaphi','aunit','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -359,8 +361,9 @@ class GDMLSphere(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['rmin','rmax','startphi','deltaphi','starttheta', \
+                    'deltatheta','aunit','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
 
@@ -416,8 +419,9 @@ class GDMLTrap(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['z','theta','phi','x1','x2','x3','x4','y1','y2','alpha', \
+                   'aunit', 'lunit'] :
+           self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
    
    def make_face4(self,v1,v2,v3,v4):
@@ -512,8 +516,8 @@ class GDMLTrd(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['z','x1','x2','y1','y2','lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
    
    def make_face4(self,v1,v2,v3,v4):
@@ -576,8 +580,9 @@ class GDMLTube(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
+                   'lunit'] :
+          self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -628,8 +633,9 @@ class GDMLTube(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if not hasattr(fp,'onchange') or not fp.onchange : return
-       self.execute(fp)
+       if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
+               'lunit']:
+           self.execute(fp)
        FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
 class GDMLFiles(GDMLcommon) :
@@ -647,6 +653,7 @@ class GDMLFiles(GDMLcommon) :
                     "solids section").solids=sectionDict.get('solids',"")
       obj.addProperty("App::PropertyString","structure","GDMLFiles", \
                     "sructure section").structure=sectionDict.get('structure',"")
+      self.Type = 'GDMLFiles'
       obj.Proxy = self
 
    def execute(self, fp):
@@ -655,7 +662,7 @@ class GDMLFiles(GDMLcommon) :
    def onChanged(self, fp, prop):
       '''Do something when a property has changed'''
       if not hasattr(fp,'onchange') or not fp.onchange : return
-      self.execute(fp)
+      #self.execute(fp)
       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
 class GDMLvolume :
