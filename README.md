@@ -6,8 +6,8 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
 ## Current stable version of FreeCAD is 18.01 which uses Python3
 
-As having to make a lot of changes to work with Python3 the
-development branch <workbench> has now been merged with the <master> branch
+As I had to make a lot of changes to get things working with Python3 the
+development branch <workbench> has now been merged with the master branch
 
 ## Installation Linux
 
@@ -36,9 +36,9 @@ GDML in the windows FreeCAD Mod directory
    
 ## GDML Workbench
 
-If you switch to the GDML workbench a number of icons are available
-in the Workbench bar, clicking on one the icons will create a GDML
-object with default values. You can then edit the properties via the properties window. The parameters should be the same as in the GDML user guide.
+If in FreeCAD you switch to the GDML workbench a number of icons are then available in the Workbench bar,
+clicking on one the icons will create a GDML object with default values.
+You can then edit the properties via the properties window. The parameters should be the same as in the GDML user guide.
 
 GDML objects supported in this 
 GDMLBox
@@ -49,7 +49,7 @@ GDMLSphere
 GDMLTrap
 GDMLTube
 
-The first icon on the workbench bar is different. If you select a object
+The first icon on the workbench bar is different. If you select a object like a volume
 via the Combo view - Model - Labels & Attributes and then click on the icon
 it will cycle the display mode of the selected object and all its children.
 The cycle is Solid -> WireFrame -> Not Displayed -> Solid
@@ -58,12 +58,11 @@ The cycle is Solid -> WireFrame -> Not Displayed -> Solid
 
 This directory contains some sample gdml files. 
 
-One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, but does eventually load. You might have to okay the odd wait.
+One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, but does eventually load.
+You might have to okay the odd wait.
 
-If when it is displayed you go down the Volumes tree to VelovVelo under Word then click on the toggle icon ( 1st GDML icon in the workbench)
-Again wait patiently and the display will change to wireframe. You can
-then decend further down the Volumes tree, select one and again use the toggle icon and that volume and children will change to Solid. In this
-way various parts in different volumes can be examind.
+If when it is displayed you go down the Volumes tree to VelovVelo under the World volume then click on the toggle icon ( 1st GDML icon in the workbench) Again wait patiently and the display will change to wireframe. You can
+then decend further down the Volumes tree, select one and again use the toggle icon and that volume and children will change to Solid. In this way various parts in different volumes can be examined.
 
 ## Exporter
 
