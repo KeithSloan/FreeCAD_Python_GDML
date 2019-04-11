@@ -7,7 +7,7 @@ Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 ## Current stable version of FreeCAD is 18.01 which uses Python3
 
 As I had to make a lot of changes to get things working with Python3 the
-development branch <workbench> has now been merged with the <master> branch
+development branch <workbench> has now been merged with the master branch
 
 ## Installation Linux
 
