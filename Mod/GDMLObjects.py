@@ -315,6 +315,7 @@ class GDMLPolycone(GDMLcommon) :
        zplanes = self.Object.OutList
        cones = []
        for i in range(0,len(zplanes)-1) :
+           print ('index : '+str(i))
            coneInner = Part.makeCone(zplanes[i].rmin,zplanes[i+1].rmin, \
                  zplanes[i+1].z - zplanes[i].z)
            coneOuter = Part.makeCone(zplanes[i].rmax,zplanes[i+1].rmax, \

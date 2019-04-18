@@ -31,7 +31,7 @@ printverbose = False
 
 import FreeCAD 
 import os, io, sys, re, math
-import Part, PartGui
+import Part
 
 ##########################
 # Globals Dictionarys    #
@@ -40,7 +40,7 @@ import Part, PartGui
 #globals constDict, filesDict 
 
 if FreeCAD.GuiUp:
-    import FreeCADGui
+    import PartGui, FreeCADGui
     gui = True
 else:
     if printverbose: print("FreeCAD Gui not present.")
