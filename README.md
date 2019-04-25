@@ -102,6 +102,8 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
 
 ## Need to sort out AIR definition
 
+## Icons designed by Jim Austin jmaustpc
+
 ## Acknowledgements
 
 Thanks to
