@@ -102,9 +102,10 @@ If not creates a mesh and then a Tessellated solid with 3 vertex.
 
 ## Need to sort out AIR definition
 
-## Icons designed by Jim Austin jmaustpc
+## Graphic Icons 
 
-## Acknowledgements
+GDML Shapes designed by Jim Austin jmaustpc
+Cycle icon by Flaticon see www.flaticon.com
 
 Thanks to
 

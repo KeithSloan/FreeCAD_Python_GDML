@@ -217,11 +217,25 @@ class TubeFeature:
                 QtCore.QT_TRANSLATE_NOOP('GDMLTubeFeature',\
                 'Tube Object')}
 
-class ToggleFeature :
+class CycleFeature :
 
     def Activated(self) :
-        
+       
         def toggle(obj) :
+            #print ("Toggle "+obj.Label)
+            #print (obj.ViewObject.DisplayMode)
+            #print (obj.ViewObject.Visibility)
+            if obj.ViewObject.Visibility == False :
+               obj.ViewObject.DisplayMode = 'Shaded'
+               obj.ViewObject.Visibility = True
+            else :
+               if obj.ViewObject.DisplayMode == 'Shaded' :
+                  obj.ViewObject.DisplayMode = 'Wireframe'
+               else :
+                  obj.ViewObject.Visibility = False 
+
+
+        def cycle(obj) :
             print ("Toggle : "+ obj.Label)
             #print dir(obj)
             
@@ -232,41 +246,31 @@ class ToggleFeature :
                #print "Toggle Group" 
                for s in obj.Group :
                    #print s
-                   toggle(s)
+                   cycle(s)
 
             # Cycle through display options
             elif hasattr(obj,'ViewObject') :
-                 #print "Toggle "+obj.Label
-                 #print obj.ViewObject.DisplayMode
-                 #print obj.ViewObject.Visibility
-                 if obj.ViewObject.Visibility == False :
-                    obj.ViewObject.DisplayMode = 'Shaded'
-                    obj.ViewObject.Visibility = True
-                 else :
-                    if obj.ViewObject.DisplayMode == 'Shaded' :
-                       obj.ViewObject.DisplayMode = 'Wireframe'
-                    else :
-                       obj.ViewObject.Visibility = False 
+               toggle(obj)
 
             if hasattr(obj,'Base') and hasattr(obj,'Tool') :
                print ("Boolean") 
-               toggle(obj.Base)
-               toggle(obj.Tool)
+               cycle(obj.Base)
+               cycle(obj.Tool)
             
 
         for obj in FreeCADGui.Selection.getSelection():
             #if len(obj.InList) == 0: # allowed only for for top level objects
-            toggle(obj)
+            cycle(obj)
 
 
     def GetResources(self):
-        return {'Pixmap'  : 'GDML Toggle', 'MenuText': \
-                QtCore.QT_TRANSLATE_NOOP('GDML_ToggleGroup',\
-                'Toggle Group'), 'ToolTip': \
-                QtCore.QT_TRANSLATE_NOOP('GDML_ToggleGroup', \
-                'Toggle Object and all children display')}    
+        return {'Pixmap'  : 'GDML_Cycle', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup',\
+                'Cycle Group'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup', \
+                'Cycle Object and all children display')}    
 
-FreeCADGui.addCommand('ToggleCommand',ToggleFeature())
+FreeCADGui.addCommand('CycleCommand',CycleFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())
 FreeCADGui.addCommand('ElTubeCommand',ElliTubeFeature())
