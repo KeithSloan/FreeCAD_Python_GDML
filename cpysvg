@@ -1,0 +1,9 @@
+src=$(pwd)/Source_Icon_Designs
+trg=$(pwd)/Mod/Resources/icons
+cp $src/GDML_Box_mauve_blackline.svg      $trg/GDMLBoxFeature.svg
+#cp $src/GDML_Box_mauve_blackline.svg      $trg/GDMLConeFeature.svg
+#cp $src/GDML_Box_mauve_blackline.svg      $trg/GDMLEllipsoidFeature.svg
+#cp $src/GDML_Box_mauve_blackline.svg      $trg/GDMLElTubeFeature.svg
+cp $src/GDML_Sphere_mauve.svg             $trg/GDMLSphereFeature.svg
+cp $src/GDML_Generic_Trapezoid_mauve_blackline.svg  $trg/GDMLTrapFeature.svg
+cp $src/GDML_Cut_Tube_mauve_blackline.svg $trg/GDMLTubeFeature.svg

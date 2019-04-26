@@ -15,7 +15,7 @@
    id="svg2980"
    sodipodi:version="0.32"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="GDML_Box_mauve_blackline.svg"
+   sodipodi:docname="GDML_Tube_mauve_blackline.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
    inkscape:export-filename="/home/you/Downloads/GDML_Box_turquoise_blackline.png"
@@ -94,16 +94,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.1083431"
-     inkscape:cx="35.774778"
-     inkscape:cy="26.958549"
+     inkscape:zoom="5.9632948"
+     inkscape:cx="22.104583"
+     inkscape:cy="34.285753"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="796"
-     inkscape:window-height="835"
-     inkscape:window-x="0"
+     inkscape:window-width="845"
+     inkscape:window-height="831"
+     inkscape:window-x="40"
      inkscape:window-y="0"
      inkscape:snap-bbox="true"
      inkscape:snap-nodes="false"
@@ -159,13 +159,13 @@
      inkscape:groupmode="layer">
     <path
        style="fill:#ebbdeb;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1"
-       d="M 9.3723167,10.819997 32.639994,19.838462 54.459992,9.6584598 31.838463,3.6461494 Z"
+       d="m 26.81234,18.701546 5.827654,1.136916 c 1.973974,-3.745824 2.309365,-6.602345 1.657427,-8.754404 C 32.229738,4.2585889 20.230487,4.5193258 19.076868,5.9692241 L 15.236903,9.850773 c 9.46634,0.913398 12.2535,-0.4503713 11.575437,8.850773 z"
        id="path2993"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccsccc" />
     <path
        style="fill:#d473d4;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1"
-       d="M 54.459992,9.6584597 54.124606,48.844618 33.143072,61.695391 31.969224,20.173848 Z"
+       d="m 34.672274,12.676925 0.503075,42.204623 -2.703047,5.136918 -0.503078,-39.844618 c 1.073292,-1.544133 2.461921,-5.120627 2.70305,-7.496923 z"
        id="path2995"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
@@ -173,7 +173,13 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc"
        id="path3825"
-       d="M 9.2046237,10.98769 32.807687,20.173848 32.97538,61.863083 9.0369317,52.34154 Z"
+       d="m 15.073862,10.149227 c 5.938631,-0.07033 16.7036,-0.8262746 11.864586,7.676925 l 1.006156,39.34154 C 30.208084,49.009889 25.119019,45.917549 15.409248,46.304609 Z"
        style="display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient3773);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+    <path
+       style="fill:#d473d4;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1"
+       d="M 31.75229,19.835458 32.42306,59.860079 28.043087,58.960064 27.036931,18.444676 Z"
+       id="path2995-5"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
   </g>
 </svg>
