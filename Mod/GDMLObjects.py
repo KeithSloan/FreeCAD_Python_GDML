@@ -262,11 +262,11 @@ class GDMLElTube(GDMLcommon) :
 
 class GDMLzplane(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z):
-      obj.addProperty("App::PropertyLength","rmin","zplane", \
+      obj.addProperty("App::PropertyFloat","rmin","zplane", \
               "Inside Radius").rmin=rmin
-      obj.addProperty("App::PropertyLength","rmax","zplane", \
+      obj.addProperty("App::PropertyFloat","rmax","zplane", \
               "Outside Radius").rmax=rmax
-      obj.addProperty("App::PropertyLength","z","zplane","z").z=z
+      obj.addProperty("App::PropertyFloat","z","zplane","z").z=z
       self.Type = 'zplane'
       obj.Proxy = self
 
@@ -314,12 +314,25 @@ class GDMLPolycone(GDMLcommon) :
        print ("Delta phi : "+str(deltaphi)) 
        zplanes = self.Object.OutList
        cones = []
+       print ("Number of zplanes : "+str(len(zplanes)))
        for i in range(0,len(zplanes)-1) :
            print ('index : '+str(i))
-           coneInner = Part.makeCone(zplanes[i].rmin,zplanes[i+1].rmin, \
-                 zplanes[i+1].z - zplanes[i].z)
-           coneOuter = Part.makeCone(zplanes[i].rmax,zplanes[i+1].rmax, \
-                 zplanes[i+1].z - zplanes[i].z)
+           h = zplanes[i+1].z - zplanes[i].z
+           rm1 = zplanes[i].rmin
+           rm2 = zplanes[i+1].rmin
+           rM1 = zplanes[i].rmax
+           rM2 = zplanes[i+1].rmax
+           print('height :'+str(h))
+           print('rm1 :'+str(rm1)+' rm2 :'+str(rm2))
+           print('rM1 :'+str(rM1)+' rM2 :'+str(rM2))
+           if rm1 != rm2 :
+              coneInner = Part.makeCone(rm1,rm2,h) 
+           else :
+              coneInner = Part.makeCylinder(rm1,h)
+           if rM1 != rM2 :
+              coneOuter = Part.makeCone(rM1,rM2,h) 
+           else :
+              coneOuter = Part.makeCylinder(rM1,h)
            cones.append(coneOuter.cut(coneInner))
 
        cone = cones[0]
