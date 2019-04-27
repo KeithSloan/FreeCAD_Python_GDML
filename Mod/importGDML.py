@@ -121,6 +121,9 @@ def getVal(ptr,var) :
     else :
        return (0.0)
 
+def getName(ptr) :
+    return (ptr.attrib.get('name'))
+
 def getText(ptr,var,default) :
     if var in ptr :
        return (ptr.attrib.get(var))
@@ -187,7 +190,7 @@ def createBox(volObj,solid,material,px,py,pz,rot,displayMode) :
     print ("CreateBox : ")
     print (solid.attrib)
     #mycube=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLBox")
-    mycube=volObj.newObject("Part::FeaturePython","GDMLBox")
+    mycube=volObj.newObject("Part::FeaturePython","GDMLBox:"+getName(solid))
     x = getVal(solid,'x')
     y = getVal(solid,'y')
     z = getVal(solid,'z')
@@ -214,7 +217,7 @@ def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mycone=volObj.newObject("Part::FeaturePython","GDMLCone")
+    mycone=volObj.newObject("Part::FeaturePython","GDMLCone:"+getName(solid))
     GDMLCone(mycone,rmin1,rmax1,rmin2,rmax2,z, \
              startphi,deltaphi,aunit,lunit,material)
     print ("CreateCone : ")
@@ -234,7 +237,7 @@ def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
     zmax = getVal(solid,'zmax')
     zcut = getVal(solid,'zcut')
     lunit = getText(solid,'lunit',"mm")
-    myelcone=volObj.newObject("Part::FeaturePython","GDMLElCone")
+    myelcone=volObj.newObject("Part::FeaturePython","GDMLElCone:"+getName(solid))
     GDMLElCone(myelcone,dx,dy,zmax,zcut,lunit,material)
     print ("CreateElCone : ")
     print ("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -255,7 +258,7 @@ def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
     zcut1 = getVal(solid,'zcut1')
     zcut2 = getVal(solid,'zcut2')
     lunit = getText(solid,'lunit',"mm")
-    myelli=volObj.newObject("Part::FeaturePython","GDMLEllipsoid")
+    myelli=volObj.newObject("Part::FeaturePython","GDMLEllipsoid:"+getName(solid))
     # cuts 0 for now
     GDMLEllipsoid(myelli,ax, by, cz,zcut1,zcut2,lunit,material)
     print ("CreateEllipsoid : ")
@@ -276,7 +279,7 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     dy = getVal(solid,'dy')
     dz = getVal(solid,'dz')
     lunit = getText(solid,'lunit',"mm")
-    myeltube=volObj.newObject("Part::FeaturePython","GDMLElTube")
+    myeltube=volObj.newObject("Part::FeaturePython","GDMLElTube:"+getName(solid))
     GDMLElTube(myeltube,dx, dy, dz,lunit,material)
     print ("CreateElTube : ")
     print ("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -297,7 +300,7 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mypolycone=volObj.newObject("Part::FeaturePython","GDMLPolycone")
+    mypolycone=volObj.newObject("Part::FeaturePython","GDMLPolycone:"+getName(solid))
     mypolycone.addExtension("App::OriginGroupExtensionPython", None)
     GDMLPolycone(mypolycone,startphi,deltaphi,aunit,lunit,material)
     ViewProviderExtension(mypolycone.ViewObject)
@@ -332,7 +335,7 @@ def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     deltaphi = getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mysphere=volObj.newObject("Part::FeaturePython","GDMLSphere")
+    mysphere=volObj.newObject("Part::FeaturePython","GDMLSphere:"+getName(solid))
     GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
                lunit,material)
     print ("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -360,7 +363,7 @@ def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
     #print z
-    mytrap=volObj.newObject("Part::FeaturePython","GDMLTrap")
+    mytrap=volObj.newObject("Part::FeaturePython","GDMLTrap:"+getName(solid))
     GDMLTrap(mytrap,z,theta,phi,x1,x2,x3,x4,y1,y2,alpha,aunit,lunit,material)
     print ("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)
@@ -381,7 +384,7 @@ def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
     y2 = getVal(solid,'y2')
     lunit = getText(solid,'lunit',"mm")
     #print z
-    mytrd=volObj.newObject("Part::FeaturePython","GDMLTrd")
+    mytrd=volObj.newObject("Part::FeaturePython","GDMLTrd:"+getName(solid))
     GDMLTrd(mytrd,z,x1,x2,y1,y2,lunit,material)
     print ("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)
@@ -405,7 +408,7 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     print (rmin)
     print (rmax)
     print (z)
-    mytube=volObj.newObject("Part::FeaturePython","GDMLTube")
+    mytube=volObj.newObject("Part::FeaturePython","GDMLTube:"+getName(solid))
     GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
     print ("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)
@@ -429,7 +432,7 @@ def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
        tool = solids.find("*[@name='%s']" % name2nd )
        print ("second : "+name2nd)
        #parseObject(root,tool)
-       mybool = volObj.newObject(objType,solid.tag)
+       mybool = volObj.newObject(objType,solid.tag+':'+getName(solid))
        mybool.Base = createSolid(volObj,base,material,0,0,0,None,displayMode)
        #mybool.Base = createSolid(base,px,py,pz,rot)
        # second solid is placed at position and rotation relative to first
