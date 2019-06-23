@@ -58,8 +58,7 @@ The cycle is Solid -> WireFrame -> Not Displayed -> Solid
 
 This directory contains some sample gdml files. 
 
-One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, but does eventually load.
-You might have to okay the odd wait.
+One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, but does eventually load. On my system I have to okay one wait. When it finally does display you will want to zoom in.
 
 If when it is displayed you go down the Volumes tree to VelovVelo under the World volume then click on the toggle icon ( 1st GDML icon in the workbench) Again wait patiently and the display will change to wireframe. You can
 then decend further down the Volumes tree, select one and again use the toggle icon and that volume and children will change to Solid. In this way various parts in different volumes can be examined.
@@ -79,6 +78,9 @@ If not handled as above then objects shapes are checked  to see if planar,
 if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
 If not creates a mesh and then a Tessellated solid with 3 vertex. 
  
+## Preferences
+There is now an option to toggle Printverbose flag to reduce printing to the python console.
+
 ## Future Development Road Map
 
   * Icons for workbench designed

@@ -43,7 +43,7 @@ class GDML_Workbench ( Workbench ):
         def QT_TRANSLATE_NOOP(scope, text):
             return text
         
-        import GDMLCommands
+        import GDMLCommands, GDMLResources
         commands=['CycleCommand','BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
                   'TrapCommand','TubeCommand']
@@ -61,7 +61,13 @@ class GDML_Workbench ( Workbench ):
         FreeCADGui.addIconPath(FreeCAD.getResourceDir() + \
                               "Mod/GDML/Resources/icons")
         FreeCADGui.addLanguagePath(":/translations")
+        FreeCADGui.addPreferencePage(":/ui/GDML-base.ui","GDML")
+        print(FreeCAD.getResourceDir() + "Mod/Resources/ui/GDML-base.ui")
+        #FreeCADGui.addPreferencePage(FreeCAD.getResourceDir() + \
+        #        "Mod/Resources/ui/GDML-base.ui","GDML")
         #FreeCADGui.addPreferencePage(":/ui/openscadprefs-base.ui","OpenSCAD")
+        #FreeCADGui.addPreferencePage(FreeCAD.getResourceDir() + \
+        #            "Mod/Resources/ui/openscadprefs-base.ui","OpenSCAD")
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"

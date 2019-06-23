@@ -1,6 +1,7 @@
 import FreeCAD, FreeCADGui, Part
 from pivy import coin
 
+import GDMLShared
 
 # Get angle in Radians
 def getAngle(aunit,angle) :
@@ -28,7 +29,7 @@ class GDMLcommon :
 class GDMLBox(GDMLcommon) :
    def __init__(self, obj, x, y, z, lunit, material):
       '''Add some custom properties to our Box feature'''
-      print ("GDMLBox init")
+      GDMLShared.trace("GDMLBox init")
       obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
       obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
@@ -43,14 +44,14 @@ class GDMLBox(GDMLcommon) :
        #if not hasattr(fp,'onchange') or not fp.onchange : return
        if prop in ['x','y','z','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
        # Need to add code to check values make a valid cone
        box = Part.makeBox(fp.x,fp.y,fp.z)
        fp.Shape = box
-       FreeCAD.Console.PrintMessage("Recompute GDML Box Object \n")
+       GDMLShared.trace("Recompute GDML Box Object \n")
 
 class GDMLCone(GDMLcommon) :
    def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,aunit, \
@@ -79,7 +80,7 @@ class GDMLCone(GDMLcommon) :
        if prop in ['rmin1','rmax1','rmin2','rmax2','z','startphi','deltaphi' \
                ,'aunit', 'lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
@@ -98,7 +99,7 @@ class GDMLCone(GDMLcommon) :
           fp.Shape = cone3
        else :   
           fp.Shape = cone1
-       FreeCAD.Console.PrintMessage("Recompute GDML Cone Object \n")
+       GDMLShared.trace("Recompute GDML Cone Object \n")
 
 class GDMLElCone(GDMLcommon) :
    def __init__(self, obj, dx, dy, zmax, zcut, lunit, material) :
@@ -124,7 +125,7 @@ class GDMLElCone(GDMLcommon) :
        '''Do something when a property has changed'''
        if prop in ['dx','dy','zmax','zcut','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
@@ -151,7 +152,7 @@ class GDMLElCone(GDMLcommon) :
           fp.Shape = cone2.cut(box)
        else :
           fp.Shape = cone2
-       FreeCAD.Console.PrintMessage("Recompute GDML ElCone Object \n")
+       GDMLShared.trace("Recompute GDML ElCone Object \n")
 
 class GDMLEllipsoid(GDMLcommon) :
    def __init__(self, obj, ax, by, cz, zcut1, zcut2, lunit, material) :
@@ -181,7 +182,7 @@ class GDMLEllipsoid(GDMLcommon) :
        '''Do something when a property has changed'''
        if prop in ['ax','by','cz','zcut1','zcut2','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
@@ -198,7 +199,7 @@ class GDMLEllipsoid(GDMLcommon) :
        mat.A44 = 1
        zcut1 = abs(fp.zcut1)
        zcut2 = abs(fp.zcut2)
-       print ("zcut2 : "+str(zcut2))
+       GDMLShared.trace("zcut2 : "+str(zcut2))
        t1ellipsoid = sphere.transformGeometry(mat) 
        if zcut2 != None and zcut2 > 0 :   # Remove from upper z
           box1 = Part.makeBox(2*ax,2*by,zcut2)
@@ -218,7 +219,7 @@ class GDMLEllipsoid(GDMLcommon) :
           fp.Shape = t2ellipsoid.cut(box2)
        else :  
           fp.Shape = t2ellipsoid
-       FreeCAD.Console.PrintMessage("Recompute GDML Ellipsoid Object \n")
+       GDMLShared.trace("Recompute GDML Ellipsoid Object \n")
 
 class GDMLElTube(GDMLcommon) :
    def __init__(self, obj, dx, dy, dz, lunit, material) :
@@ -244,7 +245,7 @@ class GDMLElTube(GDMLcommon) :
        '''Do something when a property has changed'''
        if prop in ['dx','dy','dz','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
@@ -255,10 +256,10 @@ class GDMLElTube(GDMLcommon) :
        mat.A22 = fp.dy / 100
        mat.A33 = fp.dz / 50
        mat.A44 = 1
-       #print mat
+       #trace mat
        newtube = tube.transformGeometry(mat)
        fp.Shape = newtube
-       FreeCAD.Console.PrintMessage("Recompute GDML ElTube Object \n")
+       GDMLShared.trace("Recompute GDML ElTube Object \n")
 
 class GDMLzplane(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z):
@@ -274,10 +275,10 @@ class GDMLzplane(GDMLcommon) :
        '''Do something when a property has changed'''
        if prop in ['rmin','rmax','z'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
-       FreeCAD.Console.PrintMessage("Recompute GDML zplane Object \n")
+       GDMLShared.trace("Recompute GDML zplane Object \n")
       
 
 class GDMLPolycone(GDMLcommon) :
@@ -305,26 +306,26 @@ class GDMLPolycone(GDMLcommon) :
        '''Do something when a property has changed'''
        if prop in ['startphi','deltaphi','aunit','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        startphi = getAngle(fp.aunit,fp.startphi)
        deltaphi = getAngle(fp.aunit,fp.deltaphi)
-       print ("Start phi : "+str(startphi))
-       print ("Delta phi : "+str(deltaphi)) 
+       GDMLShared.trace("Start phi : "+str(startphi))
+       GDMLShared.trace("Delta phi : "+str(deltaphi)) 
        zplanes = self.Object.OutList
        cones = []
-       print ("Number of zplanes : "+str(len(zplanes)))
+       GDMLShared.trace("Number of zplanes : "+str(len(zplanes)))
        for i in range(0,len(zplanes)-1) :
-           print ('index : '+str(i))
+           GDMLShared.trace('index : '+str(i))
            h = zplanes[i+1].z - zplanes[i].z
            rm1 = zplanes[i].rmin
            rm2 = zplanes[i+1].rmin
            rM1 = zplanes[i].rmax
            rM2 = zplanes[i+1].rmax
-           print('height :'+str(h))
-           print('rm1 :'+str(rm1)+' rm2 :'+str(rm2))
-           print('rM1 :'+str(rM1)+' rM2 :'+str(rM2))
+           GDMLShared.trace('height :'+str(h))
+           GDMLShared.trace('rm1 :'+str(rm1)+' rm2 :'+str(rm2))
+           GDMLShared.trace('rM1 :'+str(rM1)+' rM2 :'+str(rM2))
            if rm1 != rm2 :
               coneInner = Part.makeCone(rm1,rm2,h) 
            else :
@@ -336,19 +337,19 @@ class GDMLPolycone(GDMLcommon) :
            cones.append(coneOuter.cut(coneInner))
 
        cone = cones[0]
-       print ("Number of cones : "+str(len(cones)))
+       GDMLShared.trace("Number of cones : "+str(len(cones)))
        if len(cones) > 1 :
           for merge in cones[1:] :
               cone = cone.fuse(merge)
 
        fp.Shape = cone    
-       FreeCAD.Console.PrintMessage("Recompute GDMLPolycone Object \n")
+       GDMLShared.trace("Recompute GDMLPolycone Object \n")
 
 class GDMLSphere(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, startphi, deltaphi, starttheta, \
                 deltatheta, aunit, lunit, material):
       '''Add some custom properties to our Sphere feature'''
-      print ("GDMLSphere init")
+      GDMLShared.trace("GDMLSphere init")
       obj.addProperty("App::PropertyLength","rmin","GDMLSphere", \
               "Inside Radius").rmin=rmin
       obj.addProperty("App::PropertyLength","rmax","GDMLSphere", \
@@ -378,7 +379,7 @@ class GDMLSphere(GDMLcommon) :
        if prop in ['rmin','rmax','startphi','deltaphi','starttheta', \
                     'deltatheta','aunit','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
 
    def execute(self, fp):
@@ -395,7 +396,7 @@ class GDMLSphere(GDMLcommon) :
        
        #sphere3 = sphere2.cut(sphere1)
        fp.Shape = sphere2
-       FreeCAD.Console.PrintMessage("Recompute GDML Sphere Object \n")
+       GDMLShared.trace("Recompute GDML Sphere Object \n")
 
 class GDMLTrap(GDMLcommon) :
    def __init__(self, obj, z, theta, phi, x1, x2, x3, x4, y1, y2, alpha, \
@@ -436,7 +437,7 @@ class GDMLTrap(GDMLcommon) :
        if prop in ['z','theta','phi','x1','x2','x3','x4','y1','y2','alpha', \
                    'aunit', 'lunit'] :
            self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
    
    def make_face4(self,v1,v2,v3,v4):
        # helper mehod to create the faces
@@ -453,18 +454,18 @@ class GDMLTrap(GDMLcommon) :
        phi   = getAngle(fp.aunit,fp.phi)
        dx = fp.y1*math.sin(alpha)
        dy = fp.y1*(1.0 - math.cos(alpha))
-       print ("Delta adjustments")
-       print ("dx : "+str(dx)+" dy : "+str(dy))
+       GDMLShared.trace("Delta adjustments")
+       GDMLShared.trace("dx : "+str(dx)+" dy : "+str(dy))
        y1m = dy - fp.y1
        y1p = dy + fp.y1
        x1m = dx - fp.x1
        x1p = dx + fp.x1
        z    = fp.z
-       print ("y1m : "+str(y1m))
-       print ("y1p : "+str(y1p))
-       print ("z   : "+str(z))
-       print ("x1  : "+str(fp.x1))
-       print ("x2  : "+str(fp.x2))
+       GDMLShared.trace("y1m : "+str(y1m))
+       GDMLShared.trace("y1p : "+str(y1p))
+       GDMLShared.trace("z   : "+str(z))
+       GDMLShared.trace("x1  : "+str(fp.x1))
+       GDMLShared.trace("x2  : "+str(fp.x2))
 
        v1    = FreeCAD.Vector(x1m, y1m, -z)
        v2    = FreeCAD.Vector(x1p, y1m, -z)
@@ -475,17 +476,17 @@ class GDMLTrap(GDMLcommon) :
        dr = z*math.tan(theta)
        tx = dr*math.cos(phi)
        ty = dr*math.cos(phi)
-       print ("Coord of top surface centre")
-       print ("x : "+str(tx)+" y : "+str(ty))
+       GDMLShared.trace("Coord of top surface centre")
+       GDMLShared.trace("x : "+str(tx)+" y : "+str(ty))
        py2 = ty + fp.y2
        my2 = ty - fp.y2
        px3 = tx + fp.x3
        mx3 = tx - fp.x3
        px4 = tx + fp.x4
        mx4 = tx - fp.x4
-       print ("px3 : "+str(px3))
-       print ("py2 : "+str(py2))
-       print ("my2 : "+str(my2))
+       GDMLShared.trace("px3 : "+str(px3))
+       GDMLShared.trace("py2 : "+str(py2))
+       GDMLShared.trace("my2 : "+str(my2))
 
        v5 = FreeCAD.Vector(mx3, my2, z)
        v6 = FreeCAD.Vector(px3, my2, z)
@@ -505,7 +506,7 @@ class GDMLTrap(GDMLcommon) :
        #solid = Part.makePolygon([v1,v2,v3,v4,v5,v6,v7,v1])
 
        fp.Shape = solid
-       FreeCAD.Console.PrintMessage("Recompute GDML Trap Object \n")
+       GDMLShared.trace("Recompute GDML Trap Object \n")
 
 class GDMLTrd(GDMLcommon) :
    def __init__(self, obj, z, x1, x2,  y1, y2, lunit, material) :
@@ -532,7 +533,7 @@ class GDMLTrd(GDMLcommon) :
        '''Do something when a property has changed'''
        if prop in ['z','x1','x2','y1','y2','lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
    
    def make_face4(self,v1,v2,v3,v4):
        # helper mehod to create the faces
@@ -543,7 +544,7 @@ class GDMLTrd(GDMLcommon) :
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
        import math
-       print ("x2  : "+str(fp.x2))
+       GDMLShared.trace("x2  : "+str(fp.x2))
 
        x1 = fp.x1/2
        x2 = fp.x2/2
@@ -572,7 +573,7 @@ class GDMLTrd(GDMLcommon) :
        #solid = Part.makePolygon([v1,v2,v3,v4,v5,v6,v7,v1])
 
        fp.Shape = solid
-       FreeCAD.Console.PrintMessage("Recompute GDML Trd Object \n")
+       GDMLShared.trace("Recompute GDML Trd Object \n")
 
 class GDMLTube(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z, startphi, deltaphi, aunit,  \
@@ -597,7 +598,7 @@ class GDMLTube(GDMLcommon) :
        if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
                    'lunit'] :
           self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
@@ -631,7 +632,7 @@ class GDMLTube(GDMLcommon) :
 
        tube = cyl3.cut(solid)
        fp.Shape = tube
-       FreeCAD.Console.PrintMessage("Recompute GDML Tube Object \n")
+       GDMLShared.trace("Recompute GDML Tube Object \n")
 
    def make_face3(self,v1,v2,v3):
        # helper mehod to create the faces
@@ -650,13 +651,13 @@ class GDMLTube(GDMLcommon) :
        if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
                'lunit']:
            self.execute(fp)
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
 
 class GDMLFiles(GDMLcommon) :
    def __init__(self,obj,FilesEntity,sectionDict) :
       '''Add some custom properties to our Cone feature'''
-      print ("GDML Files")
-      print (FilesEntity)
+      GDMLShared.trace("GDML Files")
+      GDMLShared.trace(FilesEntity)
       obj.addProperty("App::PropertyBool","active","GDMLFiles", \
                     "split option").active=FilesEntity
       obj.addProperty("App::PropertyString","define","GDMLFiles", \
@@ -677,7 +678,7 @@ class GDMLFiles(GDMLcommon) :
       '''Do something when a property has changed'''
       if not hasattr(fp,'onchange') or not fp.onchange : return
       #self.execute(fp)
-      FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+      GDMLShared.trace("Change property: " + str(prop) + "\n")
 
 class GDMLvolume :
    def __init__(self,obj) :
@@ -779,7 +780,7 @@ class ViewProvider(GDMLcommon):
  
    def onChanged(self, vp, prop):
        '''Here we can do something when a single property got changed'''
-       FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
        #if prop == "Color":
        #    c = vp.getPropertyByName("Color")
 #    self.color.rgb.setValue(c[0],c[1],c[2])    
