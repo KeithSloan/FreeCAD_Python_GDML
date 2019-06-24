@@ -62,12 +62,7 @@ class GDML_Workbench ( Workbench ):
                               "Mod/GDML/Resources/icons")
         FreeCADGui.addLanguagePath(":/translations")
         FreeCADGui.addPreferencePage(":/ui/GDML-base.ui","GDML")
-        print(FreeCAD.getResourceDir() + "Mod/Resources/ui/GDML-base.ui")
-        #FreeCADGui.addPreferencePage(FreeCAD.getResourceDir() + \
-        #        "Mod/Resources/ui/GDML-base.ui","GDML")
-        #FreeCADGui.addPreferencePage(":/ui/openscadprefs-base.ui","OpenSCAD")
-        #FreeCADGui.addPreferencePage(FreeCAD.getResourceDir() + \
-        #            "Mod/Resources/ui/openscadprefs-base.ui","OpenSCAD")
+        #print(FreeCAD.getResourceDir() + "Mod/Resources/ui/GDML-base.ui")
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"

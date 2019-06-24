@@ -682,7 +682,7 @@ def processGDML(filename):
     print("Print Verbose : "+ str(GDMLShared.printverbose))
 
     FreeCAD.Console.PrintMessage('Import GDML file : '+filename+'\n')
-    FreeCAD.Console.PrintMessage('ImportGDML Version 0.2')
+    FreeCAD.Console.PrintMessage('ImportGDML Version 0.2\n')
     
     global pathName
     pathName = os.path.dirname(os.path.normpath(filename))

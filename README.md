@@ -49,16 +49,15 @@ GDMLSphere
 GDMLTrap
 GDMLTube
 
-The first icon on the workbench bar is different. If you select a object like a volume
-via the Combo view - Model - Labels & Attributes and then click on the icon
-it will cycle the display mode of the selected object and all its children.
+The first icon on the workbench bar is different. If you select a object like a volume via the Combo view - Model - Labels & Attributes and then click on the
+icon it will cycle the display mode of the selected object and all its children.
 The cycle is Solid -> WireFrame -> Not Displayed -> Solid
 
 ## SampleFiles
 
 This directory contains some sample gdml files. 
 
-One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, but does eventually load. On my system I have to okay one wait. When it finally does display you will want to zoom in.
+One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/open, over a minute on my system, but does eventually load. On my system I have to okay one wait. When it finally does display you will want to zoom in.
 
 If when it is displayed you go down the Volumes tree to VelovVelo under the World volume then click on the toggle icon ( 1st GDML icon in the workbench) Again wait patiently and the display will change to wireframe. You can
 then decend further down the Volumes tree, select one and again use the toggle icon and that volume and children will change to Solid. In this way various parts in different volumes can be examined.
@@ -83,12 +82,14 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
 
 ## Future Development Road Map
 
-  * Icons for workbench designed
   * Workbench Dialog for initial GDML Object values(?)
   * Handle different Positioning between GDML & FreeCAD
   * Add support for quantity
   * Add further GDML Objects
-  * Design icons for workbench
+  * Add facility to add Volume
+  * Add facility to edit Materials
+  * Add facility to edit Isotopes
+  * Add facility to edit Elements 
 
 * Workbench
   * Analize FreeCAD file for direct conversion of object to GDML solid
@@ -96,7 +97,7 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
   * Provide options to control meshing objects that will be Tessellated
   * Icons to Analize and Export
 * Tidy softLink script
-* Make FreeCAD installable workbench 
+* Make FreeCAD an installable workbench 
 * Documentation
 * Investigate handling of Materials
 
