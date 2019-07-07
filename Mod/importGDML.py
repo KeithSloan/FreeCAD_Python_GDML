@@ -100,26 +100,26 @@ def checkConstant(vval):
 
 def getVal(ptr,var) :
     # get value for var variable var 
-    from math import pi
+    from math import pi,e
     #print ptr.attrib
     # is the variable defined in passed attribute
     if var in ptr.attrib :
        # if yes get its value 
        vval = ptr.attrib.get(var)
-       #print "vval"
-       #print vval
+       print("vval")
+       print(vval)
        if vval[0] == '&' :  # Is this refering to an HTML entity constant
           chkval = vval[1:]
        else : 
           chkval = vval
        # check if defined as a constant
-       if vval in constDict :
-          c = constDict.get(vval)
-          #print c
-          return(eval(c))
-       
-       else :
-          return(float(eval(chkval)))
+       #if vval in constDict :
+       #   c = constDict.get(vval)
+       #   #print c
+       #   return(eval(c))
+       #
+       #else :
+       return(float(eval(chkval)))
     else :
        return (0.0)
 
@@ -180,7 +180,7 @@ def getPlacementFromRefs(ptr) :
     return(processPlacement(base,rot))   
 
 def setDisplayMode(obj,mode):
-    GDMLShared.trace("setDisplayMode")
+    GDMLShared.trace("setDisplayMode : "+str(mode))
     if mode == 2 :
        obj.ViewObject.DisplayMode = 'Hide'
 
@@ -198,11 +198,12 @@ def createBox(volObj,solid,material,px,py,pz,rot,displayMode) :
     z = getVal(solid,'z')
     lunit = getText(solid,'lunit',"mm")
     GDMLBox(mycube,x,y,z,lunit,material)
-    ViewProvider(mycube.ViewObject)
     GDMLShared.trace("Logical Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
     mycube.Placement = processPlacement(base,rot)
     GDMLShared.trace(mycube.Placement.Rotation)
+    # set ViewProvider before setDisplay
+    ViewProvider(mycube.ViewObject)
     setDisplayMode(mycube,displayMode)
     return mycube
 
@@ -227,8 +228,9 @@ def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz-z/2)
     mycone.Placement = processPlacement(base,rot)
     GDMLShared.trace(mycone.Placement.Rotation)
-    setDisplayMode(mycone,displayMode)
+    # set ViewProvider before setDisplay
     ViewProvider(mycone.ViewObject)
+    setDisplayMode(mycone,displayMode)
     return(mycone)
 
 def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -246,8 +248,9 @@ def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz-zmax/2)
     myelcone.Placement = processPlacement(base,rot)
     GDMLShared.trace(myelcone.Placement.Rotation)
-    setDisplayMode(myelcone,displayMode)
+    # set ViewProvider before setDisplay
     ViewProvider(myelcone.ViewObject)
+    setDisplayMode(myelcone,displayMode)
     return(myelcone)
 
 def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -269,8 +272,9 @@ def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
     #base = FreeCAD.Vector(px,py,pz-z/2)
     myelli.Placement = processPlacement(base,rot)
     GDMLShared.trace(myelli.Placement.Rotation)
-    setDisplayMode(myelli,displayMode)
+    # set ViewProvider before setDisplay
     ViewProvider(myelli.ViewObject)
+    setDisplayMode(myelli,displayMode)
     return myelli
 
 def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -289,8 +293,9 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     #base = FreeCAD.Vector(px,py,pz-z/2)
     myeltube.Placement = processPlacement(base,rot)
     GDMLShared.trace(myeltube.Placement.Rotation)
-    setDisplayMode(myeltube,displayMode)
+    # set ViewProvider before setDisplay
     ViewProvider(myeltube.ViewObject)
+    setDisplayMode(myeltube,displayMode)
     return myeltube
 
 def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -324,6 +329,7 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz)
     mypolycone.Placement = processPlacement(base,rot)
     GDMLShared.trace(mypolycone.Placement.Rotation)
+    # set ViewProvider before setDisplay
     setDisplayMode(mypolycone,displayMode)
     return mypolycone
 
@@ -344,8 +350,9 @@ def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz)
     mysphere.Placement = prcessPlacement(base,rot)
     GDMLShared.trace(mysphere.Placement.Rotation)
-    ViewProvider(mysphere.ViewObject)
+    # set ViewProvider before setDisplay
     setDisplayMode(mysphere,displayMode)
+    ViewProvider(mysphere.ViewObject)
     return mysphere
 
 def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -371,8 +378,9 @@ def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz)
     mytrap.Placement = processPlacement(base,rot)
     GDMLShared.trace(mytrap.Placement.Rotation)
-    setDisplayMode(mytrap,displayMode)
+    # set ViewProvider before setDisplay
     ViewProvider(mytrap.ViewObject)
+    setDisplayMode(mytrap,displayMode)
     return mytrap
 
 def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -392,6 +400,7 @@ def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz)
     mytrd.Placement = processPlacement(base,rot)
     GDMLShared.trace(mytrd.Placement.Rotation)
+    # set ViewProvider before setDisplay
     ViewProvider(mytrd.ViewObject)
     setDisplayMode(mytrd,displayMode)
     return mytrd
@@ -416,6 +425,7 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     base = FreeCAD.Vector(px,py,pz)
     mytube.Placement = processPlacement(base,rot)
     GDMLShared.trace(mytube.Placement.Rotation)
+    # set ViewProvider before setDisplay
     ViewProvider(mytube.ViewObject)
     setDisplayMode(mytube,displayMode)
     return mytube
@@ -565,8 +575,10 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
         parsePhysVol(volgrp,pv,solid,material,displayMode)
 
 def processConstants():
-    global constDict
-    constDict = {}
+    from math import pi,e
+
+    #global constDict
+    #constDict = {}
     GDMLShared.trace("Process Constants")
     for cdefine in define.findall('constant') :
         #print cdefine.attrib
@@ -574,10 +586,11 @@ def processConstants():
         #print name
         value = cdefine.attrib.get('value')
         #print value
-        constDict[name] = value
-    GDMLShared.trace("Constant Dictionary")    
-    GDMLShared.trace(constDict)
-    return(constDict)
+        #constDict[name] = value
+        globals()[name] = eval(value)
+    #GDMLShared.trace("Constant Dictionary")    
+    #GDMLShared.trace(constDict)
+    #return(constDict)
 
 def getItem(element, attribute) :
     item = element.get(attribute)
@@ -711,7 +724,8 @@ def processGDML(filename):
     processIsotopes()
     processElements()
 
-    constDict = processConstants()
+    #constDict = processConstants()
+    processConstants()
     GDMLShared.trace(setup.attrib)
 
     volumeGrp = doc.addObject("App::DocumentObjectGroupPython","Volumes")
