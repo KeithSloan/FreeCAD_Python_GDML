@@ -92,10 +92,14 @@ class GDMLCone(GDMLcommon) :
        #print fp.rmax2
        #print fp.z
 
-       cone1 = Part.makeCone(fp.rmax2,fp.rmax1,fp.z)
-       if (fp.rmin1 != 0.0 and fp.rmin2 != 0.0) :
-          cone2 = Part.makeCone(fp.rmin2,fp.rmin1,fp.z)
-          cone3 = cone1.cut(cone2)
+       cone1 = Part.makeCone(fp.rmin1,fp.rmax1,fp.z)
+       if (fp.rmin1 != fp.rmin2 or fp.rmax1 != fp.rmax2 ) :
+          cone2 = Part.makeCone(fp.rmin2,fp.rmax2,fp.z)
+          if  fp.rmax1 > fp.rmax2 :
+              cone3 = cone1.cut(cone2)
+          else :
+              cone3 = cone2.cut(cone1)
+
           fp.Shape = cone3
        else :   
           fp.Shape = cone1
@@ -260,6 +264,151 @@ class GDMLElTube(GDMLcommon) :
        newtube = tube.transformGeometry(mat)
        fp.Shape = newtube
        GDMLShared.trace("Recompute GDML ElTube Object \n")
+
+class GDMLXtru(GDMLcommon) :
+   def __init__(self, obj, lunit, material) :
+      obj.addExtension('App::OriginGroupExtensionPython', self)
+      obj.addProperty("App::PropertyString","lunit","GDMLxtru", \
+                      "lunit").lunit=lunit
+      obj.addProperty("App::PropertyString","material","GDMLxtru", \
+                       "Material").material=material
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLXtru", \
+                      "Shape of the Xtru")
+      self.Type = 'GDMLxtru'
+      self.Object = obj
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       #if prop in ['startphi','deltaphi','aunit','lunit'] :
+       #   self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       parms = self.Object.OutList
+       #print("OutList")
+       #print(parms)
+       GDMLShared.trace("Number of parms : "+str(len(parms)))
+       polyList = []
+       sections = []
+       for ptr in parms :
+           if hasattr(ptr,'x') :
+              x = ptr.x
+              y = ptr.y
+              GDMLShared.trace('x : '+str(x))
+              GDMLShared.trace('y : '+str(y))
+              polyList.append([x, y])
+
+           if hasattr(ptr,'zOrder') :
+              zOrder = ptr.zOrder
+              xOffset = ptr.xOffset
+              yOffset = ptr.yOffset
+              zPosition = ptr.zPosition
+              sf = ptr.scalingFactor
+              s = [zOrder,xOffset,yOffset,zPosition,sf]
+              sections.append(s)
+
+       faces_list = []
+       baseList = []
+       topList = []
+       # close polygon
+       polyList.append(polyList[0])
+       for s in range(0,len(sections)-1) :
+           xOffset1   = sections[s][1]
+           yOffset1   = sections[s][2]
+           zPosition1 = sections[s][3]
+           sf1        = sections[s][4]
+           xOffset2   = sections[s+1][1]
+           yOffset2   = sections[s+1][2]
+           zPosition2 = sections[s+1][3]
+           sf2        = sections[s+1][4]
+           print("polyList")
+           for p in polyList :
+              print(p)
+              vb=FreeCAD.Vector(p[0]*sf1+xOffset1, p[1]*sf1+yOffset1,zPosition1)
+              vt=FreeCAD.Vector(p[0]*sf1+xOffset2, p[1]*sf1+yOffset2,zPosition2)
+              baseList.append(vb) 
+              topList.append(vt) 
+           # close polygons
+           baseList.append(baseList[0])
+           topList.append(topList[0])
+           # deal with base face       
+           w1 = Part.makePolygon(baseList)
+           f1 = Part.Face(w1)
+           faces_list.append(f1)
+           print("base list")
+           print(baseList)
+           print("Top list")
+           print(topList)
+           # deal with side faces
+           for i in range(0,len(polyList)-1) :
+               sideList = []
+               sideList.append(baseList[i])
+               sideList.append(baseList[i+1])
+               sideList.append(topList[i+1])
+               sideList.append(topList[i])
+               # Close SideList polygon
+               sideList.append(baseList[i])
+               print("sideList")
+               print(sideList)
+               w1 = Part.makePolygon(sideList)
+               f1 = Part.Face(w1)
+               faces_list.append(f1)
+           # deal with top face
+           w1 = Part.makePolygon(topList)
+           f1 = Part.Face(w1)
+           faces_list.append(f1)
+           print("Faces List")
+           print(faces_list)
+           shell=Part.makeShell(faces_list)
+           solid=Part.Solid(shell).removeSplitter()
+           if solid.Volume < 0:
+              solid.reverse()
+       fp.Shape = solid
+
+class GDML2dVertex(GDMLcommon) :
+   def __init__(self, obj, x, y):
+      obj.addProperty("App::PropertyFloat","x","Vertex", \
+              "x").x=x
+      obj.addProperty("App::PropertyFloat","y","Vertex", \
+              "y").y=y
+      self.Type = 'Vertex'
+      self.Object = obj
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['x','y'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       GDMLShared.trace("Recompute GDML 2dVertex Object \n")
+      
+class GDMLSection(GDMLcommon) :
+   def __init__(self, obj, zOrder,zPosition,xOffset,yOffset,scalingFactor):
+      obj.addProperty("App::PropertyInteger","zOrder","section", \
+              "zOrder").zOrder=zOrder
+      obj.addProperty("App::PropertyInteger","zPosition","section", \
+              "zPosition").zPosition=zPosition
+      obj.addProperty("App::PropertyFloat","xOffset","section", \
+              "xOffset").xOffset=xOffset
+      obj.addProperty("App::PropertyFloat","yOffset","section", \
+              "yOffset").yOffset=yOffset
+      obj.addProperty("App::PropertyFloat","scalingFactor","section", \
+              "scalingFactor").scalingFactor=scalingFactor
+      self.Type = 'section'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['zOrder','zPosition','xOffset','yOffset','scaleFactor'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       GDMLShared.trace("Recompute GDML 2dVertex Object \n")
+      
 
 class GDMLzplane(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z):

@@ -28,9 +28,10 @@ __author__ = "Keith Sloan <keith@sloan-home.co.uk>"
 __url__ = ["https://github.com/KeithSloan/FreeCAD_GDML"]
 
 import FreeCAD 
-import os, io, sys, re, math
+import os, io, sys, re
 import Part
 
+from math import *
 import GDMLShared
 
 ##########################
@@ -100,7 +101,7 @@ def checkConstant(vval):
 
 def getVal(ptr,var) :
     # get value for var variable var 
-    from math import pi,e
+    # all of math must be imported at global level 
     #print ptr.attrib
     # is the variable defined in passed attribute
     if var in ptr.attrib :
@@ -152,13 +153,13 @@ def processPlacement(base,rot) :
         GDMLShared.trace(rot.attrib)
         if 'y' in rot.attrib :
             axis = FreeCAD.Vector(0,1,0) 
-            angle = float(rot.attrib['y'])
+            angle = float(eval(rot.attrib['y']))
         if 'x' in rot.attrib :
        	    axis = FreeCAD.Vector(1,0,0) 
-            angle = float(rot.attrib['x'])
+            angle = float(eval(rot.attrib['x']))
         if 'z' in rot.attrib :
             axis = FreeCAD.Vector(0,0,1) 
-            angle = float(rot.attrib['z'])
+            angle = float(eval(rot.attrib['z']))
     GDMLShared.trace(angle) 
     place = FreeCAD.Placement(base,axis,angle)
     return place
@@ -405,6 +406,40 @@ def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytrd,displayMode)
     return mytrd
 
+def createXtru(volObj,solid,material,px,py,pz,rot,displayMode) :
+    from GDMLObjects import GDMLXtru, GDML2dVertex, GDMLSection, \
+             ViewProvider, ViewProviderExtension
+    GDMLShared.trace("CreateXtru : ")
+    myXtru=volObj.newObject("Part::FeaturePython","GDMLXtru"+getName(solid))
+    myXtru.addExtension("App::OriginGroupExtensionPython", None)
+    lunit = getText(solid,'lunit',"mm")
+    GDMLXtru(myXtru,lunit,material)
+    ViewProviderExtension(myXtru.ViewObject)
+    for vert2d in solid.findall('twoDimVertex') : 
+        x = getVal(vert2d,'x')
+        y = getVal(vert2d,'y')
+        my2dVert=FreeCAD.ActiveDocument.addObject('App::FeaturePython','GDML2DVertex') 
+        #myzplane=mypolycone.newObject('App::FeaturePython','zplane') 
+        GDML2dVertex(my2dVert,x,y)
+        myXtru.addObject(my2dVert)
+        ViewProvider(my2dVert)
+    for section in solid.findall('section') : 
+        zOrder = int(getVal(section,'zOrder'))
+        zPosition = int(getVal(section,'zPosition'))
+        xOffset = getVal(section,'xOffset')
+        yOffset = getVal(section,'yOffset')
+        scalingFactor = getVal(section,'scalingFactor')
+        mysection=FreeCAD.ActiveDocument.addObject('App::FeaturePython','GDMLSection')
+        GDMLSection(mysection,zOrder,zPosition,xOffset,yOffset,scalingFactor)
+        myXtru.addObject(mysection)
+        ViewProvider(mysection)
+
+    GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
+    base = FreeCAD.Vector(px,py,pz)
+    myXtru.Placement = processPlacement(base,rot)
+    GDMLShared.trace(myXtru.Placement.Rotation)
+    return(myXtru)
+
 def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLTube, ViewProvider
     GDMLShared.trace("CreateTube : ")
@@ -504,6 +539,10 @@ def createSolid(volObj,solid,material,px,py,pz,rot,displayMode) :
            return(createTube(volObj,solid,material,px,py,pz,rot,displayMode)) 
            break
 
+        if case('xtru'):
+           return(createXtru(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           break
+
         if case('intersection'):
             return(parseBoolean(volObj,solid,'Part::Common', \
                   material,px,py,pz,rot,displayMode)) 
@@ -575,10 +614,8 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
         parsePhysVol(volgrp,pv,solid,material,displayMode)
 
 def processConstants():
-    from math import pi,e
+    # all of math must be imported at global level
 
-    #global constDict
-    #constDict = {}
     GDMLShared.trace("Process Constants")
     for cdefine in define.findall('constant') :
         #print cdefine.attrib
@@ -588,9 +625,6 @@ def processConstants():
         #print value
         #constDict[name] = value
         globals()[name] = eval(value)
-    #GDMLShared.trace("Constant Dictionary")    
-    #GDMLShared.trace(constDict)
-    #return(constDict)
 
 def getItem(element, attribute) :
     item = element.get(attribute)
