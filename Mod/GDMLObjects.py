@@ -326,7 +326,9 @@ class GDMLXtru(GDMLcommon) :
            for p in polyList :
               print(p)
               vb=FreeCAD.Vector(p[0]*sf1+xOffset1, p[1]*sf1+yOffset1,zPosition1)
-              vt=FreeCAD.Vector(p[0]*sf1+xOffset2, p[1]*sf1+yOffset2,zPosition2)
+              #vb=FreeCAD.Vector(-20, p[1]*sf1+yOffset1,zPosition1)
+              vt=FreeCAD.Vector(p[0]*sf2+xOffset2, p[1]*sf2+yOffset2,zPosition2)
+              #vt=FreeCAD.Vector(20, p[1]*sf2+yOffset2,zPosition2)
               baseList.append(vb) 
               topList.append(vt) 
            # close polygons
@@ -341,7 +343,8 @@ class GDMLXtru(GDMLcommon) :
            print("Top list")
            print(topList)
            # deal with side faces
-           for i in range(0,len(polyList)-1) :
+           # remember first point is added to end of list
+           for i in range(0,len(baseList)-1) :
                sideList = []
                sideList.append(baseList[i])
                sideList.append(baseList[i+1])
@@ -361,7 +364,8 @@ class GDMLXtru(GDMLcommon) :
            print("Faces List")
            print(faces_list)
            shell=Part.makeShell(faces_list)
-           solid=Part.Solid(shell).removeSplitter()
+           #solid=Part.Solid(shell).removeSplitter()
+           solid=Part.Solid(shell)
            if solid.Volume < 0:
               solid.reverse()
        fp.Shape = solid
