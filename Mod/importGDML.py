@@ -465,6 +465,50 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytube,displayMode)
     return mytube
 
+def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
+    from GDMLObjects import GDMLTessellated, GDMLTriangular, \
+            GDMLQuadrangular,  ViewProvider, ViewProviderExtension
+    GDMLShared.trace("CreateTessellated : ")
+    GDMLShared.trace(solid.attrib)
+    myTess=volObj.newObject("Part::FeaturePython","GDMLTessellated:"+getName(solid))
+    myTess.addExtension("App::OriginGroupExtensionPython", None)
+    GDMLTessellated(myTess)
+    ViewProviderExtension(myTess.ViewObject)
+    for elem in solid.getchildren() :
+        print(elem)
+        print(elem.tag)
+        print(elem.text)
+        print(elem.attrib)
+        v1 = elem.attrib['vertex1']
+        v2 = elem.attrib['vertex2']
+        v3 = elem.attrib['vertex3']
+        vType = elem.attrib['type']
+        if elem.tag == 'triangular' :
+           myTri = FreeCAD.ActiveDocument.addObject('App::FeaturePython','GDMLTriangle')
+           GDMLTriangular(myTri,v1,v2,v3,vType) 
+           myTess.addObject(myTri)
+           ViewProvider(myTess)
+        
+        if elem.tag == 'quadrangular' :
+           v4 = elem.attrib['vertex4']
+           myQuad = FreeCAD.ActiveDocument.addObject('App::FeaturePython','GDMLQuadrangular')
+           GDMLQuadrangular(myQuad,v1,v2,v3,v4,vType) 
+           myTess.addObject(myQuad)
+           ViewProvider(myTess)
+
+
+    return(myTess)
+
+
+    GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
+    base = FreeCAD.Vector(px,py,pz)
+    myTess.Placement = processPlacement(base,rot)
+    GDMLShared.trace(myTess.Placement.Rotation)
+    # set ViewProvider before setDisplay
+    ViewProvider(myTess.ViewObject)
+    setDisplayMode(myTess,displayMode)
+    return myTess
+
 def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import ViewProvider
     GDMLShared.trace(solid.tag)
@@ -537,6 +581,10 @@ def createSolid(volObj,solid,material,px,py,pz,rot,displayMode) :
 
         if case('tube'):
            return(createTube(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           break
+
+        if case('tessellated'):
+           return(createTessellated(volObj,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('xtru'):

@@ -806,6 +806,87 @@ class GDMLTube(GDMLcommon) :
            self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
+
+class GDMLVertex(GDMLcommon) :
+   def __init__(self, obj, x, y, z, lunit):
+      obj.addProperty("App::PropertyFloat","x","GDMLVertex", \
+              "x").x=x
+      obj.addProperty("App::PropertyFloat","y","GDMLVertex", \
+              "y").y=y
+      obj.addProperty("App::PropertyFloat","z","GDMLVertex", \
+              "z").z=z
+      self.Type = 'GDMLVertex'
+      self.Object = obj
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['x','y', 'z'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       GDMLShared.trace("Recompute GDML Vertex Object \n")
+       
+
+class GDMLTriangular(GDMLcommon) :
+   def __init__(self, obj, v1, v2, v3, vtype):
+      obj.addProperty("App::PropertyString","v1","Triangular", \
+              "v1").v1=v1
+      obj.addProperty("App::PropertyString","v2","Triangular", \
+              "v1").v2=v2
+      obj.addProperty("App::PropertyString","v3","Triangular", \
+              "v1").v3=v3
+      obj.addProperty("App::PropertyEnumeration","vtype","Triangular","vtype")
+      obj.vtype=["Absolute", "Relative"]
+      obj.vtype=0
+      self.Type = 'Triangular'
+      self.Object = obj
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['v1','v2','v3','type'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       GDMLShared.trace("Recompute GDML Triangular Object \n")
+       
+class GDMLQuadrangular(GDMLcommon) :
+   def __init__(self, obj, v1, v2, v3, v4, vtype):
+      obj.addProperty("App::PropertyString","v1","Quadrang", \
+              "v1").v1=v1
+      obj.addProperty("App::PropertyString","v2","Quadrang", \
+              "v2").v2=v2
+      obj.addProperty("App::PropertyString","v3","Quadrang", \
+              "v3").v3=v3
+      obj.addProperty("App::PropertyString","v4","Quadrang", \
+              "v4").v4=v4
+      obj.addProperty("App::PropertyEnumeration","vtype","Quadrang","vtype")
+      obj.vtype=["Absolute", "Relative"]
+      obj.vtype=0
+      self.Type = 'Quadrang'
+      self.Object = obj
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['v1','v2','v3','v4','type'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       GDMLShared.trace("Recompute GDML Quqdrang\n")
+       
+class GDMLTessellated(GDMLcommon) :
+    def __init__(self, obj ) :
+      obj.addExtension('App::OriginGroupExtensionPython', self)
+      self.Type = 'GDMLTessellated'
+      self.Object = obj
+      obj.Proxy = self
+
+
 class GDMLFiles(GDMLcommon) :
    def __init__(self,obj,FilesEntity,sectionDict) :
       '''Add some custom properties to our Cone feature'''
