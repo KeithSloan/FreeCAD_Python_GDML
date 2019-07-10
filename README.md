@@ -43,7 +43,7 @@ via the FreeCAD properties windows and the resulting changes displayed
 
 ## GDML Import
 
-On opening of a GDML file the appropriate FreeCAD implemeneted python Object
+On opening of a GDML file the appropriate FreeCAD implemented python Object
 is created for each solid
 
 ## GDML Object creation
