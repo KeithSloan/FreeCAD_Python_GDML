@@ -99,7 +99,8 @@ def case(*args):
 def checkConstant(vval):
     print (vval)
 
-def getVal(ptr,var) :
+def getVal(ptr,var,vtype = 1) :
+    # vtype 1 - float vtype 2 int
     # get value for var variable var 
     # all of math must be imported at global level 
     #print ptr.attrib
@@ -120,9 +121,15 @@ def getVal(ptr,var) :
        #   return(eval(c))
        #
        #else :
-       return(float(eval(chkval)))
+       if vtype == 1 : 
+          return(float(eval(chkval)))
+       else : 
+          return(int(eval(chkval)))
     else :
-       return (0.0)
+       if vtype == 1 :
+          return (0.0)
+       else :
+          return(0)
 
 def getName(ptr) :
     return (ptr.attrib.get('name'))
@@ -424,8 +431,8 @@ def createXtru(volObj,solid,material,px,py,pz,rot,displayMode) :
         myXtru.addObject(my2dVert)
         ViewProvider(my2dVert)
     for section in solid.findall('section') : 
-        zOrder = int(getVal(section,'zOrder'))
-        zPosition = int(getVal(section,'zPosition'))
+        zOrder = getVal(section,'zOrder',2)     # Get Int
+        zPosition = getVal(section,'zPosition',2) # Get Int
         xOffset = getVal(section,'xOffset')
         yOffset = getVal(section,'yOffset')
         scalingFactor = getVal(section,'scalingFactor')
