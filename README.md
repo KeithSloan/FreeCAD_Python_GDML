@@ -38,12 +38,13 @@ GDML in the windows FreeCAD Mod directory
 
 ## GDML Solids
 
-GDML Solids are implemented as FreeCAD Python Objects and have the same properties as defined by GDML. By selecting an Object
-the properties can be changed via the FreeCAD properties windows and the resulting changes displayed
+GDML Solids are implemented as FreeCAD Python Objects and have the same properties as defined by GDML. By selecting an Object the properties can be changed
+via the FreeCAD properties windows and the resulting changes displayed
 
 ## GDML Import
 
-On opening of a GDML file the appropriate FreeCAD implemeneted python Object is created for each solid
+On opening of a GDML file the appropriate FreeCAD implemeneted python Object
+is created for each solid
 
 ## GDML Object creation
 
@@ -51,14 +52,17 @@ Switching to the GDML workbench a number of icons are then available on the Work
 clicking on one the icons will create a GDML object with default values.
 You can then edit the properties via the properties window. The parameters should be the same as in the GDML user guide.
 
-GDML objects supported in this 
-GDMLBox
-GDMLCone
-GDMLElTube
-GDMLEllipsoid
-GDMLSphere
-GDMLTrap
-GDMLTube
+GDML objects supported in this
+
+1. GDMLBox
+2. GDMLCone
+3. GDMLElTube
+4. GDMLEllipsoid
+5. GDMLSphere
+6. GDMLTrap
+7. GDMLTube
+
+## Viewing Volumes
 
 The first icon on the workbench bar is different. If you select a object like a volume via the Combo view - Model - Labels & Attributes and then click on the
 icon it will cycle the display mode of the selected object and all its children.
@@ -79,10 +83,10 @@ GDMLObjects are output as straight GDML solids
 
 The following FreeCAD objects are output as GDML equivalents
 
-1) Cube     ( GDML - Box )
-2) Cone     ( GDML - Cone )
-3) Cylinder ( GDML - Tube )
-4) Sphere   ( GDML - Sphere )
+1. Cube     ( GDML - Box )
+2. Cone     ( GDML - Cone )
+3. Cylinder ( GDML - Tube )
+4. Sphere   ( GDML - Sphere )
 
 If not handled as above then objects shapes are checked  to see if planar,
 if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
