@@ -34,9 +34,20 @@ GDML in the windows FreeCAD Mod directory
 
 2) A correct version of lxml for your version of windows should be downloaded and installed.
    
-## GDML Workbench
+# GDML Workbench
 
-If in FreeCAD you switch to the GDML workbench a number of icons are then available in the Workbench bar,
+## GDML Solids
+
+GDML Solids are implemented as FreeCAD Python Objects and have the same properties as defined by GDML. By selecting an Object
+the properties can be changed via the FreeCAD properties windows and the resulting changes displayed
+
+## GDML Import
+
+On opening of a GDML file the appropriate FreeCAD implemeneted python Object is created for each solid
+
+## GDML Object creation
+
+Switching to the GDML workbench a number of icons are then available on the Workbench bar,
 clicking on one the icons will create a GDML object with default values.
 You can then edit the properties via the properties window. The parameters should be the same as in the GDML user guide.
 
