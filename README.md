@@ -79,7 +79,10 @@ then decend further down the Volumes tree, select one and again use the toggle i
 
 ## Exporter
 
+### GDML Objects
 GDMLObjects are output as straight GDML solids
+
+### FreeCAD Objects
 
 The following FreeCAD objects are output as GDML equivalents
 
