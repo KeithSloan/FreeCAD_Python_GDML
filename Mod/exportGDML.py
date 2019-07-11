@@ -297,9 +297,12 @@ def defineWorldBox(exportList,bbox):
     #   print(bbox)
     # Solids get added to solids section of gdml ( solids is a global )
     ET.SubElement(solids, 'box', {'name': 'WorldBox',
-                     'x': str(2*max(abs(bbox.XMin), abs(bbox.XMax))), \
-                     'y': str(2*max(abs(bbox.YMin), abs(bbox.YMax))), \
-                     'z': str(2*max(abs(bbox.ZMin), abs(bbox.ZMax))), \
+                             'x': str(1000), \
+                             'y': str(1000), \
+                             'z': str(1000), \
+                     #'x': str(2*max(abs(bbox.XMin), abs(bbox.XMax))), \
+                     #'y': str(2*max(abs(bbox.YMin), abs(bbox.YMax))), \
+                     #'z': str(2*max(abs(bbox.ZMin), abs(bbox.ZMax))), \
                      'lunit': 'mm'})
 
 
@@ -706,6 +709,28 @@ def processGDMLElTubeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, eltubeName, delta)
     return(eltubeName)
 
+def processGDMLPolyconeObject(obj, addVolsFlag) :
+    # Needs unique Name
+    #polyconeName = 'Cone' + obj.Name
+    polyconeName = obj.Name
+    ET.SubElement(solids, 'genericPolycone',{'name': polyconeName, \
+                           'startphi': str(obj.startphi),  \
+                           'deltaphi': str(obj.deltaphi),  \
+                           'aunit': str(obj.aunit),  \
+                           'lunit' : 'mm'})
+    print(obj.OutList)
+    for zplane in obj.OutList :
+        ET.SubElement(solids, 'zplane',{'rmin': str(zplane.rmin), \
+                               'rmax' : str(zplane.rmax), \
+                               'z' : str(zplane.z)})
+
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       #delta = FreeCAD.Vector(0, 0, obj.dz.Value / 2)
+       delta = FreeCAD.Vector(0, 0, 0)
+       createAdjustedLVandPV(obj, obj.Name, polyconeName, delta)
+    return(polyconeName)
+
 def processGDMLSphereObject(obj, addVolsFlag) :
     # Needs unique Name
     sphereName = 'Sphere' + obj.Name
@@ -912,6 +937,11 @@ def processObject(obj, addVolsFlag) :
                 return(processGDMLConeObject(obj, addVolsFlag))
                 break
 
+             if case("GDMLPolycone") :
+                print("      GDMLPolycone") 
+                return(processGDMLPolyconeObject(obj, addVolsFlag))
+                break
+
              if case("GDMLSphere") :
                 print("      GDMLSphere") 
                 return(processGDMLSphereObject(obj, addVolsFlag))
@@ -993,5 +1023,6 @@ def export(exportList,filename) :
     # format & write GDML file 
     indent(gdml)
     print("Write to GDML file")
-    ET.ElementTree(gdml).write(filename, 'utf-8', True)
+    #ET.ElementTree(gdml).write(filename, 'utf-8', True)
+    ET.ElementTree(gdml).write(filename)
     print("GDML file written")
