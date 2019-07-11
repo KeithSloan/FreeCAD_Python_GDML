@@ -268,13 +268,13 @@ class GDMLElTube(GDMLcommon) :
 class GDMLXtru(GDMLcommon) :
    def __init__(self, obj, lunit, material) :
       obj.addExtension('App::OriginGroupExtensionPython', self)
-      obj.addProperty("App::PropertyString","lunit","GDMLxtru", \
+      obj.addProperty("App::PropertyString","lunit","GDMLXtru", \
                       "lunit").lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLxtru", \
+      obj.addProperty("App::PropertyString","material","GDMLXtru", \
                        "Material").material=material
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLXtru", \
                       "Shape of the Xtru")
-      self.Type = 'GDMLxtru'
+      self.Type = 'GDMLXtru'
       self.Object = obj
       obj.Proxy = self
 
@@ -886,6 +886,22 @@ class GDMLTessellated(GDMLcommon) :
       self.Object = obj
       obj.Proxy = self
 
+    def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       #if prop in ['v1','v2','v3','v4','type'] :
+       #   self.execute(fp)
+       #self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+    def execute(self, fp):
+       print("Tessellated")
+       print(self.Object)
+       print(dir(self.Object))
+       parms = self.Object.OutList
+       GDMLShared.trace("Number of parms : "+str(len(parms)))
+       for ptr in parms :
+           print(ptr)
+       
 
 class GDMLFiles(GDMLcommon) :
    def __init__(self,obj,FilesEntity,sectionDict) :

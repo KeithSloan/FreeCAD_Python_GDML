@@ -30,9 +30,9 @@ import FreeCAD, os, Part, math
 from FreeCAD import Vector
 
 # xml handling
-import argparse
-import xml.etree.ElementTree as ET
-from   xml.etree.ElementTree import XML 
+#import argparse
+import lxml.etree  as ET
+#from   xml.etree.ElementTree import XML 
 #################################
 
 try: import FreeCADGui
@@ -89,10 +89,11 @@ def GDMLstructure() :
 
     defineCnt = LVcount = PVcount = POScount =  ROTcount = 1
 
-    gdml = ET.Element('gdml', {
-          'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
-          'xsi:noNamespaceSchemaLocation': "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd"
-})
+    #gdml = ET.Element('gdml', {
+          #'xmlns:xsi': "http://www.w3.org/2001/XMLSchema-instance",
+          #'xsi:noNamespaceSchemaLocation': "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd"
+#})
+    gdml = ET.Element('gdml')
     define = ET.SubElement(gdml, 'define')
     materials = ET.SubElement(gdml, 'materials')
     solids = ET.SubElement(gdml, 'solids')
@@ -362,10 +363,11 @@ def reportObject(obj) :
     print(obj)
     print("Name : "+obj.Name)
     print("Type : "+obj.TypeId) 
-    print("Placement")
-    print("Pos   : "+str(obj.Placement.Base))
-    print("axis  : "+str(obj.Placement.Rotation.Axis))
-    print("angle : "+str(obj.Placement.Rotation.Angle))
+    if hasattr(obj,'Placement') :
+       print("Placement")
+       print("Pos   : "+str(obj.Placement.Base))
+       print("axis  : "+str(obj.Placement.Rotation.Axis))
+       print("angle : "+str(obj.Placement.Rotation.Angle))
     
     while switch(obj.TypeId) :
 
@@ -759,6 +761,23 @@ def processGDMLTubeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
     return(tubeName)
 
+def processGDMLXtruObject(obj, addVolsFlag) :
+    # Needs unique Name
+    tubeName = 'Tube' + obj.Name
+    ET.SubElement(solids, 'tube',{'name': tubeName, \
+                           'rmin': str(obj.rmin.Value),  \
+                           'rmax': str(obj.rmax.Value),  \
+                           'startphi': str(obj.startphi), \
+                           'deltaphi': str(obj.deltaphi), \
+                           'aunit': 'rad',
+                           'z': str(obj.z.Value),  \
+                           'lunit' : 'mm'})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
+    return(tubeName)
+
 # Need to add position of object2 relative to object1
 # Need to add rotation ??? !!!!
 def addBooleanPositionAndRotation(element,obj1,obj2):
@@ -787,8 +806,17 @@ def processObject(obj, addVolsFlag) :
       #
       # Deal with non solids
       #
+      if case("App::DocumentObjectGroupPython"):
+         print("   Object List : "+obj.Name)
+         print(obj)
+         #print(dir(obj))
+         print(obj.Group)
+         for grp in obj.Group :
+             processObject(grp, addVolsFlag)
+         break
+
       if case("Part::Cut") :
-         print("Cut")
+         print("   Cut")
          cutName = 'Cut'+obj.Name
          ref1 = processObject(obj.Base,False)
          ref2 = processObject(obj.Tool,False)
@@ -802,7 +830,7 @@ def processObject(obj, addVolsFlag) :
          break
 
       if case("Part::Fuse") :
-         print("Union")
+         print("   Union")
          unionName = 'Union'+obj.Name
          ref1 = processObject(obj.Base,False)
          ref2 = processObject(obj.Tool,False)
@@ -817,7 +845,7 @@ def processObject(obj, addVolsFlag) :
          break
 
       if case("Part::Common") :
-         print("intersection")
+         print("   Intersection")
          intersectName = 'Intersect'+obj.Name
          ref1 = processObject(obj.Base,False)
          ref2 = processObject(obj.Tool,False)
@@ -832,7 +860,7 @@ def processObject(obj, addVolsFlag) :
          break
 
       if case("Part::MultiFuse") :
-         print("Multifuse") 
+         print("   Multifuse") 
          multName = 'MultiFuse'+obj.Name
          multUnion = ET.Element('multiUnion',{'name': multName })
          for subobj in obj.Shapes:
@@ -849,54 +877,61 @@ def processObject(obj, addVolsFlag) :
          break
 
       if case("Part::MultiCommon") :
-         print("Multi Common / intersection")
-         print("Not available in GDML")
+         print("   Multi Common / intersection")
+         print("   Not available in GDML")
          exit(-3)
          break
 
       if case("Mesh::Feature") :
-         print("Mesh Feature") 
+         print("   Mesh Feature") 
          return(processMesh(obj, obj.Mesh, obj.Name))
          break
 
       if case("Part::FeaturePython"):
-          print("Python Feature")
+          print("   Python Feature")
           if hasattr(obj.Proxy, 'Type') :
+             print(obj.Proxy.Type) 
              switch(obj.Proxy.Type)
              if case("GDMLBox") :
-                print("GDMLBox") 
+                print("      GDMLBox") 
                 return(processGDMLBoxObject(obj, addVolsFlag))
                 break
 
              if case("GDMLEllipsoid") :
-                print("GDMLEllipsoid") 
+                print("      GDMLEllipsoid") 
                 return(processGDMLEllipsoidObject(obj, addVolsFlag))
                 break
 
              if case("GDMLElTube") :
-                print("GDMLElTube") 
+                print("      GDMLElTube") 
                 return(processGDMLElTubeObject(obj, addVolsFlag))
                 break
 
              if case("GDMLCone") :
-                print("GDMLCone") 
+                print("      GDMLCone") 
                 return(processGDMLConeObject(obj, addVolsFlag))
                 break
 
              if case("GDMLSphere") :
-                print("GDMLSphere") 
+                print("      GDMLSphere") 
                 return(processGDMLSphereObject(obj, addVolsFlag))
                 break
 
              if case("GDMLTrap") :
-                print("GDMLTrap") 
+                print("      GDMLTrap") 
                 return(processGDMLTrapObject(obj, addVolsFlag))
                 break
 
              if case("GDMLTube") :
-                print("GDMLTube") 
+                print("      GDMLTube") 
                 return(processGDMLTubeObject(obj, addVolsFlag))
                 break
+
+             if case("GDMLXtru") :
+                print("      GDMLXtru") 
+                return(processGDMLXtruObject(obj, addVolsFlag))
+                break
+
           else :
              print("Not a GDML Feature")
           break  
@@ -905,22 +940,22 @@ def processObject(obj, addVolsFlag) :
       #  Now deal with objects that map to GDML solids
       #
       if case("Part::Box") :
-         print("Box")
+         print("    Box")
          return(processBoxObject(obj, addVolsFlag))
          break
 
       if case("Part::Cylinder") :
-         print("Cylinder")
+         print("    Cylinder")
          return(processCylinderObject(obj, addVolsFlag))
          break
 
       if case("Part::Cone") :
-         print("Cone")
+         print("    Cone")
          return(processConeObject(obj, addVolsFlag))
          break
 
       if case("Part::Sphere") :
-         print("Sphere")
+         print("    Sphere")
          return(processSphereObject(obj, addVolsFlag))
          break
 
@@ -929,7 +964,9 @@ def processObject(obj, addVolsFlag) :
       # Need to check obj has attribute Shape
       # Create tessellated solid
       #
-      return(processObjectShape(obj, AddVolsFlag))
+      #return(processObjectShape(obj, addVolsFlag))
+      print("Convert FreeCAD shape to Tessellated")
+      return(processObjectShape(obj))
       break
 
 def export(exportList,filename) :
