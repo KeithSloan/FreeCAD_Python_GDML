@@ -43,7 +43,7 @@ via the FreeCAD properties windows and the resulting changes displayed
 
 ## GDML Import
 
-On opening of a GDML file the appropriate FreeCAD implemeneted python Object
+On opening of a GDML file the appropriate FreeCAD implemented python Object
 is created for each solid
 
 ## GDML Object creation
@@ -79,7 +79,10 @@ then decend further down the Volumes tree, select one and again use the toggle i
 
 ## Exporter
 
+### GDML Objects
 GDMLObjects are output as straight GDML solids
+
+### FreeCAD Objects
 
 The following FreeCAD objects are output as GDML equivalents
 
