@@ -372,10 +372,13 @@ class GDMLXtru(GDMLcommon) :
 
 class GDML2dVertex(GDMLcommon) :
    def __init__(self, obj, x, y):
+      obj.addProperty("App::PropertyString","Type","Vertex", \
+              "twoDimVertex").Type='twoDimVertex'
       obj.addProperty("App::PropertyFloat","x","Vertex", \
               "x").x=x
       obj.addProperty("App::PropertyFloat","y","Vertex", \
               "y").y=y
+      obj.setEditorMode("Type", 1) 
       self.Type = 'Vertex'
       self.Object = obj
       obj.Proxy = self
@@ -391,6 +394,8 @@ class GDML2dVertex(GDMLcommon) :
       
 class GDMLSection(GDMLcommon) :
    def __init__(self, obj, zOrder,zPosition,xOffset,yOffset,scalingFactor):
+      obj.addProperty("App::PropertyString","Type","section", \
+              "section").Type='section'
       obj.addProperty("App::PropertyInteger","zOrder","section", \
               "zOrder").zOrder=zOrder
       obj.addProperty("App::PropertyInteger","zPosition","section", \

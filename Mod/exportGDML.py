@@ -788,20 +788,27 @@ def processGDMLTubeObject(obj, addVolsFlag) :
 
 def processGDMLXtruObject(obj, addVolsFlag) :
     # Needs unique Name
-    tubeName = 'Tube' + obj.Name
-    ET.SubElement(solids, 'tube',{'name': tubeName, \
-                           'rmin': str(obj.rmin.Value),  \
-                           'rmax': str(obj.rmax.Value),  \
-                           'startphi': str(obj.startphi), \
-                           'deltaphi': str(obj.deltaphi), \
-                           'aunit': 'rad',
-                           'z': str(obj.z.Value),  \
+    #tubeName = 'Tube' + obj.Name
+    xtruName = obj.Name
+    ET.SubElement(solids, 'xtru',{'name': xtruName, \
                            'lunit' : 'mm'})
+    for items in obj.OutList :
+        if items.Type == 'twoDimVertex' :
+           ET.SubElement(solids, 'twoDimVertex',{'x': str(items.x), \
+                                   'y': str(items.y)})
+        if items.Type == 'section' :
+           ET.SubElement(solids, 'section',{'zOrder': str(items.zOrder), \
+                                  'zPosition': str(items.zPosition), \
+                                  'xOffset' : str(items.xOffset), \
+                                  'yOffset' : str(items.yOffset), \
+                                  'scalingFactor' : str(items.scalingFactor)})
+
+
     if addVolsFlag :
        # Adjustment for position in GDML
-       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
-       createAdjustedLVandPV(obj, obj.Name, tubeName, delta)
-    return(tubeName)
+       delta = FreeCAD.Vector(0, 0, 0)
+       createAdjustedLVandPV(obj, obj.Name, xtruName, delta)
+    return(xtruName)
 
 # Need to add position of object2 relative to object1
 # Need to add rotation ??? !!!!
