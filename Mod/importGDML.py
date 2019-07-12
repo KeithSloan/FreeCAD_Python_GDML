@@ -478,14 +478,11 @@ def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLShared.trace("CreateTessellated : ")
     GDMLShared.trace(solid.attrib)
     myTess=volObj.newObject("Part::FeaturePython","GDMLTessellated:"+getName(solid))
-    myTess.addExtension("App::OriginGroupExtensionPython", None)
+    #myTess.addExtension("App::OriginGroupExtensionPython", None)
     GDMLTessellated(myTess)
     ViewProviderExtension(myTess.ViewObject)
     for elem in solid.getchildren() :
         print(elem)
-        print(elem.tag)
-        print(elem.text)
-        print(elem.attrib)
         v1 = elem.attrib['vertex1']
         v2 = elem.attrib['vertex2']
         v3 = elem.attrib['vertex3']
@@ -494,18 +491,14 @@ def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
            myTri = FreeCAD.ActiveDocument.addObject('App::FeaturePython','GDMLTriangle')
            GDMLTriangular(myTri,v1,v2,v3,vType) 
            myTess.addObject(myTri)
-           ViewProvider(myTess)
+           ViewProvider(myTri)
         
         if elem.tag == 'quadrangular' :
            v4 = elem.attrib['vertex4']
            myQuad = FreeCAD.ActiveDocument.addObject('App::FeaturePython','GDMLQuadrangular')
            GDMLQuadrangular(myQuad,v1,v2,v3,v4,vType) 
            myTess.addObject(myQuad)
-           ViewProvider(myTess)
-
-
-    return(myTess)
-
+           ViewProvider(myQuad)
 
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)

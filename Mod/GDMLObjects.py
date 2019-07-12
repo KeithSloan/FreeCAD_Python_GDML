@@ -406,6 +406,7 @@ class GDMLSection(GDMLcommon) :
               "yOffset").yOffset=yOffset
       obj.addProperty("App::PropertyFloat","scalingFactor","section", \
               "scalingFactor").scalingFactor=scalingFactor
+      obj.setEditorMode("Type", 1) 
       self.Type = 'section'
       obj.Proxy = self
 
@@ -887,6 +888,9 @@ class GDMLQuadrangular(GDMLcommon) :
 class GDMLTessellated(GDMLcommon) :
     def __init__(self, obj ) :
       obj.addExtension('App::OriginGroupExtensionPython', self)
+      obj.addProperty("App::PropertyString","Type","Tessellated", \
+              "twoDimVertex").Type='twoDimVertex'
+ 
       self.Type = 'GDMLTessellated'
       self.Object = obj
       obj.Proxy = self
@@ -900,12 +904,23 @@ class GDMLTessellated(GDMLcommon) :
 
     def execute(self, fp):
        print("Tessellated")
-       print(self.Object)
-       print(dir(self.Object))
        parms = self.Object.OutList
        GDMLShared.trace("Number of parms : "+str(len(parms)))
        for ptr in parms :
-           print(ptr)
+           #print(dir(ptr))
+           if hasattr(ptr,'v4') :
+              print("Quad")
+              print(ptr.v1)
+              print(getVal(ptr.v1))
+              print(ptr.v2)
+              print(ptr.v3)
+              print(ptr.v4)
+           else :   
+              print("Triangle")
+              print(ptr.v1)
+              print(ptr.v2)
+              print(ptr.v3)
+
        
 
 class GDMLFiles(GDMLcommon) :
