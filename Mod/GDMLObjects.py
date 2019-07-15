@@ -888,9 +888,7 @@ class GDMLQuadrangular(GDMLcommon) :
 class GDMLTessellated(GDMLcommon) :
     def __init__(self, obj ) :
       obj.addExtension('App::OriginGroupExtensionPython', self)
-      obj.addProperty("App::PropertyString","Type","Tessellated", \
-              "twoDimVertex").Type='twoDimVertex'
- 
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLTessellated", "Shape of the Tesssellation")
       self.Type = 'GDMLTessellated'
       self.Object = obj
       obj.Proxy = self
@@ -906,22 +904,39 @@ class GDMLTessellated(GDMLcommon) :
        print("Tessellated")
        parms = self.Object.OutList
        GDMLShared.trace("Number of parms : "+str(len(parms)))
+       faces = []
        for ptr in parms :
            #print(dir(ptr))
            if hasattr(ptr,'v4') :
               print("Quad")
               print(ptr.v1)
-              print(getVal(ptr.v1))
               print(ptr.v2)
               print(ptr.v3)
               print(ptr.v4)
+              faces.append(GDMLShared.quad(ptr.v1,ptr.v2,ptr.v3,ptr.v4))
+
            else :   
               print("Triangle")
+              print("Vertex 1")
               print(ptr.v1)
+              print("Vertex 2")
               print(ptr.v2)
+              print("Vertex 3")
               print(ptr.v3)
-
-       
+              faces.append(GDMLShared.triangle(ptr.v1,ptr.v2,ptr.v3))
+     
+       print(faces)
+       shell=Part.makeShell(faces)
+       print("Is Valid")
+       print(shell.isValid())
+       shell.check()
+       #solid=Part.Solid(shell).removeSplitter()
+       solid=Part.Solid(shell)
+       if solid.Volume < 0:
+          solid.reverse()
+       fp.Shape = solid
+       #fp.Shape = faces[0]
+       #fp.Shape = Part.makeBox(10,10,10)
 
 class GDMLFiles(GDMLcommon) :
    def __init__(self,obj,FilesEntity,sectionDict) :

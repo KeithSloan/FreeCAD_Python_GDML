@@ -2,51 +2,44 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 <define>
 <constant name="PCOLL2_SCULPT_P1_X" value ="63.0"/>
-<constant name="PCOLL2_SCULPT_P1_Y" value ="10.0"/>
-<constant name="PCOLL2_SCULPT_P2_X" value ="106.5"/>
-<constant name="PCOLL2_SCULPT_P2_Y" value ="19.0"/>
-<constant name="PCOLL2_SCULPT_P3_X" value ="158.0"/>
-<constant name="PCOLL2_SCULPT_P3_Y" value ="36.0"/>
-<constant name="PCOLL2_SCULPT_P4_X" value ="228.0"/>
-<constant name="PCOLL2_SCULPT_P4_Y" value ="55.0"/>
-<constant name="COLL1_R1_U" value ="35"/>
-<constant name="COLL1_R1_D" value ="36"/>
-<constant name="COLL1_R4_U" value ="55.595"/>
-<constant name="COLL1_R4_D" value ="56.820"/>
-<constant name="COLL1_THICK" value ="200.0"/>
+    <constant name="PCOLL2_SCULPT_P1_Y" value ="10.0"/>
+    <constant name="PCOLL2_SCULPT_P2_X" value ="106.5"/>
+    <constant name="PCOLL2_SCULPT_P2_Y" value ="19.0"/>
+    <constant name="PCOLL2_SCULPT_P3_X" value ="158.0"/>
+    <constant name="PCOLL2_SCULPT_P3_Y" value ="36.0"/>
+    <constant name="PCOLL2_SCULPT_P4_X" value ="228.0"/>
+    <constant name="PCOLL2_SCULPT_P4_Y" value ="55.0"/>
 
-<!-- coll at the center of hybrid toriod -->
-    <constant name="COLL5_THICK" value ="70.0"/>
-
-    <!-- main coll, adjust this -->
-    <position name="posPCOLL2" unit="mm" x="0" y="0" z="9825-DOFFSET"/>
-    <constant name="PCOLL2_R1_U" value ="38.0"/>
-    <constant name="PCOLL2_R1_D" value ="38.0"/>
-    <!-- coll sep, inner rad, adjust this -->
-    <constant name="PCOLL2_R2_U" value ="64"/>
-    <constant name="PCOLL2_R2_D" value ="64"/>
-    <!-- coll sep, outer rad, adjust this -->
-    <constant name="PCOLL2_R3_U" value ="221"/>
-    <constant name="PCOLL2_R3_D" value ="221"/>
-    <constant name="PCOLL2_R4_U" value ="300"/>
-    <constant name="PCOLL2_R4_D" value ="300"/>
     <constant name="PCOLL2_THICK" value ="100.0"/>
 
-    <position name="posCOLL5" unit="mm" x="0" y="0" z="12835-DOFFSET"/>
+    <position name="PCOLL2_lcut1" unit="mm" x="PCOLL2_SCULPT_P1_X" y="-PCOLL2_SCULPT_P1_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_lcut2" unit="mm" x="PCOLL2_SCULPT_P2_X" y="-PCOLL2_SCULPT_P2_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_lcut3" unit="mm" x="PCOLL2_SCULPT_P3_X" y="-PCOLL2_SCULPT_P3_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_lcut4" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-PCOLL2_SCULPT_P4_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_lcut5" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-70" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_lcut6" unit="mm" x="20.0" y="-70.0" z="-PCOLL2_THICK/2-5"/> 
 
-    <position name="PCOLL2_lcut1" unit="mm" x="PCOLL2_SCULPT_P1_X" y="-PCOLL2_SCULPT_P1_Y" z="-PCOLL2_THICK/2-5"/>
-    <position name="PCOLL2_lcut2" unit="mm" x="PCOLL2_SCULPT_P2_X" y="-PCOLL2_SCULPT_P2_Y" z="-PCOLL2_THICK/2-5"/>
-    <position name="PCOLL2_lcut3" unit="mm" x="PCOLL2_SCULPT_P3_X" y="-PCOLL2_SCULPT_P3_Y" z="-PCOLL2_THICK/2-5"/>
-    <position name="PCOLL2_lcut4" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-PCOLL2_SCULPT_P4_Y" z="-PCOLL2_THICK/2-5"/>
-    <position name="PCOLL2_lcut5" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-70" z="-PCOLL2_THICK/2-5"/>
-    <position name="PCOLL2_lcut6" unit="mm" x="20.0" y="-70.0" z="-PCOLL2_THICK/2-5"/>
+    <position name="PCOLL2_lcut7" unit="mm" x="PCOLL2_SCULPT_P1_X" y="-PCOLL2_SCULPT_P1_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_lcut8" unit="mm" x="PCOLL2_SCULPT_P2_X" y="-PCOLL2_SCULPT_P2_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_lcut9" unit="mm" x="PCOLL2_SCULPT_P3_X" y="-PCOLL2_SCULPT_P3_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_lcut10" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-PCOLL2_SCULPT_P4_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_lcut11" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-70" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_lcut12" unit="mm" x="20.0" y="-70.0" z="PCOLL2_THICK/2+5"/> 
 
-    <position name="PCOLL2_lcut7" unit="mm" x="PCOLL2_SCULPT_P1_X" y="-PCOLL2_SCULPT_P1_Y" z="PCOLL2_THICK/2+5"/>
-    <position name="PCOLL2_lcut8" unit="mm" x="PCOLL2_SCULPT_P2_X" y="-PCOLL2_SCULPT_P2_Y" z="PCOLL2_THICK/2+5"/>
-    <position name="PCOLL2_lcut9" unit="mm" x="PCOLL2_SCULPT_P3_X" y="-PCOLL2_SCULPT_P3_Y" z="PCOLL2_THICK/2+5"/>
-    <position name="PCOLL2_lcut10" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-PCOLL2_SCULPT_P4_Y" z="PCOLL2_THICK/2+5"/>
-    <position name="PCOLL2_lcut11" unit="mm" x="PCOLL2_SCULPT_P4_X" y="-70" z="PCOLL2_THICK/2+5"/>
-    <position name="PCOLL2_lcut12" unit="mm" x="20.0" y="-70.0" z="PCOLL2_THICK/2+5"/>
+
+    <position name="PCOLL2_rcut1" unit="mm" x="PCOLL2_SCULPT_P1_X" y="PCOLL2_SCULPT_P1_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_rcut2" unit="mm" x="PCOLL2_SCULPT_P2_X" y="PCOLL2_SCULPT_P2_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_rcut3" unit="mm" x="PCOLL2_SCULPT_P3_X" y="PCOLL2_SCULPT_P3_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_rcut4" unit="mm" x="PCOLL2_SCULPT_P4_X" y="PCOLL2_SCULPT_P4_Y" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_rcut5" unit="mm" x="PCOLL2_SCULPT_P4_X" y="70" z="-PCOLL2_THICK/2-5"/> 
+    <position name="PCOLL2_rcut6" unit="mm" x="20.0" y="70" z="-PCOLL2_THICK/2-5"/> 
+
+    <position name="PCOLL2_rcut7" unit="mm" x="PCOLL2_SCULPT_P1_X" y="PCOLL2_SCULPT_P1_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_rcut8" unit="mm" x="PCOLL2_SCULPT_P2_X" y="PCOLL2_SCULPT_P2_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_rcut9" unit="mm" x="PCOLL2_SCULPT_P3_X" y="PCOLL2_SCULPT_P3_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_rcut10" unit="mm" x="PCOLL2_SCULPT_P4_X" y="PCOLL2_SCULPT_P4_Y" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_rcut11" unit="mm" x="PCOLL2_SCULPT_P4_X" y="70" z="PCOLL2_THICK/2+5"/> 
+    <position name="PCOLL2_rcut12" unit="mm" x="20" y="70" z="PCOLL2_THICK/2+5"/> 
 </define>`
 <materials>
     <isotope N="12" Z="6" name="C120x56070ee874f0">
@@ -169,21 +162,22 @@
   </materials>
 <solids>
 	<box lunit="mm" name="WorldBox" x="20.0" y="20.0" z="20.0" />
-	<tessellated name="leftpcolcut">
-        <triangular vertex1="PCOLL2_lcut1" vertex2="PCOLL2_lcut2" vertex3="PCOLL2_lcut6" type="ABSOLUTE"/>
-        <quadrangular vertex1="PCOLL2_lcut6" vertex2="PCOLL2_lcut2" vertex3="PCOLL2_lcut3" vertex4="PCOLL2_lcut5" type="ABSOLUTE"/>
-        <triangular vertex1="PCOLL2_lcut3" vertex2="PCOLL2_lcut4" vertex3="PCOLL2_lcut5" type="ABSOLUTE"/>
+<tessellated name="leftpcolcut">
+	<triangular vertex1="PCOLL2_lcut1" vertex2="PCOLL2_lcut2" vertex3="PCOLL2_lcut6" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut6" vertex2="PCOLL2_lcut2" vertex3="PCOLL2_lcut3" vertex4="PCOLL2_lcut5" type="ABSOLUTE"/>
+	<triangular vertex1="PCOLL2_lcut3" vertex2="PCOLL2_lcut4" vertex3="PCOLL2_lcut5" type="ABSOLUTE"/>
 
-        <quadrangular vertex1="PCOLL2_lcut1" vertex2="PCOLL2_lcut6" vertex3="PCOLL2_lcut12" vertex4="PCOLL2_lcut7" type="ABSOLUTE"/>
-        <quadrangular vertex1="PCOLL2_lcut6" vertex2="PCOLL2_lcut5" vertex3="PCOLL2_lcut11" vertex4="PCOLL2_lcut12" type="ABSOLUTE"/>
-        <quadrangular vertex1="PCOLL2_lcut4" vertex2="PCOLL2_lcut10" vertex3="PCOLL2_lcut11" vertex4="PCOLL2_lcut5" type="ABSOLUTE"/>
-        <quadrangular vertex1="PCOLL2_lcut3" vertex2="PCOLL2_lcut9" vertex3="PCOLL2_lcut10" vertex4="PCOLL2_lcut4" type="ABSOLUTE"/>
-        <quadrangular vertex1="PCOLL2_lcut2" vertex2="PCOLL2_lcut8" vertex3="PCOLL2_lcut9" vertex4="PCOLL2_lcut3" type="ABSOLUTE"/>
-        <quadrangular vertex1="PCOLL2_lcut1" vertex2="PCOLL2_lcut7" vertex3="PCOLL2_lcut8" vertex4="PCOLL2_lcut2" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut1" vertex2="PCOLL2_lcut6" vertex3="PCOLL2_lcut12" vertex4="PCOLL2_lcut7" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut6" vertex2="PCOLL2_lcut5" vertex3="PCOLL2_lcut11" vertex4="PCOLL2_lcut12" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut4" vertex2="PCOLL2_lcut10" vertex3="PCOLL2_lcut11" vertex4="PCOLL2_lcut5" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut3" vertex2="PCOLL2_lcut9" vertex3="PCOLL2_lcut10" vertex4="PCOLL2_lcut4" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut2" vertex2="PCOLL2_lcut8" vertex3="PCOLL2_lcut9" vertex4="PCOLL2_lcut3" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut1" vertex2="PCOLL2_lcut7" vertex3="PCOLL2_lcut8" vertex4="PCOLL2_lcut2" type="ABSOLUTE"/>
 
-        <triangular vertex1="PCOLL2_lcut7" vertex2="PCOLL2_lcut12" vertex3="PCOLL2_lcut8" type="ABSOLUTE"/>
-</tessellated>
-
+	<triangular vertex1="PCOLL2_lcut7" vertex2="PCOLL2_lcut12" vertex3="PCOLL2_lcut8" type="ABSOLUTE"/>
+	<quadrangular vertex1="PCOLL2_lcut8" vertex2="PCOLL2_lcut12" vertex3="PCOLL2_lcut11" vertex4="PCOLL2_lcut9" type="ABSOLUTE"/>
+	<triangular vertex1="PCOLL2_lcut9" vertex2="PCOLL2_lcut11" vertex3="PCOLL2_lcut10" type="ABSOLUTE"/>
+    </tessellated>
 <polycone name = "thepolycone" startphi="1" deltaphi="4" aunit="rad" lunit= "mm">
 <zplane rmin="1" rmax="9" z="10" />
 <zplane rmin="3" rmax="5" z="12" />
