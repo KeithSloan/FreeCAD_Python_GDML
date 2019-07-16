@@ -64,9 +64,17 @@ GDML objects supported in this
 
 ## Viewing Volumes
 
-The first icon on the workbench bar is different. If you select a object like a volume via the Combo view - Model - Labels & Attributes and then click on the
-icon it will cycle the display mode of the selected object and all its children.
-The cycle is Solid -> WireFrame -> Not Displayed -> Solid
+The first icon on the workbench bar is different. If you select a object by one of the following methods
+
+1. A volume via the Combo view - Model - Labels & Attributes.
+
+   Then click on the icon it will cycle the display mode of the selected Volume and all its children.
+   The cycle is Solid -> WireFrame -> Not Displayed -> Solid
+
+2. In the main display - select a face by <ctrl> <left mouse>
+   
+   Then click on the icon it will cycle the display mode of the selected object
+   
 
 ## SampleFiles
 
