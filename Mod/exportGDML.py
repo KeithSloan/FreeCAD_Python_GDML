@@ -39,6 +39,11 @@ try: import FreeCADGui
 except ValueError: gui = False
 else: gui = True
 
+global zOrder
+
+from GDMLObjects import GDMLQuadrangular, GDMLTriangular, \
+                        GDML2dVertex, GDMLSection
+
 #***************************************************************************
 # Tailor following to your requirements ( Should all be strings )          *
 # no doubt there will be a problem when they do implement Value
@@ -630,6 +635,13 @@ def processConeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, coneName, delta)
     return(coneName)
 
+def processSection(obj, addVolsflag) :
+    print("Process Section")
+    ET.SubElement(solids, 'section',{'vertex1': obj.v1, \
+            'vertex2': obj.v2, 'vertex3': obj.v3, 'vertex4': obj.v4, \
+            'type': obj.vtype})
+
+
 def processSphereObject(obj, addVolsFlag) :
     # Needs unique Name
     sphereName = 'Sphere' + obj.Name
@@ -731,6 +743,13 @@ def processGDMLPolyconeObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, polyconeName, delta)
     return(polyconeName)
 
+def processGDMLQuadObject(obj, addVolsFlag) :
+    print("GDMLQuadrangular")
+    ET.SubElement(solids, 'quadrangular',{'vertex1': obj.v1, \
+            'vertex2': obj.v2, 'vertex3': obj.v3, 'vertex4': obj.v4, \
+            'type': obj.vtype})
+    
+
 def processGDMLSphereObject(obj, addVolsFlag) :
     # Needs unique Name
     sphereName = 'Sphere' + obj.Name
@@ -744,6 +763,33 @@ def processGDMLSphereObject(obj, addVolsFlag) :
     if addVolsFlag :
        createLVandPV(obj,obj.Name,sphereName)
     return(sphereName)
+
+def processGDMLTessellatedObject(obj, addVolsFlag) :
+    # Needs unique Name
+    # Need to output unique define positions
+    # Need to create set of positions
+    #for items in obj.Outlist :
+    #    ET.SubElement(GDMLShared.define,'position',{'name': obj.Name + 'v1', \
+    #            'x':items.x , 'y':items.y, 'z':items.z,'unit':'mm')
+
+    tessName = 'Tess' + obj.Name
+    ET.SubElement(solids, 'tessellated',{'name': tessName})
+    print(len(obj.OutList))
+    for items in obj.OutList :
+        if hasattr(items,'v4' ) :
+            ET.SubElement(solids,'quadrangular',{'vertex1':'v1', \
+                    'vertex2':'v2', 'vertex3':'v3', 'vertex4':'v4',
+                                 'type':'ABSOLUTE'})
+        else :    
+            ET.SubElement(solids,'triangular',{'vertex1':'v1', 'vertex2':'v2', \
+                                 'vertex3':'v3','type':'ABSOLUTE'})
+
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, 0)
+       createAdjustedLVandPV(obj, obj.Name, tessName, delta)
+       return(tessName)
+
 
 def processGDMLTrapObject(obj, addVolsFlag) :
     # Needs unique Name
@@ -768,6 +814,11 @@ def processGDMLTrapObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, trapName, delta)
     return(trapName)
 
+def processGDMLTriangle(obj, addVolsFlag) :
+    print("Process GDML Triangle")
+    ET.SubElement(solids, 'triangular',{'vertex1': obj.v1, \
+            'vertex2': obj.v2, 'vertex3': obj.v3,  \
+            'type': obj.vtype})
 
 def processGDMLTubeObject(obj, addVolsFlag) :
     # Needs unique Name
@@ -809,6 +860,11 @@ def processGDMLXtruObject(obj, addVolsFlag) :
        delta = FreeCAD.Vector(0, 0, 0)
        createAdjustedLVandPV(obj, obj.Name, xtruName, delta)
     return(xtruName)
+
+def processGDML2dVertex(obj, addVolsFlag) :
+    print("Process 2d Vertex")
+    ET.SubElement(solids, 'twoDimVertex',{'x': obj.x, 'y': obj.y})
+
 
 # Need to add position of object2 relative to object1
 # Need to add rotation ??? !!!!
@@ -948,10 +1004,15 @@ def processObject(obj, addVolsFlag) :
                 print("      GDMLPolycone") 
                 return(processGDMLPolyconeObject(obj, addVolsFlag))
                 break
-
+             
              if case("GDMLSphere") :
                 print("      GDMLSphere") 
                 return(processGDMLSphereObject(obj, addVolsFlag))
+                break
+
+             if case("GDMLTessellated") :
+                print("      GDMLTessellated") 
+                return(processGDMLTessellatedObject(obj, addVolsFlag))
                 break
 
              if case("GDMLTrap") :
@@ -972,6 +1033,28 @@ def processObject(obj, addVolsFlag) :
           else :
              print("Not a GDML Feature")
           break  
+      # Same as Part::Feature but no position
+      if case("App::FeaturePython") :
+         print("App::FeaturePython") 
+         # Following not needed as handled bu Outlist on Tessellated
+         #if isinstance(obj.Proxy, GDMLQuadrangular) :
+         #   return(processGDMLQuadObject(obj, addVolsFlag))
+         #   break
+  
+         #if isinstance(obj.Proxy, GDMLTriangular) :
+         #   return(processGDMLTriangleObject(obj, addVolsFlag))
+         #   break
+          
+         # Following not needed as handled bu Outlist on Xtru
+
+         #if isinstance(obj.Proxy, GDML2dVertex) :
+         #   return(processGDML2dVertObject(obj, addVolsFlag))
+         #   break
+            
+         #if isinstance(obj.Proxy, GDMLSection) :
+         #   return(processGDMLSection(obj, addVolsFlag))
+         #   break
+         break  
 
       #
       #  Now deal with objects that map to GDML solids
@@ -1016,7 +1099,9 @@ def export(exportList,filename) :
     constructWorld()
     bbox = FreeCAD.BoundBox()
     defineWorldBox(exportList, bbox)
-    for obj in exportList :
+    #for obj in exportList :
+    zOrder = 1
+    for obj in FreeCAD.ActiveDocument.Objects:
         reportObject(obj)
         processObject(obj, True)
 

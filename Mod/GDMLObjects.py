@@ -846,7 +846,7 @@ class GDMLTriangular(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","vtype","Triangular","vtype")
       obj.vtype=["Absolute", "Relative"]
       obj.vtype=0
-      self.Type = 'Triangular'
+      self.Type = 'GDMLTriangular'
       self.Object = obj
       obj.Proxy = self
 
@@ -872,7 +872,7 @@ class GDMLQuadrangular(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","vtype","Quadrang","vtype")
       obj.vtype=["Absolute", "Relative"]
       obj.vtype=0
-      self.Type = 'Quadrang'
+      self.Type = 'GDMLQuadrangular'
       self.Object = obj
       obj.Proxy = self
 
