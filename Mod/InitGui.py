@@ -30,7 +30,18 @@
 #* Also copyright Keith Sloan                                              * 
 #***************************************************************************/
 
-import FreeCAD
+#import FreeCAD
+from FreeCAD import *
+from importGDML import processGDML
+import PartGui
+import GDMLCommands, GDMLResources
+
+class MyObserver():
+    def __init__(self):
+        self.signal = []
+
+    def slotCreatedDocument(self, doc):
+        processGDML(FreeCAD.getResourceDir() + "Mod/Resources/Default.GDML")
 
 class GDML_Workbench ( Workbench ):
     "GDML workbench object"
@@ -38,12 +49,13 @@ class GDML_Workbench ( Workbench ):
         self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/GDML/Resources/icons/GDMLWorkbench.svg"
         self.__class__.MenuText = "GDML"
         self.__class__.ToolTip = "GDML workbench"
+        #self.obs = MyObserver()
 
     def Initialize(self):
         def QT_TRANSLATE_NOOP(scope, text):
             return text
         
-        import GDMLCommands, GDMLResources
+        #import GDMLCommands, GDMLResources
         commands=['CycleCommand','BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
                   'TrapCommand','TubeCommand']
@@ -51,7 +63,6 @@ class GDML_Workbench ( Workbench ):
                          'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
                          'TrapCommand','TubeCommand']
 
-        import PartGui
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common']
 
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbench','GDMLTools'),toolbarcommands)
@@ -64,8 +75,28 @@ class GDML_Workbench ( Workbench ):
         FreeCADGui.addPreferencePage(":/ui/GDML-base.ui","GDML")
         #print(FreeCAD.getResourceDir() + "Mod/Resources/ui/GDML-base.ui")
 
+    def Activated(self):
+        "This function is executed when the workbench is activated"
+        print ("Activated")
+        print(self.GetClassName())
+        #MyObserver()
+        #App.addDocumentObserver(self.doc)
+        self.obs = MyObserver()
+        App.addDocumentObserver(self.obs)
+        return
+
+    def Deactivated(self):
+        "This function is executed when the workbench is deactivated"
+        App.removeDocumentObserver(self.obs)
+        return
+    
     def GetClassName(self):
         return "Gui::PythonWorkbench"
+
+class testClass():
+    def __init__(self):
+        self.signal = []
+
 
 Gui.addWorkbench(GDML_Workbench())
 
