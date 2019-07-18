@@ -32,24 +32,25 @@
 
 #import FreeCAD
 from FreeCAD import *
-from importGDML import processGDML
 import PartGui
 import GDMLCommands, GDMLResources
 
-class MyObserver():
-    def __init__(self):
-        self.signal = []
-
-    def slotCreatedDocument(self, doc):
-        processGDML(FreeCAD.getResourceDir() + "Mod/Resources/Default.GDML")
-
 class GDML_Workbench ( Workbench ):
+
+    class MyObserver():
+       def __init__(self):
+           self.signal = []
+
+       def slotCreatedDocument(self, doc):
+           from importGDML import processGDML
+           processGDML(doc,FreeCAD.getResourceDir() + \
+                       "Mod/GDML/Resources/Default.gdml")
+    
     "GDML workbench object"
     def __init__(self):
         self.__class__.Icon = FreeCAD.getResourceDir() + "Mod/GDML/Resources/icons/GDMLWorkbench.svg"
         self.__class__.MenuText = "GDML"
         self.__class__.ToolTip = "GDML workbench"
-        #self.obs = MyObserver()
 
     def Initialize(self):
         def QT_TRANSLATE_NOOP(scope, text):
@@ -78,10 +79,7 @@ class GDML_Workbench ( Workbench ):
     def Activated(self):
         "This function is executed when the workbench is activated"
         print ("Activated")
-        print(self.GetClassName())
-        #MyObserver()
-        #App.addDocumentObserver(self.doc)
-        self.obs = MyObserver()
+        self.obs = self.MyObserver()
         App.addDocumentObserver(self.obs)
         return
 
@@ -92,11 +90,6 @@ class GDML_Workbench ( Workbench ):
     
     def GetClassName(self):
         return "Gui::PythonWorkbench"
-
-class testClass():
-    def __init__(self):
-        self.signal = []
-
 
 Gui.addWorkbench(GDML_Workbench())
 

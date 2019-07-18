@@ -73,7 +73,7 @@ def open(filename):
     docname = os.path.splitext(os.path.basename(filename))[0]
     doc = FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
-        processGDML(filename)
+        processGDML(doc,filename)
     return doc
 
 def insert(filename,docname):
@@ -85,7 +85,7 @@ def insert(filename,docname):
     except NameError:
         doc=FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
-        processGDML(filename)
+        processGDML(doc,filename)
 
 class switch(object):
     value = None
@@ -590,7 +590,7 @@ def getItem(element, attribute) :
     else :
        return ""
 
-def processMaterials() :
+def processMaterials(doc) :
     from GDMLObjects import GDMLmaterial, GDMLfraction, \
                             GDMLcomposite, ViewProvider
     materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
@@ -645,7 +645,7 @@ def processMaterials() :
             compositeObj.Label = ref +' : '+str(n)
 
              
-def processIsotopes() :
+def processIsotopes(doc) :
     from GDMLObjects import GDMLisotope, ViewProvider
     isotopesGrp  = doc.addObject("App::DocumentObjectGroupPython","Isotopes")
     for isotope in materials.findall('isotope') :
@@ -660,7 +660,7 @@ def processIsotopes() :
         #GDMLisotope(isoObj,name,N,Z,unit,value)
         GDMLisotope(isoObj,name,N,Z,value)
 
-def processElements() :
+def processElements(doc) :
     from GDMLObjects import GDMLelement, GDMLfraction
     elementsGrp  = doc.addObject("App::DocumentObjectGroupPython","Elements")
     elementsGrp.Label = 'Elements'
@@ -678,7 +678,7 @@ def processElements() :
             #fractObj.Label = ref[0:5]+' : ' + '{0:0.2f}'.format(n)
             fractObj.Label = ref+' : ' + '{0:0.2f}'.format(n)
 
-def processGDML(filename):
+def processGDML(doc,filename):
 
     import GDMLShared
     params = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/GDML")
@@ -712,9 +712,9 @@ def processGDML(filename):
     solids    = root.find('solids')
     structure = root.find('structure')
 
-    processMaterials()
-    processIsotopes()
-    processElements()
+    processMaterials(doc)
+    processIsotopes(doc)
+    processElements(doc)
 
     #constDict = processConstants()
     GDMLShared.processConstants()

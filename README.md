@@ -41,10 +41,10 @@ GDML in the windows FreeCAD Mod directory
 GDML Solids are implemented as FreeCAD Python Objects and have the same properties as defined by GDML. By selecting an Object the properties can be changed
 via the FreeCAD properties windows and the resulting changes displayed
 
-## GDML Import
+## Opening a new file when the GDML workbench is active will load a Default file.
+The Default file is defined in GDML/Mod/Resources/Default.gdml.
 
-On opening of a GDML file the appropriate FreeCAD implemented python Object
-is created for each solid
+New GDML object have the material set to SSteel0x56070ee87d10 so the Default file should define this material. Other materials can be set by editing the FreeCAD parmeters of the object after creation.
 
 ## GDML Object creation
 
@@ -61,6 +61,11 @@ GDML objects supported in this
 5. GDMLSphere
 6. GDMLTrap
 7. GDMLTube
+
+## GDML Import
+
+On opening of a GDML file the appropriate FreeCAD implemented python Object
+is created for each solid
 
 ## Viewing Volumes
 
