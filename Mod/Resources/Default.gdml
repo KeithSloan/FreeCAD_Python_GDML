@@ -1,6 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-  <define />
+<define>
+<constant name="PI" value="1.*pi"/>
+<!-- The following are just for Export Testing -->
+<matrix coldim="2" name="REFLECTIVITY_CATHODE" values="
+      1.54986*eV 0.25
+      1.77127*eV 0.25
+      2.06648*eV 0.25
+      2.47978*eV 0.25
+      3.09973*eV 0.25
+      4.13297*eV 0.25
+      4.95956*eV 0.25
+      5.51063*eV 0.25
+      5.90424*eV 0.25"/>
+</define>
 <materials>
     <isotope N="12" Z="6" name="C120x56070ee874f0">
       <atom unit="g/mole" value="12" />
