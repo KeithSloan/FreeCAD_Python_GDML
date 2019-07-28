@@ -606,8 +606,10 @@ def processMaterials(doc) :
                       name).formula = formula
         D = material.find('D')
         if D != None :
-           Dvalue = float(D.get('value'))
            Dunit = getItem(D,'unit')
+           Dvalue = float(D.get('value'))
+           materialObj.addProperty("App::PropertyString",'Dunit','GDMLmaterial','D unit').Dunit = Dunit
+           materialObj.addProperty("App::PropertyFloat",'Dvalue','GDMLmaterial','D value').Dvalue = Dvalue
         Z = material.get('Z')
         if Z != None :  
            materialObj.addProperty("App::PropertyString",'Z',name).Z = Z
@@ -619,14 +621,14 @@ def processMaterials(doc) :
         if T != None :
            Tunit = T.get('unit')
            Tvalue = float(T.get('value'))
-           materialObj.addProperty("App::PropertyString",'Tunit',name).Tunit = Tunit
-           materialObj.addProperty("App::PropertyFloat",'Tvalue',name).Tvalue = Tvalue
+           materialObj.addProperty("App::PropertyString",'Tunit','GDMLmaterial',"T ZZZUnit").Tunit = Tunit
+           materialObj.addProperty("App::PropertyFloat",'Tvalue','GDMLmaterial','T XXXXvalue').Tvalue = Tvalue
         MEE = material.find('MEE')
         if MEE != None :
            Munit = MEE.get('unit')
            Mvalue = float(MEE.get('value'))
-           materialObj.addProperty("App::PropertyString",'MEEunit',name).MEEunit = Munit
-           materialObj.addProperty("App::PropertyFloat",'MEEvalue',name).MEEvalue = Mvalue
+           materialObj.addProperty("App::PropertyString",'MEEunit','GDMLmaterial','MEE unit').MEEunit = Munit
+           materialObj.addProperty("App::PropertyFloat",'MEEvalue','GDMLmaterial','MEE value').MEEvalue = Mvalue
         for fraction in material.findall('fraction') :
             n = float(fraction.get('n'))
             ref = fraction.get('ref')
