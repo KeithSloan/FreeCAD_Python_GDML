@@ -655,12 +655,12 @@ def processIsotopes(doc) :
         Z = int(float(isotope.get('Z')))    # annotated.gdml file has Z=8.0 
         name = isotope.get('name')
         atom = isotope.find('atom')
-        #unit = atom.get('unit')
+        unit = atom.get('unit')
         value = float(atom.get('value'))
         #isoObj = isotopesGrp.newObject("App::FeaturePython",name)
         isoObj = isotopesGrp.newObject("App::DocumentObjectGroupPython",name)
         #GDMLisotope(isoObj,name,N,Z,unit,value)
-        GDMLisotope(isoObj,name,N,Z,value)
+        GDMLisotope(isoObj,name,N,Z,unit,value)
 
 def processElements(doc) :
     from GDMLObjects import GDMLelement, GDMLfraction

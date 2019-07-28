@@ -887,6 +887,11 @@ def addBooleanPositionAndRotation(element,obj1,obj2):
     defineCnt += 1
     ET.SubElement(element,'positionref', {'ref': positionName})
 
+def processGroup(obj, addVolsFlag) :
+    print("Group Num : "+str(len(obj.Group)))
+    for grp in obj.Group :
+        processObject(grp, addVolsFlag)
+
 def processObject(obj, addVolsFlag) :
     print("\nProcess Object")
     global materials
@@ -902,42 +907,46 @@ def processObject(obj, addVolsFlag) :
          print("   Object List : "+obj.Name)
          #print(obj)
          #print(dir(obj))
-         print(obj.Group)
+         global item
          while switch(obj.Name) :
-            if case("Materials") :
+            if case("Materials") : 
                print("Materials")
-               material = ET.SubElement(materials,'material',{'name': obj.Name})
                break
 
             if case("Isotopes") :
+               print("Isotopes")
+               break
+            
+            if case("Elements") :
+               print("Elements")
                break
 
-            if case("Elements") :
-               break 
-            print("Drop Through")
             break
-
+     
          if isinstance(obj.Proxy,GDMLmaterial) :
             print("GDML material")
-            print(dir(obj.Proxy))
-            print(dir(obj))
-            if hasattr(obj.Proxy,'Tunit') :
-               print('Tunit')
+            #print(dir(obj))
 
-            if hasattr(obj.Proxy,'T') :
-               print("Found Temp")
-               Tunit  = obj.Proxy.get('Tunit')
-               Tvalue = obj.Proxy.get('Tvalue')
-               ET.SubElement(materials,'T',{'unit': Tunit, 'value': Tvalue})
+            item = ET.SubElement(materials,'material',{'name': obj.Name})
+            if hasattr(obj,'Dunit') :
+               ET.SubElement(item,'D',{'unit': obj.Dunit, \
+                                      'value': str(obj.Dvalue)})
+
+            if hasattr(obj,'Tunit') :
+               ET.SubElement(item,'T',{'unit': obj.Tunit, \
+                                      'value': str(obj.Tvalue)})
            
-            if hasattr(obj.Proxy,'MEE') :
-               MEEubit  = obj.Proxy.get('MEEubit')
-               MEEvalue = obj.Proxy.get('MEEvalue')
-               ET.SubElement(materials,'MEE',{'unit': MEEunit, 'value': MEEvalue})
+            if hasattr(obj,'MEEunit') :
+               ET.SubElement(item,'MEE',{'unit': obj.MEEunit, \
+                                               'value': str(obj.MEEvalue)})
+
             break
 
          if isinstance(obj.Proxy,GDMLfraction) :
+
             print("GDML fraction")
+            ET.SubElement(item,'fraction',{'n': str(obj.n), \
+                                          'ref': obj.Name})
             break
 
          if isinstance(obj.Proxy,GDMLcomposite) :
@@ -946,15 +955,21 @@ def processObject(obj, addVolsFlag) :
 
          if isinstance(obj.Proxy,GDMLisotope) :
             print("GDML isotope")
+            item = ET.SubElement(materials,'isotope',{'N': str(obj.N), \
+                                                      'Z': str(obj.Z), \
+                                                      'name' : obj.Name})
+            ET.SubElement(item,'atom',{'unit': obj.unit, \
+                                       'value': str(obj.value)})
             break
 
          if isinstance(obj.Proxy,GDMLelement) :
             print("GDML element")
+            item = ET.SubElement(materials,'element',{'name': obj.Name})
             break
 
-         for grp in obj.Group :
-             processObject(grp, addVolsFlag)
-         
+         if len(obj.Group) > 1 :
+            for grp in obj.Group :
+                processObject(grp, addVolsFlag)
          break
 
       if case("Part::Cut") :
@@ -1156,7 +1171,7 @@ def export(exportList,filename) :
     #for obj in exportList :
     zOrder = 1
     for obj in FreeCAD.ActiveDocument.Objects:
-        reportObject(obj)
+        #reportObject(obj)
         processObject(obj, True)
 
     # Now append World Volume definition to stucture
