@@ -714,13 +714,11 @@ def processGDML(doc,filename):
     solids    = root.find('solids')
     structure = root.find('structure')
 
-    processMaterials(doc)
+    GDMLShared.processConstants(doc)
+    GDMLShared.trace(setup.attrib)
     processIsotopes(doc)
     processElements(doc)
-
-    #constDict = processConstants()
-    GDMLShared.processConstants()
-    GDMLShared.trace(setup.attrib)
+    processMaterials(doc)
 
     volumeGrp = doc.addObject("App::DocumentObjectGroupPython","Volumes")
     world = GDMLShared.getRef(setup,"world")

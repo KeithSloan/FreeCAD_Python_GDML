@@ -970,6 +970,13 @@ class GDMLvolume :
       obj.Proxy = self
       self.Object = obj
 
+class GDMLconstant(GDMLcommon) :
+   def __init__(self,obj,name,value) :
+      obj.addProperty("App::PropertyString","name",'GDMLconstant','name').name = name
+      obj.addProperty("App::PropertyString","value",'GDMLconstant','value').value = value
+      obj.Proxy = self
+      self.Object = obj
+
 class GDMLmaterial(GDMLcommon) :
    def __init__(self,obj,name) :
       # Add most properties later 
