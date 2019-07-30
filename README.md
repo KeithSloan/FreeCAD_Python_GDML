@@ -107,6 +107,13 @@ The following FreeCAD objects are output as GDML equivalents
 If not handled as above then objects shapes are checked  to see if planar,
 if yes converts to Tessellated Solid with 3 or 4 vertex as appropriate.
 If not creates a mesh and then a Tessellated solid with 3 vertex. 
+
+### Constants / Isotopes / Elements / Materials
+
+Importing a GDML will create FreeCAD objects for the above and export should
+create the same GDML definitions as imported.
+
+The Ability to change to change these maybe implemented in the future.
  
 ## Preferences
 There is now an option to toggle Printverbose flag to reduce printing to the python console.
