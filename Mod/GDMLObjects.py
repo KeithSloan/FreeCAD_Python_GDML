@@ -940,9 +940,8 @@ class GDMLTessellated(GDMLcommon) :
 
 class GDMLFiles(GDMLcommon) :
    def __init__(self,obj,FilesEntity,sectionDict) :
-      '''Add some custom properties to our Cone feature'''
-      GDMLShared.trace("GDML Files")
-      GDMLShared.trace(FilesEntity)
+      #GDMLShared.trace("GDML Files")
+      #GDMLShared.trace(FilesEntity)
       obj.addProperty("App::PropertyBool","active","GDMLFiles", \
                     "split option").active=FilesEntity
       obj.addProperty("App::PropertyString","define","GDMLFiles", \

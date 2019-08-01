@@ -680,6 +680,72 @@ def processElements(doc) :
             #fractObj.Label = ref[0:5]+' : ' + '{0:0.2f}'.format(n)
             fractObj.Label = ref+' : ' + '{0:0.2f}'.format(n)
 
+from html.parser import HTMLParser
+
+class MyHTMLParser(HTMLParser):
+
+    def handle_starttag(self, tag, attrs):
+        #print "Encountered a start tag:", tag
+        # Entity may not be in latest tag so handle outselves
+        global currentSection
+        if tag in ["define","materials","solids","structure"] :
+           print("Section : "+tag)
+           currentSection = tag
+
+    def handle_decl(self, decl):    
+        # This gets called when the entity is declared
+        print ("Encountered an Entity declaration ", decl)
+        words = decl.split()
+        wlen  = len(words)
+        print (words)
+        if words[3] == "<!ENTITY" and wlen == 7:
+           # const that refers to a file
+           word = words[6].split('"')[1]
+           print("Entity "+words[4]+" : "+word)
+           filesDict[words[4]] = word
+
+        else :
+          print ("Not Handled - Not an Entity")
+    
+    def handle_entityref(self, name):
+        # This gets called when the entity is referenced
+        # starttag may not be a section
+        print ("Entity reference : "+ name)
+        #tag = self.get_starttag_text()
+        print ("Current Section  : "+ currentSection)
+        FilesEntity = True
+        sectionDict[currentSection] = filesDict[name]
+        #print (self.getpos())
+        #search = "&"+name
+        #print ("Search : "+search)
+        #print ("Include file ")
+        #insertFile = os.path.join(pathName,str(filesDict[name]))
+        #print (insertFile)
+
+#    def handle_endtag(self, tag):
+#        print "Encountered an end tag :", tag
+
+#    def handle_data(self, data):
+#        print "Encountered some data  :", data
+
+    def unknown_decl(data):
+        print ("Encountered unknown data  :", data)
+
+def preprocessHTML(doc,filename):
+    # Add files object so user can change to organise files
+    from GDMLObjects import GDMLFiles, ViewProvider
+    print ("Preprocessing file for Entities File Definitions")
+    global FilesEntity, filesDict, sectionDict
+    FilesEntity = False
+    sectionDict = {} # Empty Dict
+    filesDict = {}
+    fp = io.open(filename) 
+    parser = MyHTMLParser()
+    parser.feed(fp.read())
+    myfiles = doc.addObject("App::FeaturePython","Export_Files")
+    GDMLFiles(myfiles,FilesEntity,sectionDict)
+    print("End of Preprocessing")
+
 def processGDML(doc,filename):
 
     import GDMLShared
@@ -695,15 +761,10 @@ def processGDML(doc,filename):
     FilesEntity = False
 
     global setup, materials, solids, structure
-  
-  # Add files object so user can change to organise files
-  #  from GDMLObjects import GDMLFiles, ViewProvider
-  #  myfiles = doc.addObject("App::FeaturePython","Export_Files")
-    #myfiles = doc.addObject("App::DocumentObjectGroupPython","Export_Files")
-    #GDMLFiles(myfiles,FilesEntity,sectionDict)
+ 
+    preprocessHTML(doc,filename)
 
     from lxml import etree
-    #root = etree.fromstring(currentString)
     parser = etree.XMLParser(resolve_entities=True)
     root = etree.parse(filename, parser=parser)
 

@@ -45,7 +45,7 @@ from GDMLObjects import GDMLQuadrangular, GDMLTriangular, \
                         GDML2dVertex, GDMLSection, \
                         GDMLmaterial, GDMLfraction, \
                         GDMLcomposite, GDMLisotope, \
-                        GDMLelement, GDMLconstant
+                        GDMLelement, GDMLconstant, GDMLFiles
 
 #***************************************************************************
 # Tailor following to your requirements ( Should all be strings )          *
@@ -111,11 +111,6 @@ def GDMLstructure() :
     #ET.ElementTree(gdml).write("test2", 'utf-8', True)
 
 
-def defineMaterials():
-    # Replaced by loading Default
-    print("Define Materials")
-    global materials
-   
 def defineWorldBox(exportList,bbox):
     for obj in exportList :
         # print("{} + {} = ".format(bbox, obj.Shape.BoundBox))
@@ -717,7 +712,6 @@ def processGroup(obj, addVolsFlag) :
 
 def processObject(obj, addVolsFlag) :
     print("\nProcess Object")
-    global materials
     # return solid or boolean reference name
     # addVolsFlag = True then create Logical & Physical Volumes
     #             = False needed for booleans
@@ -933,9 +927,19 @@ def processObject(obj, addVolsFlag) :
           else :
              print("Not a GDML Feature")
           break  
+
       # Same as Part::Feature but no position
       if case("App::FeaturePython") :
          print("App::FeaturePython") 
+         if hasattr(obj.Proxy, 'Type') :
+            print(obj.Proxy.Type) 
+            if (obj.Proxy.Type == "GDMLFiles" ):
+               print(obj.active)
+               global exportFiles
+               exportFiles = obj.active
+               print("Export Multiple Files : "+str(exportFiles))
+         break
+
          # Following not needed as handled bu Outlist on Tessellated
          #if isinstance(obj.Proxy, GDMLQuadrangular) :
          #   return(processGDMLQuadObject(obj, addVolsFlag))
@@ -994,8 +998,9 @@ def export(exportList,filename) :
    
     # process Objects
     print("\nStart GDML Export 0.1")
+    global exportFiles
+    exportFiles = False
     GDMLstructure()
-    #defineMaterials()
     constructWorld()
     bbox = FreeCAD.BoundBox()
     defineWorldBox(exportList, bbox)
@@ -1013,8 +1018,14 @@ def export(exportList,filename) :
     #ET.ElementTree(gdml).write("test9e", 'utf-8', True)
 
     # format & write GDML file 
-    indent(gdml)
-    print("Write to GDML file")
-    #ET.ElementTree(gdml).write(filename, 'utf-8', True)
-    ET.ElementTree(gdml).write(filename)
-    print("GDML file written")
+    print("Export Multiple Files : "+str(exportFiles))
+    if exportFiles == False :
+       indent(gdml)
+       print("Write to GDML file")
+       #ET.ElementTree(gdml).write(filename, 'utf-8', True)
+       ET.ElementTree(gdml).write(filename)
+       print("GDML file written")
+    else :
+       dirname = os.path.dirname(filename)
+       print("Path Name : "+ dirname) 
+
