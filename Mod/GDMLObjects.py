@@ -3,13 +3,17 @@ from pivy import coin
 
 import GDMLShared
 
+# Global Material List
+global MaterialsList
+MaterialsList = []
+
+
 # Get angle in Radians
 def getAngle(aunit,angle) :
    if aunit == 1 :   # 0 radians 1 Degrees
       return(angle*180/math.pi)
    else :
       return angle
-
 
 class GDMLcommon :
    def __init__(self, obj):
@@ -34,7 +38,9 @@ class GDMLBox(GDMLcommon) :
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
       obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
       obj.addProperty("App::PropertyString","lunit","GDMLBox","lunit").lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLBox","Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLBox","Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLBox", "Shape of the Box")
       obj.Proxy = self
       self.Type = 'GDMLBox'
@@ -70,8 +76,10 @@ class GDMLCone(GDMLcommon) :
       obj.addProperty("App::PropertyString","lunit","GDMLCone","lunit").lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
                       "Shape of the Cone")
-      obj.addProperty("App::PropertyStringList","material","GDMLCone", \
-                       "Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLCone", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       self.Type = 'GDMLCone'
       obj.Proxy = self
 
@@ -120,8 +128,10 @@ class GDMLElCone(GDMLcommon) :
                       "lunit").lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLElCone", \
                       "Shape of the Cone")
-      obj.addProperty("App::PropertyStringList","material","GDMLElCone", \
-                       "Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLElCone", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       self.Type = 'GDMLElCone'
       obj.Proxy = self
 
@@ -175,8 +185,10 @@ class GDMLEllipsoid(GDMLcommon) :
                         lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLEllipsoid", \
                       "Shape of the Ellipsoid")
-      obj.addProperty("App::PropertyStringList","material","GDMLEllipsoid", \
-                       "Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLEllipsoid", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLEllipsoid", \
                       "Shape of the Ellipsoid")
       self.Type = 'GDMLEllipsoid'
@@ -238,8 +250,10 @@ class GDMLElTube(GDMLcommon) :
                         lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLElTube", \
                       "Shape of the Cone")
-      obj.addProperty("App::PropertyStringList","material","GDMLElTube", \
-                       "Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLElTube", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLElTube", \
                       "Shape of the ElTube")
       self.Type = 'GDMLElTube'
@@ -271,7 +285,9 @@ class GDMLXtru(GDMLcommon) :
       obj.addProperty("App::PropertyString","lunit","GDMLXtru", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyString","material","GDMLXtru", \
-                       "Material").material=material
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLXtru", \
                       "Shape of the Xtru")
       self.Type = 'GDMLXtru'
@@ -453,8 +469,10 @@ class GDMLPolycone(GDMLcommon) :
       obj.aunit=0
       obj.addProperty("App::PropertyString","lunit","GDMLPolycone", \
                       "lunit").lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLPolycone", \
-                       "Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLPolycone", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolycone", \
                       "Shape of the Polycone")
       self.Type = 'GDMLPolycone'
@@ -526,8 +544,10 @@ class GDMLSphere(GDMLcommon) :
       obj.aunit=0
       obj.addProperty("App::PropertyString","lunit","GDMLSphere", \
                       "lunit").lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLSphere", \
-                       "Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLSphere", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLSphere", \
                       "Shape of the Sphere")
       obj.Proxy = self
@@ -584,8 +604,9 @@ class GDMLTrap(GDMLcommon) :
       obj.aunit=0
       obj.addProperty("App::PropertyString","lunit","GDMLTrap","lunit"). \
                        lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLTrap","Material"). \
-                       material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLTrap","Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTrap", \
                       "Shape of the Trap")
       obj.Proxy = self
@@ -681,8 +702,9 @@ class GDMLTrd(GDMLcommon) :
                       "Length y at face +z").y2=y2
       obj.addProperty("App::PropertyString","lunit","GDMLTrd","lunit"). \
                        lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLTrd","Material"). \
-                       material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLTrd","Material") 
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTrd", \
                       "Shape of the Trap")
       obj.Proxy = self
@@ -747,7 +769,9 @@ class GDMLTube(GDMLcommon) :
       obj.aunit=["rad", "deg"]
       obj.aunit=0
       obj.addProperty("App::PropertyString","lunit","GDMLTube","lunit").lunit=lunit
-      obj.addProperty("App::PropertyString","material","GDMLTube","Material").material=material
+      obj.addProperty("App::PropertyEnumeration","material","GDMLTube","Material")
+      obj.material = MaterialsList
+      obj.material = 0
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Tube")
       obj.Proxy = self
       self.Type = 'GDMLTube'
@@ -889,6 +913,9 @@ class GDMLTessellated(GDMLcommon) :
     def __init__(self, obj ) :
       obj.addExtension('App::OriginGroupExtensionPython', self)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTessellated", "Shape of the Tesssellation")
+      obj.addProperty("App::PropertyEnumeration","material","GDMLTessellated","Material")
+      obj.material = MaterialsList
+      obj.material = 0
       self.Type = 'GDMLTessellated'
       self.Object = obj
       obj.Proxy = self

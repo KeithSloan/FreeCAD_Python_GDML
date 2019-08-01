@@ -590,63 +590,6 @@ def getItem(element, attribute) :
     else :
        return ""
 
-def processMaterials(doc) :
-    from GDMLObjects import GDMLmaterial, GDMLfraction, \
-                            GDMLcomposite, ViewProvider
-    materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
-    materialGrp.Label = "Materials"
-    for material in materials.findall('material') :
-        name = material.get('name')
-        materialObj = materialGrp.newObject("App::DocumentObjectGroupPython", \
-                      name)
-        GDMLmaterial(materialObj,name)
-        formula = material.get('formula')
-        if formula != None :
-           materialObj.addProperty("App::PropertyString",'formula', \
-                      name).formula = formula
-        D = material.find('D')
-        if D != None :
-           Dunit = getItem(D,'unit')
-           Dvalue = float(D.get('value'))
-           materialObj.addProperty("App::PropertyString",'Dunit','GDMLmaterial','D unit').Dunit = Dunit
-           materialObj.addProperty("App::PropertyFloat",'Dvalue','GDMLmaterial','D value').Dvalue = Dvalue
-        Z = material.get('Z')
-        if Z != None :  
-           materialObj.addProperty("App::PropertyString",'Z',name).Z = Z
-        atom = material.find('atom')
-        if atom != None :
-           aVal = float(atom.get('value'))
-           materialObj.addProperty("App::PropertyFloat",'atom',name).atom = aVal
-        T = material.find('T')
-        if T != None :
-           Tunit = T.get('unit')
-           Tvalue = float(T.get('value'))
-           materialObj.addProperty("App::PropertyString",'Tunit','GDMLmaterial',"T ZZZUnit").Tunit = Tunit
-           materialObj.addProperty("App::PropertyFloat",'Tvalue','GDMLmaterial','T XXXXvalue').Tvalue = Tvalue
-        MEE = material.find('MEE')
-        if MEE != None :
-           Munit = MEE.get('unit')
-           Mvalue = float(MEE.get('value'))
-           materialObj.addProperty("App::PropertyString",'MEEunit','GDMLmaterial','MEE unit').MEEunit = Munit
-           materialObj.addProperty("App::PropertyFloat",'MEEvalue','GDMLmaterial','MEE value').MEEvalue = Mvalue
-        for fraction in material.findall('fraction') :
-            n = float(fraction.get('n'))
-            ref = fraction.get('ref')
-            fractionObj = materialObj.newObject("App::DocumentObjectGroupPython", \
-                                                 ref)
-            GDMLfraction(fractionObj,ref,n)
-            #fractionObj.Label = ref[0:5] +' : '+'{0:0.2f}'.format(n)
-            fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
-
-        for composite in material.findall('composite') :
-            n = int(composite.get('n'))
-            ref = composite.get('ref')
-            compositeObj = materialObj.newObject("App::DocumentObjectGroupPython", \
-                                                 ref)
-            GDMLcomposite(compositeObj,ref,n)
-            compositeObj.Label = ref +' : '+str(n)
-
-             
 def processIsotopes(doc) :
     from GDMLObjects import GDMLisotope, ViewProvider
     isotopesGrp  = doc.addObject("App::DocumentObjectGroupPython","Isotopes")
@@ -680,9 +623,71 @@ def processElements(doc) :
             #fractObj.Label = ref[0:5]+' : ' + '{0:0.2f}'.format(n)
             fractObj.Label = ref+' : ' + '{0:0.2f}'.format(n)
 
+def processMaterials(doc) :
+    from GDMLObjects import GDMLmaterial, GDMLfraction, GDMLcomposite, \
+                            MaterialsList
+
+    materialGrp = doc.addObject("App::DocumentObjectGroupPython","Materials")
+    materialGrp.Label = "Materials"
+    for material in materials.findall('material') :
+        name = material.get('name')
+        MaterialsList.append(name)
+        materialObj = materialGrp.newObject("App::DocumentObjectGroupPython", \
+                      name)
+        GDMLmaterial(materialObj,name)
+        formula = material.get('formula')
+        if formula != None :
+           materialObj.addProperty("App::PropertyString",'formula', \
+                      name).formula = formula
+        D = material.find('D')
+        if D != None :
+           Dunit = getItem(D,'unit')
+           Dvalue = float(D.get('value'))
+           materialObj.addProperty("App::PropertyString",'Dunit','GDMLmaterial','D unit').Dunit = Dunit
+           materialObj.addProperty("App::PropertyFloat",'Dvalue','GDMLmaterial','D value').Dvalue = Dvalue
+        Z = material.get('Z')
+        if Z != None :
+           materialObj.addProperty("App::PropertyString",'Z',name).Z = Z
+        atom = material.find('atom')
+        if atom != None :
+           aVal = float(atom.get('value'))
+           materialObj.addProperty("App::PropertyFloat",'atom',name).atom = aVal
+        T = material.find('T')
+        if T != None :
+           Tunit = T.get('unit')
+           Tvalue = float(T.get('value'))
+           materialObj.addProperty("App::PropertyString",'Tunit','GDMLmaterial',"T ZZZUnit").Tunit = Tunit
+           materialObj.addProperty("App::PropertyFloat",'Tvalue','GDMLmaterial','T XXXXvalue').Tvalue = Tvalue
+        MEE = material.find('MEE')
+        if MEE != None :
+           Munit = MEE.get('unit')
+           Mvalue = float(MEE.get('value'))
+           materialObj.addProperty("App::PropertyString",'MEEunit','GDMLmaterial','MEE unit').MEEunit = Munit
+           materialObj.addProperty("App::PropertyFloat",'MEEvalue','GDMLmaterial','MEE value').MEEvalue = Mvalue
+        for fraction in material.findall('fraction') :
+            n = float(fraction.get('n'))
+            ref = fraction.get('ref')
+            fractionObj = materialObj.newObject("App::DocumentObjectGroupPython", \
+                                                 ref)
+            GDMLfraction(fractionObj,ref,n)
+            #fractionObj.Label = ref[0:5] +' : '+'{0:0.2f}'.format(n)
+            fractionObj.Label = ref +' : '+'{0:0.2f}'.format(n)
+
+        for composite in material.findall('composite') :
+            n = int(composite.get('n'))
+            ref = composite.get('ref')
+            compositeObj = materialObj.newObject("App::DocumentObjectGroupPython", \
+                                                 ref)
+            GDMLcomposite(compositeObj,ref,n)
+            compositeObj.Label = ref +' : '+str(n)
+    print("Materials List :")
+    print(MaterialsList)
+
 def processGDML(doc,filename):
 
     import GDMLShared
+    import GDMLObjects
+
     params = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/GDML")
     GDMLShared.printverbose = params.GetBool('printVerbose',False)
     print("Print Verbose : "+ str(GDMLShared.printverbose))
