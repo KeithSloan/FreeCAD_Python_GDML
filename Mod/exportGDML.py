@@ -163,26 +163,32 @@ def createLVandPV(obj, name, solidName):
     global PVcount, POScount, ROTcount
     pvName = 'PV'+name+str(PVcount)
     PVcount += 1
-    posName = 'Pos'+name+str(POScount)
-    POScount += 1
-    rotName = 'Rot'+name+str(ROTcount)
-    ROTcount += 1
     pos  = obj.Placement.Base
-    angles = obj.Placement.Rotation.toEuler()
-    print ("Angles")
-    print (angles)
     lvol = ET.SubElement(structure,'volume', {'name':pvName})
     ET.SubElement(lvol, 'materialref', {'ref': 'SSteel0x56070ee87d10'})
     ET.SubElement(lvol, 'solidref', {'ref': solidName})
     # Place child physical volume in World Volume
     phys = ET.SubElement(worldVOL, 'physvol')
     ET.SubElement(phys, 'volumeref', {'ref': pvName})
-    ET.SubElement(phys, 'position', {'name': posName, 'unit': 'mm', \
-                  'x': str(pos[0]), 'y': str(pos[1]), 'z': str(pos[2]) })
-    ET.SubElement(phys, 'rotation', {'name': rotName, 'unit': 'deg', \
-                  'x': str(-angles[2]), \
-                  'y': str(-angles[1]), \
-                  'z': str(-angles[0])})
+    x = pos[0]
+    y = pos[1]
+    z = pos[2]
+    if x!=0 and y!=0 and z!=0 :
+       posName = 'Pos'+name+str(POScount)
+       POScount += 1
+       ET.SubElement(phys, 'position', {'name': posName, 'unit': 'mm', \
+                  'x': str(x), 'y': str(y), 'z': str(y) })
+    angles = obj.Placement.Rotation.toEuler()
+    print ("Angles")
+    print (angles)
+    a0 = angles[0]
+    a1 = angles[1]
+    a2 = angles[2]
+    if a0!=0 and a1!=0 and a2!=0 :
+       rotName = 'Rot'+name+str(ROTcount)
+       ROTcount += 1
+       ET.SubElement(phys, 'rotation', {'name': rotName, 'unit': 'deg', \
+                  'x': str(-a2), 'y': str(-a1), 'z': str(-a0)})
 
 def createAdjustedLVandPV(obj, name, solidName, delta):
     # Allow for difference in placement between FreeCAD and GDML
@@ -495,6 +501,7 @@ def processGDMLBoxObject(obj, addVolsFlag) :
        delta = FreeCAD.Vector(obj.x.Value / 2, \
                            obj.y.Value / 2,  \
                            obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, boxName, delta)
     return (boxName)
 
 def processGDMLConeObject(obj, addVolsFlag) :
@@ -996,7 +1003,7 @@ def export(exportList,filename) :
     print("\nStart GDML Export 0.1")
     GDMLstructure()
     #defineMaterials()
-    constructWorld()
+    #constructWorld()
     bbox = FreeCAD.BoundBox()
     defineWorldBox(exportList, bbox)
     #for obj in exportList :
