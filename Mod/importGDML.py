@@ -613,6 +613,20 @@ def processElements(doc) :
         name = element.get('name')
         elementObj = elementsGrp.newObject("App::DocumentObjectGroupPython", \
                      name)
+        Z = element.get('Z')
+        if (Z != None ) :
+           elementObj.addProperty("App::PropertyInteger","Z",name).Z=int(Z)
+        atom = element.find('atom') 
+        if atom != None :
+           unit = atom.get('unit')
+           if unit != None :
+              elementObj.addProperty("App::PropertyString","atom_unit",name). \
+                                      atom_unit = unit
+              value = float(atom.get('value'))                        
+              elementObj.addProperty("App::PropertyFloat","atom_value",name). \
+                                      atom_value = value
+
+
         GDMLelement(elementObj,name)
         for fraction in element.findall('fraction') :
             ref = fraction.get('ref')
@@ -650,8 +664,16 @@ def processMaterials(doc) :
            materialObj.addProperty("App::PropertyString",'Z',name).Z = Z
         atom = material.find('atom')
         if atom != None :
-           aVal = float(atom.get('value'))
-           materialObj.addProperty("App::PropertyFloat",'atom',name).atom = aVal
+           print("Found atom in : "+name) 
+           aUnit = atom.get('unit')
+           if aUnit != None :
+              materialObj.addProperty("App::PropertyString",'atom_unit', \
+                         name).atom_unit = aUnit
+           aValue = atom.get('value')
+           if aValue != None :
+              materialObj.addProperty("App::PropertyFloat",'atom_value', \
+                         name).atom_value = float(aValue)
+ 
         T = material.find('T')
         if T != None :
            Tunit = T.get('unit')

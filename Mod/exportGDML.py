@@ -647,6 +647,22 @@ def processGDMLTrapObject(obj, addVolsFlag) :
        createAdjustedLVandPV(obj, obj.Name, trapName, delta)
     return(trapName)
 
+def processGDMLTrdObject(obj, addVolsFlag) :
+    # Needs unique Name
+    trdName = 'Trd' + obj.Name
+    ET.SubElement(solids, 'trd',{'name': trdName, \
+                           'z': str(obj.z.Value),  \
+                           'x1': str(obj.x1.Value),  \
+                           'x2': str(obj.x2.Value),  \
+                           'y1': str(obj.y1.Value),  \
+                           'y2': str(obj.y2.Value),  \
+                           'lunit': obj.lunit})
+    if addVolsFlag :
+       # Adjustment for position in GDML
+       delta = FreeCAD.Vector(0, 0, obj.z.Value / 2)
+       createAdjustedLVandPV(obj, obj.Name, trdName, delta)
+    return(trdName)
+
 def processGDMLTriangle(obj, addVolsFlag) :
     print("Process GDML Triangle")
     ET.SubElement(solids, 'triangular',{'vertex1': obj.v1, \
@@ -722,6 +738,18 @@ def processGroup(obj, addVolsFlag) :
     for grp in obj.Group :
         processObject(grp, addVolsFlag)
 
+def processElement(obj, item): # maybe part of material or element (common code)
+    if hasattr(obj,'Z') :
+       #print(dir(obj))
+       item.set('Z',str(obj.Z)) 
+
+    if hasattr(obj,'atom_unit') :
+       atom = ET.SubElement(item,'atom') 
+       atom.set('unit',str(obj.atom_unit)) 
+            
+       if hasattr(obj,'atom_value') :
+          atom.set('value',str(obj.atom_value)) 
+
 def processObject(obj, addVolsFlag) :
     print("\nProcess Object")
     global materials
@@ -765,6 +793,10 @@ def processObject(obj, addVolsFlag) :
             #print(dir(obj))
 
             item = ET.SubElement(materials,'material',{'name': obj.Name})
+
+            # process common options material / element
+            processElement(obj, item)
+
             if hasattr(obj,'Dunit') :
                ET.SubElement(item,'D',{'unit': obj.Dunit, \
                                       'value': str(obj.Dvalue)})
@@ -802,6 +834,7 @@ def processObject(obj, addVolsFlag) :
          if isinstance(obj.Proxy,GDMLelement) :
             print("GDML element")
             item = ET.SubElement(materials,'element',{'name': obj.Name})
+            processElement(obj,item)
             break
 
          # Commented out as individual objects will also exist
@@ -927,15 +960,23 @@ def processObject(obj, addVolsFlag) :
                 return(processGDMLTrapObject(obj, addVolsFlag))
                 break
 
+             if case("GDMLTrd") :
+                print("      GDMLTrd") 
+                return(processGDMLTrdObject(obj, addVolsFlag))
+                break
+
              if case("GDMLTube") :
                 print("      GDMLTube") 
                 return(processGDMLTubeObject(obj, addVolsFlag))
+                print("GDML Tube processed")
                 break
 
              if case("GDMLXtru") :
                 print("      GDMLXtru") 
                 return(processGDMLXtruObject(obj, addVolsFlag))
                 break
+
+             print("Not yet Handled")
 
           else :
              print("Not a GDML Feature")

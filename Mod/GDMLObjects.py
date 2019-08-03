@@ -581,7 +581,7 @@ class GDMLSphere(GDMLcommon) :
 class GDMLTrap(GDMLcommon) :
    def __init__(self, obj, z, theta, phi, x1, x2, x3, x4, y1, y2, alpha, \
                 aunit, lunit, material):
-      '''Add some custom properties to our Tube feature'''
+      "General Trapezoid"
       obj.addProperty("App::PropertyLength","z","GDMLTrap","z").z=z
       obj.addProperty("App::PropertyFloat","theta","GDMLTrap","theta"). \
                        theta=theta
@@ -691,7 +691,7 @@ class GDMLTrap(GDMLcommon) :
 
 class GDMLTrd(GDMLcommon) :
    def __init__(self, obj, z, x1, x2,  y1, y2, lunit, material) :
-      '''Add some custom properties to our Tube feature'''
+      "3.4.15 : Trapezoid – x & y varying along z"
       obj.addProperty("App::PropertyLength","z","GDMLTrd`","z").z=z
       obj.addProperty("App::PropertyLength","x1","GDMLTrd", \
                       "Length x at y= -y1 face -z").x1=x1
