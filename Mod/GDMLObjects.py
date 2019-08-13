@@ -911,7 +911,7 @@ class GDMLQuadrangular(GDMLcommon) :
        GDMLShared.trace("Recompute GDML Quqdrang\n")
        
 class GDMLTessellated(GDMLcommon) :
-    def __init__(self, obj ) :
+    def __init__(self, obj, material ) :
       obj.addExtension('App::OriginGroupExtensionPython', self)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTessellated", "Shape of the Tesssellation")
       obj.addProperty("App::PropertyEnumeration","material","GDMLTessellated","Material")

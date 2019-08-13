@@ -400,7 +400,7 @@ def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLShared.trace(solid.attrib)
     myTess=volObj.newObject("Part::FeaturePython","GDMLTessellated:"+getName(solid))
     #myTess.addExtension("App::OriginGroupExtensionPython", None)
-    GDMLTessellated(myTess)
+    GDMLTessellated(myTess,material)
     ViewProviderExtension(myTess.ViewObject)
     ViewProvider(myTess.ViewObject)
     for elem in solid.getchildren() :
