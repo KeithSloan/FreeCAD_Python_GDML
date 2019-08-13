@@ -69,12 +69,14 @@ class GDML_Workbench ( Workbench ):
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbench','GDMLTools'),toolbarcommands)
         self.appendMenu('GDML',commands)
         self.appendToolbar(QT_TRANSLATE_NOOP('Workbech','GDML Part tools'),parttoolbarcommands)
+        ResourcePath = FreeCAD.getHomePath() + "Mod/GDML/Resources/"
+        print("Resource Path : "+ResourcePath)
+        #FreeCADGui.addIconPath(FreeCAD.getResourceDir() + \
         #FreeCADGui.addIconPath(":/icons")
-        FreeCADGui.addIconPath(FreeCAD.getResourceDir() + \
-                              "Mod/GDML/Resources/icons")
-        FreeCADGui.addLanguagePath(":/translations")
-        FreeCADGui.addPreferencePage(":/ui/GDML-base.ui","GDML")
-        #print(FreeCAD.getResourceDir() + "Mod/Resources/ui/GDML-base.ui")
+        FreeCADGui.addIconPath(ResourcePath + "icons")
+        #FreeCADGui.addLanguagePath(":/translations")
+        FreeCADGui.addLanguagePath(ResourcePath + "/translations")
+        FreeCADGui.addPreferencePage(ResourcePath + "/ui/GDML-base.ui","GDML")
 
     def Activated(self):
         "This function is executed when the workbench is activated"

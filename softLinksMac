@@ -4,8 +4,8 @@ src=$(pwd)
 tgt1="/Applications/FreeCAD.app/Contents/Resources"
 #tgt2="/usr/lib/freecad-daily"
 sudo rm -rf $tgt1/Mod/GDML
-#sudo rm -rf $res1/Mod/GDML
 sudo ln -s $src/Mod $tgt1/Mod/GDML
+echo sudo ln -s $src/Mod $tgt1/Mod/GDML
 #sudo ln -s $src/Mod $res1/Mod/GDML
 #sudo rm -rf $tgt2/Mod/GDML
 #sudo ln -s $src/Mod $tgt2/Mod/GDML
