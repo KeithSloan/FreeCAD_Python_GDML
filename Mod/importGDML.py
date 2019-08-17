@@ -598,7 +598,7 @@ def processIsotopes(doc) :
         Z = int(float(isotope.get('Z')))    # annotated.gdml file has Z=8.0 
         name = isotope.get('name')
         atom = isotope.find('atom')
-        unit = atom.get('unit')
+        unit = atom.get('unit','g/mole')
         value = float(atom.get('value'))
         #isoObj = isotopesGrp.newObject("App::FeaturePython",name)
         isoObj = isotopesGrp.newObject("App::DocumentObjectGroupPython",name)
@@ -615,7 +615,7 @@ def processElements(doc) :
                      name)
         Z = element.get('Z')
         if (Z != None ) :
-           elementObj.addProperty("App::PropertyInteger","Z",name).Z=int(Z)
+           elementObj.addProperty("App::PropertyInteger","Z",name).Z=int(float(Z))
         atom = element.find('atom') 
         if atom != None :
            unit = atom.get('unit')
