@@ -159,6 +159,7 @@ and the following FreeCAD forum members
 * chrisb
 * DeepSOIC
 * ickby
+* looo
 
 ## Feedback
 
