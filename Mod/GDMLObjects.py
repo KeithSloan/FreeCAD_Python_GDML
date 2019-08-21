@@ -279,6 +279,50 @@ class GDMLElTube(GDMLcommon) :
        fp.Shape = newtube
        GDMLShared.trace("Recompute GDML ElTube Object \n")
 
+class GDMLPolyhedra(GDMLcommon) :
+   def __init__(self, obj, startphi, deltaphi, numsides, aunit, lunit, material) :
+      '''Add some custom properties for Polyhedra feature'''
+      obj.addProperty("App::PropertyFloat","startphi","GDMLPolyhedra", \
+                      "Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyFloat","deltaphi","GDMLPolyhedra", \
+                      "Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyInteger","numsides","GDMLPolyhedra", \
+                      "Number of Side").numsides=numsides
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolyhedra", \
+                       "aunit")
+      obj.aunit=["rad", "deg"]
+      obj.aunit=0
+      obj.addProperty("App::PropertyString","lunit","GDMLPolyhedra", \
+                      "lunit").lunit=lunit
+      obj.addProperty("App::PropertyEnumeration","material","GDMLPolyhedra", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = MaterialsList.index(material)
+      self.Type = 'GDMLPolyhedra'
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['startphi', 'deltaphi', 'numsides', 'aunit','lunit'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+
+       print("Execute Polyhedra")
+       #tube = Part.makeCylinder(100,100)
+       #mat = FreeCAD.Matrix()
+       #mat.unity()
+       #mat.A11 = fp.dx / 100
+       #mat.A22 = fp.dy / 100
+       #mat.A33 = fp.dz / 50
+       #mat.A44 = 1
+       #trace mat
+       #newtube = tube.transformGeometry(mat)
+       #fp.Shape = newtube
+       GDMLShared.trace("Recompute GDML Polyhedra Object \n")
+
 class GDMLXtru(GDMLcommon) :
    def __init__(self, obj, lunit, material) :
       obj.addExtension('App::OriginGroupExtensionPython', self)

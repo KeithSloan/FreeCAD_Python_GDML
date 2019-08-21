@@ -262,6 +262,43 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mypolycone,displayMode)
     return mypolycone
 
+def createPolyhedra(volObj,solid,material,px,py,pz,rot,displayMode) :
+    from GDMLObjects import GDMLPolyhedra, GDMLzplane, \
+            ViewProvider, ViewProviderExtension
+    GDMLShared.trace("Create Polyhedra : ")
+    GDMLShared.trace(solid.attrib)
+    startphi = GDMLShared.getVal(solid,'startphi')
+    deltaphi = GDMLShared.getVal(solid,'deltaphi')
+    numsides = GDMLShared.getVal(solid,'numsides',2)
+    aunit = getText(solid,'aunit','rad')
+    lunit = getText(solid,'lunit',"mm")
+    mypolyhedra=volObj.newObject("Part::FeaturePython","GDMLPolyhedra:"+ \
+                getName(solid))
+    mypolyhedra.addExtension("App::OriginGroupExtensionPython", None)
+    GDMLPolyhedra(mypolyhedra,startphi,deltaphi,numsides,aunit,lunit,material)
+    ViewProviderExtension(mypolyhedra.ViewObject)
+
+    #mypolyhedra.ViewObject.DisplayMode = "Shaded"
+    GDMLShared.trace(solid.findall('zplane'))
+    for zplane in solid.findall('zplane') : 
+        GDMLShared.trace(zplane)
+        rmin = GDMLShared.getVal(zplane,'rmin')
+        rmax = GDMLShared.getVal(zplane,'rmax')
+        z = GDMLShared.getVal(zplane,'z')
+        myzplane=FreeCAD.ActiveDocument.addObject('App::FeaturePython','zplane') 
+        mypolyhedra.addObject(myzplane)
+        #myzplane=mypolyhedra.newObject('App::FeaturePython','zplane') 
+        GDMLzplane(myzplane,rmin,rmax,z)
+        ViewProvider(myzplane)
+
+    GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
+    base = FreeCAD.Vector(px,py,pz)
+    mypolyhedra.Placement = GDMLShared.processPlacement(base,rot)
+    GDMLShared.trace(mypolyhedra.Placement.Rotation)
+    # set ViewProvider before setDisplay
+    setDisplayMode(mypolyhedra,displayMode)
+    return mypolyhedra
+
 def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLSphere, ViewProvider
     GDMLShared.trace("CreateSphere : ")
@@ -483,6 +520,10 @@ def createSolid(volObj,solid,material,px,py,pz,rot,displayMode) :
 
         if case('polycone'):
            return(createPolycone(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           break
+
+        if case('polyhedra'):
+           return(createPolyhedra(volObj,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('sphere'):
