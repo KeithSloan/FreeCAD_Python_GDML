@@ -116,12 +116,13 @@ def setDisplayMode(obj,mode):
     if mode == 3 :
        obj.ViewObject.DisplayMode = 'Wireframe'
 
-def createBox(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createBox(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLBox, ViewProvider
     GDMLShared.trace("CreateBox : ")
     GDMLShared.trace(solid.attrib)
     #mycube=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","GDMLBox")
-    mycube=volObj.newObject("Part::FeaturePython","GDMLBox:"+getName(solid))
+    #mycube=volObj.newObject("Part::FeaturePython","GDMLBox:"+getName(solid))
+    mycube=part.newObject("Part::FeaturePython","GDMLBox:"+getName(solid))
     x = GDMLShared.getVal(solid,'x')
     y = GDMLShared.getVal(solid,'y')
     z = GDMLShared.getVal(solid,'z')
@@ -136,7 +137,7 @@ def createBox(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mycube,displayMode)
     return mycube
 
-def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createCone(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLCone, ViewProvider
     GDMLShared.trace("CreateCone : ")
     GDMLShared.trace(solid.attrib)
@@ -149,7 +150,8 @@ def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
     deltaphi = GDMLShared.getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mycone=volObj.newObject("Part::FeaturePython","GDMLCone:"+getName(solid))
+    #mycone=volObj.newObject("Part::FeaturePython","GDMLCone:"+getName(solid))
+    mycone=part.newObject("Part::FeaturePython","GDMLCone:"+getName(solid))
     GDMLCone(mycone,rmin1,rmax1,rmin2,rmax2,z, \
              startphi,deltaphi,aunit,lunit,material)
     GDMLShared.trace("CreateCone : ")
@@ -162,7 +164,7 @@ def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mycone,displayMode)
     return(mycone)
 
-def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createElcone(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLElCone, ViewProvider
     GDMLShared.trace("CreateElCone : ")
     dx = GDMLShared.getVal(solid,'dx')
@@ -170,7 +172,8 @@ def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
     zmax = GDMLShared.getVal(solid,'zmax')
     zcut = GDMLShared.getVal(solid,'zcut')
     lunit = getText(solid,'lunit',"mm")
-    myelcone=volObj.newObject("Part::FeaturePython","GDMLElCone:"+getName(solid))
+    #myelcone=volObj.newObject("Part::FeaturePython","GDMLElCone:"+getName(solid))
+    myelcone=part.newObject("Part::FeaturePython","GDMLElCone:"+getName(solid))
     GDMLElCone(myelcone,dx,dy,zmax,zcut,lunit,material)
     GDMLShared.trace("CreateElCone : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -182,7 +185,7 @@ def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(myelcone,displayMode)
     return(myelcone)
 
-def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createEllipsoid(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLEllipsoid, ViewProvider
     GDMLShared.trace("CreateElTube : ")
     GDMLShared.trace(solid.attrib)
@@ -192,7 +195,8 @@ def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
     zcut1 = GDMLShared.getVal(solid,'zcut1')
     zcut2 = GDMLShared.getVal(solid,'zcut2')
     lunit = getText(solid,'lunit',"mm")
-    myelli=volObj.newObject("Part::FeaturePython","GDMLEllipsoid:"+getName(solid))
+    #myelli=volObj.newObject("Part::FeaturePython","GDMLEllipsoid:"+getName(solid))
+    myelli=part.newObject("Part::FeaturePython","GDMLEllipsoid:"+getName(solid))
     # cuts 0 for now
     GDMLEllipsoid(myelli,ax, by, cz,zcut1,zcut2,lunit,material)
     GDMLShared.trace("CreateEllipsoid : ")
@@ -206,7 +210,7 @@ def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(myelli,displayMode)
     return myelli
 
-def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createEltube(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLElTube, ViewProvider
     GDMLShared.trace("CreateElTube : ")
     GDMLShared.trace(solid.attrib)
@@ -214,7 +218,8 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     dy = GDMLShared.getVal(solid,'dy')
     dz = GDMLShared.getVal(solid,'dz')
     lunit = getText(solid,'lunit',"mm")
-    myeltube=volObj.newObject("Part::FeaturePython","GDMLElTube:"+getName(solid))
+    #myeltube=volObj.newObject("Part::FeaturePython","GDMLElTube:"+getName(solid))
+    myeltube=part.newObject("Part::FeaturePython","GDMLElTube:"+getName(solid))
     GDMLElTube(myeltube,dx, dy, dz,lunit,material)
     GDMLShared.trace("CreateElTube : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -227,7 +232,7 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(myeltube,displayMode)
     return myeltube
 
-def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createPolycone(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLPolycone, GDMLzplane, \
             ViewProvider, ViewProviderExtension
     GDMLShared.trace("Create Polycone : ")
@@ -236,7 +241,8 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
     deltaphi = GDMLShared.getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mypolycone=volObj.newObject("Part::FeaturePython","GDMLPolycone:"+getName(solid))
+    #mypolycone=volObj.newObject("Part::FeaturePython","GDMLPolycone:"+getName(solid))
+    mypolycone=part.newObject("Part::FeaturePython","GDMLPolycone:"+getName(solid))
     mypolycone.addExtension("App::OriginGroupExtensionPython", None)
     GDMLPolycone(mypolycone,startphi,deltaphi,aunit,lunit,material)
     ViewProviderExtension(mypolycone.ViewObject)
@@ -262,7 +268,7 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mypolycone,displayMode)
     return mypolycone
 
-def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createSphere(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLSphere, ViewProvider
     GDMLShared.trace("CreateSphere : ")
     GDMLShared.trace(solid.attrib)
@@ -272,7 +278,8 @@ def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     deltaphi = GDMLShared.getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mysphere=volObj.newObject("Part::FeaturePython","GDMLSphere:"+getName(solid))
+    #mysphere=volObj.newObject("Part::FeaturePython","GDMLSphere:"+getName(solid))
+    mysphere=part.newObject("Part::FeaturePython","GDMLSphere:"+getName(solid))
     GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
                lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -284,7 +291,7 @@ def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     ViewProvider(mysphere.ViewObject)
     return mysphere
 
-def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createTrap(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLTrap, ViewProvider
     GDMLShared.trace("CreateTrap : ")
     GDMLShared.trace(solid.attrib)
@@ -301,7 +308,8 @@ def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
     #print z
-    mytrap=volObj.newObject("Part::FeaturePython","GDMLTrap:"+getName(solid))
+    #mytrap=volObj.newObject("Part::FeaturePython","GDMLTrap:"+getName(solid))
+    mytrap=part.newObject("Part::FeaturePython","GDMLTrap:"+getName(solid))
     GDMLTrap(mytrap,z,theta,phi,x1,x2,x3,x4,y1,y2,alpha,aunit,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)
@@ -312,7 +320,7 @@ def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytrap,displayMode)
     return mytrap
 
-def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createTrd(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLTrd, ViewProvider
     GDMLShared.trace("CreateTrd : ")
     GDMLShared.trace(solid.attrib)
@@ -323,7 +331,8 @@ def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
     y2 = GDMLShared.getVal(solid,'y2')
     lunit = getText(solid,'lunit',"mm")
     #print z
-    mytrd=volObj.newObject("Part::FeaturePython","GDMLTrd:"+getName(solid))
+    #mytrd=volObj.newObject("Part::FeaturePython","GDMLTrd:"+getName(solid))
+    mytrd=part.newObject("Part::FeaturePython","GDMLTrd:"+getName(solid))
     GDMLTrd(mytrd,z,x1,x2,y1,y2,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)
@@ -334,12 +343,15 @@ def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytrd,displayMode)
     return mytrd
 
-def createXtru(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createXtru(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLXtru, GDML2dVertex, GDMLSection, \
              ViewProvider, ViewProviderExtension
     GDMLShared.trace("CreateXtru : ")
-    myXtru=volObj.newObject("Part::FeaturePython","GDMLXtru"+getName(solid))
-    myXtru.addExtension("App::OriginGroupExtensionPython", None)
+    #myXtru=volObj.newObject("Part::FeaturePython","GDMLXtru"+getName(solid))
+    print(solid)
+    print(getName(solid))
+    myXtru=part.newObject("Part::FeaturePython","GDMLXtru"+getName(solid))
+    #myXtru.addExtension("App::OriginGroupExtensionPython", None)
     lunit = getText(solid,'lunit',"mm")
     GDMLXtru(myXtru,lunit,material)
     ViewProviderExtension(myXtru.ViewObject)
@@ -368,7 +380,7 @@ def createXtru(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLShared.trace(myXtru.Placement.Rotation)
     return(myXtru)
 
-def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createTube(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLTube, ViewProvider
     GDMLShared.trace("CreateTube : ")
     GDMLShared.trace(solid.attrib)
@@ -382,7 +394,8 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLShared.trace(rmin)
     GDMLShared.trace(rmax)
     GDMLShared.trace(z)
-    mytube=volObj.newObject("Part::FeaturePython","GDMLTube:"+getName(solid))
+    #mytube=volObj.newObject("Part::FeaturePython","GDMLTube:"+getName(solid))
+    mytube=part.newObject("Part::FeaturePython","GDMLTube:"+getName(solid))
     GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
     base = FreeCAD.Vector(px,py,pz)
@@ -393,12 +406,13 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytube,displayMode)
     return mytube
 
-def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createTessellated(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLTessellated, GDMLTriangular, \
             GDMLQuadrangular,  ViewProvider, ViewProviderExtension
     GDMLShared.trace("CreateTessellated : ")
     GDMLShared.trace(solid.attrib)
-    myTess=volObj.newObject("Part::FeaturePython","GDMLTessellated:"+getName(solid))
+    #myTess=volObj.newObject("Part::FeaturePython","GDMLTessellated:"+getName(solid))
+    myTess=part.newObject("Part::FeaturePython","GDMLTessellated:"+getName(solid))
     #myTess.addExtension("App::OriginGroupExtensionPython", None)
     GDMLTessellated(myTess,material)
     ViewProviderExtension(myTess.ViewObject)
@@ -431,7 +445,7 @@ def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(myTess,displayMode)
     return myTess
 
-def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
+def parseBoolean(volObj,part,solid,objType,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import ViewProvider
     GDMLShared.trace(solid.tag)
     GDMLShared.trace(solid.attrib)
@@ -445,11 +459,13 @@ def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
        tool = solids.find("*[@name='%s']" % name2nd )
        GDMLShared.trace("second : "+name2nd)
        #parseObject(root,tool)
-       mybool = volObj.newObject(objType,solid.tag+':'+getName(solid))
-       mybool.Base = createSolid(volObj,base,material,0,0,0,None,displayMode)
+       #mybool = volObj.newObject(objType,solid.tag+':'+getName(solid))
+       mybool = part.newObject(objType,solid.tag+':'+getName(solid))
+       #mybool.Base = createSolid(volObj,base,material,0,0,0,None,displayMode)
+       mybool.Base = createSolid(volObj,part,base,material,0,0,0,None,displayMode)
        #mybool.Base = createSolid(base,px,py,pz,rot)
        # second solid is placed at position and rotation relative to first
-       mybool.Tool = createSolid(volObj,tool,material,0,0,0,None,displayMode)
+       mybool.Tool = createSolid(volObj,part,tool,material,0,0,0,None,displayMode)
        mybool.Tool.Placement= GDMLShared.getPlacementFromRefs(solid) 
        # Okay deal with position of boolean
        GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
@@ -458,73 +474,73 @@ def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
        #ViewProvider(mybool.ViewObject)
        return mybool
 
-def createSolid(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createSolid(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     GDMLShared.trace(solid.tag)
     while switch(solid.tag) :
         if case('box'):
-           return(createBox(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createBox(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('cone'):
-           return(createCone(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createCone(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('elcone'):
-           return(createElcone(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createElcone(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('ellipsoid'):
-           return(createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createEllipsoid(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('eltube'):
-           return(createEltube(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createEltube(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('polycone'):
-           return(createPolycone(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createPolycone(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('sphere'):
-           return(createSphere(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createSphere(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('trap'):
-           return(createTrap(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createTrap(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('trap_dimensions'):
-           return(createTrap(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createTrap(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('trd'):
-           return(createTrd(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createTrd(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('tube'):
-           return(createTube(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createTube(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('tessellated'):
-           return(createTessellated(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createTessellated(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('xtru'):
-           return(createXtru(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createXtru(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('intersection'):
-            return(parseBoolean(volObj,solid,'Part::Common', \
+            return(parseBoolean(volObj,part,solid,'Part::Common', \
                   material,px,py,pz,rot,displayMode)) 
             break
 
         if case('union'):
-            return(parseBoolean(volObj,solid,'Part::Fuse', \
+            return(parseBoolean(volObj,part,solid,'Part::Fuse', \
                   material,px,py,pz,rot,displayMode)) 
             break
 
         if case('subtraction'):
-            return(parseBoolean(volObj,solid,'Part::Cut', \
+            return(parseBoolean(volObj,part,solid,'Part::Cut', \
                   material,px,py,pz,rot,displayMode)) 
             break
 
@@ -540,15 +556,16 @@ def getVolSolid(name):
     solid = solids.find("*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(volGrp,physVol,solid,material,displayMode):
+def parsePhysVol(volGrp,part,physVol,solid,material,displayMode):
     GDMLShared.trace("ParsePhyVol")
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
+       GDMLShared.trace("positionref : "+posref)
        pos = GDMLShared.define.find("position[@name='%s']" % posref )
-       GDMLShared.trace(pos.attrib)
+       if pos is not None : GDMLShared.trace(pos.attrib)
     else :
        pos = physVol.find("position")
-    if posref is not None :
+    if pos is not None :
        px = GDMLShared.getVal(pos,'x')
        py = GDMLShared.getVal(pos,'y')
        pz = GDMLShared.getVal(pos,'z')
@@ -562,26 +579,30 @@ def parsePhysVol(volGrp,physVol,solid,material,displayMode):
 
     volref = GDMLShared.getRef(physVol,"volumeref")
     GDMLShared.trace("Volume ref : "+volref)
-    parseVolume(volGrp,volref,px,py,pz,rot,displayMode)
+    parseVolume(volGrp,part,volref,px,py,pz,rot,displayMode)
 
 # ParseVolume name - structure is global
 # We get passed position and rotation
 # displayMode 1 normal 2 hide 3 wireframe
-def parseVolume(parent,name,px,py,pz,rot,displayMode) :
+def parseVolume(parent,part,name,px,py,pz,rot,displayMode) :
     GDMLShared.trace("ParseVolume : "+name)
-    volgrp = parent.newObject("App::DocumentObjectGroupPython",name)
+    #volgrp = parent.newObject("App::DocumentObjectGroupPython",name)
+    #part = parent.newObject("App::Part",name)
+    newpart = part.newObject("App::Part",name)
     vol = structure.find("volume[@name='%s']" % name )
     solidref = GDMLShared.getRef(vol,"solidref")
     solid  = solids.find("*[@name='%s']" % solidref )
     GDMLShared.trace(solid.tag)
     # Material is the materialref value
     material = GDMLShared.getRef(vol,"materialref")
-    createSolid(volgrp,solid,material,px,py,pz,rot,displayMode)
+    #createSolid(volgrp,part,solid,material,px,py,pz,rot,displayMode)
+    createSolid(None,newpart,solid,material,px,py,pz,rot,displayMode)
     # Volume may or maynot contain physvol's
     displayMode = 1
     for pv in vol.findall('physvol') : 
         # create solids at pos & rot in physvols
-        parsePhysVol(volgrp,pv,solid,material,displayMode)
+        #parsePhysVol(volgrp,part,pv,solid,material,displayMode)
+        parsePhysVol(None,newpart,pv,solid,material,displayMode)
 
 def getItem(element, attribute) :
     item = element.get(attribute)
@@ -747,9 +768,12 @@ def processGDML(doc,filename):
     processElements(doc)
     processMaterials(doc)
 
-    volumeGrp = doc.addObject("App::DocumentObjectGroupPython","Volumes")
+    #volumeGrp = doc.addObject("App::DocumentObjectGroupPython","Volumes")
+    part =doc.addObject("App::Part","World")
     world = GDMLShared.getRef(setup,"world")
-    parseVolume(volumeGrp,world,0,0,0,None,3)
+    #print(world)
+    #parseVolume(volumeGrp,part,world,0,0,0,None,3)
+    parseVolume(None,part,world,0,0,0,None,3)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")
