@@ -7,13 +7,23 @@ import GDMLShared
 global MaterialsList
 MaterialsList = []
 
-
 # Get angle in Radians
 def getAngle(aunit,angle) :
    if aunit == 1 :   # 0 radians 1 Degrees
       return(angle*180/math.pi)
    else :
       return angle
+
+def makeRegularPolygon(n,r):
+    #from FreeCAD import Vector
+    #import Part
+    from math import cos, sin, pi
+    vecs = [FreeCAD.Vector(cos(2*pi*i/n)*r, sin(2*pi*i/n)*r) \
+            for i in range(n+1)]
+    return Part.makePolygon(vecs)
+
+def makeFrustrum(sides,z1,z2,rmax1,rmax2):
+    print("Make Frustrum")
 
 class GDMLcommon :
    def __init__(self, obj):
@@ -298,7 +308,10 @@ class GDMLPolyhedra(GDMLcommon) :
                        "Material")
       obj.material = MaterialsList
       obj.material = MaterialsList.index(material)
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolyhedra", \
+                      "Shape of the Polyhedra")
       self.Type = 'GDMLPolyhedra'
+      self.Object = obj
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
@@ -307,10 +320,27 @@ class GDMLPolyhedra(GDMLcommon) :
           self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
+
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
 
        print("Execute Polyhedra")
+       parms = self.Object.OutList
+       #print("OutList")
+       #print(parms)
+       GDMLShared.trace("Number of parms : "+str(len(parms)))
+       numsides = fp.numsides
+       GDMLShared.trace("Number of sides : "+str(numsides))
+       top_rmax = parms[0].rmax
+       top_z    = parms[0].z
+       GDMLShared.trace("Top z    : "+str(top_z))
+       GDMLShared.trace("Top rmax : "+str(top_rmax))
+       bottom_rmax = parms[1].rmax
+       bottom_z    = parms[1].z
+       GDMLShared.trace("Bottom z    : "+str(bottom_z))
+       GDMLShared.trace("Bottom rmax : "+str(bottom_rmax))
+       makeFrustrum(numsides,top_z,bottom_z,top_rmax,bottom_rmax)
+       #top = makeRegularPolygon(6,2)
        #tube = Part.makeCylinder(100,100)
        #mat = FreeCAD.Matrix()
        #mat.unity()
