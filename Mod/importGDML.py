@@ -612,17 +612,29 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
     GDMLShared.trace("ParseVolume : "+name)
     volgrp = parent.newObject("App::DocumentObjectGroupPython",name)
     vol = structure.find("volume[@name='%s']" % name )
-    solidref = GDMLShared.getRef(vol,"solidref")
-    solid  = solids.find("*[@name='%s']" % solidref )
-    GDMLShared.trace(solid.tag)
-    # Material is the materialref value
-    material = GDMLShared.getRef(vol,"materialref")
-    createSolid(volgrp,solid,material,px,py,pz,rot,displayMode)
-    # Volume may or maynot contain physvol's
-    displayMode = 1
-    for pv in vol.findall('physvol') : 
-        # create solids at pos & rot in physvols
-        parsePhysVol(volgrp,pv,solid,material,displayMode)
+    if vol != None : # If not volume test for assembly
+       solidref = GDMLShared.getRef(vol,"solidref")
+       solid  = solids.find("*[@name='%s']" % solidref )
+       GDMLShared.trace(solid.tag)
+       # Material is the materialref value
+       material = GDMLShared.getRef(vol,"materialref")
+       createSolid(volgrp,solid,material,px,py,pz,rot,displayMode)
+       # Volume may or maynot contain physvol's
+       displayMode = 1
+       for pv in vol.findall('physvol') : 
+           # create solids at pos & rot in physvols
+           parsePhysVol(volgrp,pv,solid,material,displayMode)
+
+    else :
+       assembly= structure.find("assembly[@name='%s']" % name)
+       if assembly != None :
+          print("Assembly : "+name)
+          for pv in assembly.findall('physvol') :
+              # create solids at pos & rot in physvols
+              parsePhysVol(volgrp,pv,solid,material,displayMode)
+       else :
+          print("Not Volume or Assembly") 
+
 
 def getItem(element, attribute) :
     item = element.get(attribute)
