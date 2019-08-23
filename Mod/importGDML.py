@@ -581,7 +581,7 @@ def getVolSolid(name):
     solid = solids.find("*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(volGrp,physVol,solid,material,displayMode):
+def parsePhysVol(volGrp,physVol,displayMode):
     GDMLShared.trace("ParsePhyVol")
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
@@ -623,15 +623,15 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
        displayMode = 1
        for pv in vol.findall('physvol') : 
            # create solids at pos & rot in physvols
-           parsePhysVol(volgrp,pv,solid,material,displayMode)
+           parsePhysVol(volgrp,pv,displayMode)
 
     else :
-       assembly= structure.find("assembly[@name='%s']" % name)
+       assembly = structure.find("assembly[@name='%s']" % name)
        if assembly != None :
           print("Assembly : "+name)
           for pv in assembly.findall('physvol') :
               # create solids at pos & rot in physvols
-              parsePhysVol(volgrp,pv,solid,material,displayMode)
+              parsePhysVol(volgrp,pv,displayMode)
        else :
           print("Not Volume or Assembly") 
 
