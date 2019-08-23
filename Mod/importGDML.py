@@ -268,7 +268,7 @@ def createPolycone(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mypolycone,displayMode)
     return mypolycone
 
-def createPolyhedra(volObj,solid,material,px,py,pz,rot,displayMode) :
+def createPolyhedra(volObj,part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLPolyhedra, GDMLzplane, \
             ViewProvider, ViewProviderExtension
     GDMLShared.trace("Create Polyhedra : ")
@@ -278,7 +278,8 @@ def createPolyhedra(volObj,solid,material,px,py,pz,rot,displayMode) :
     numsides = GDMLShared.getVal(solid,'numsides',2)
     aunit = getText(solid,'aunit','rad')
     lunit = getText(solid,'lunit',"mm")
-    mypolyhedra=volObj.newObject("Part::FeaturePython","GDMLPolyhedra:"+ \
+    #mypolyhedra=volObj.newObject("Part::FeaturePython","GDMLPolyhedra:"+ \
+    mypolyhedra=part.newObject("Part::FeaturePython","GDMLPolyhedra:"+ \
                 getName(solid))
     mypolyhedra.addExtension("App::OriginGroupExtensionPython", None)
     GDMLPolyhedra(mypolyhedra,startphi,deltaphi,numsides,aunit,lunit,material)
@@ -539,7 +540,7 @@ def createSolid(volObj,part,solid,material,px,py,pz,rot,displayMode) :
            break
 
         if case('polyhedra'):
-           return(createPolyhedra(volObj,solid,material,px,py,pz,rot,displayMode)) 
+           return(createPolyhedra(volObj,part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('sphere'):
