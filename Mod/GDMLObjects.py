@@ -14,7 +14,7 @@ def getAngle(aunit,angle) :
    else :
       return angle
 
-def makeRegularPolygonVectors(n,r,z):
+def makeRegularPolygon(n,r,z):
     from math import cos, sin, pi
     vecs = [FreeCAD.Vector(cos(2*pi*i/n)*r, sin(2*pi*i/n)*r, z) \
             for i in range(n+1)]
@@ -25,28 +25,16 @@ def printPolyVec(n,v) :
     for i in v :
         print("Vertex - x : "+str(i[0])+" y : "+str(i[1])+" z : "+str(i[2]))
 
-def makeFrustrum(sides,z,rmax0,rmax1):
+def makeFrustrum(num,poly0,poly1) :
     # return list of faces
-    print("Make Frustrum")
-    top = makeRegularPolygonVectors(sides,rmax0,z)
-    print(len(top))
-    bot = []
+    print("Make Frustrum : "+str(num)+" Faces")
     faces = []
-    for i in top :
-       bot.append(FreeCAD.Vector(i.x, i.y, 0 ))
-    printPolyVec("Bot",bot)
-    print(bot)
-    print(len(bot))
-    print("End Bot")
-    faces.append(Part.Face(Part.makePolygon(bot)))
-    for i in range(len(top) - 1) :
+    for i in range(num) :
        j = i + 1
-       print([top[i],top[j],bot[j],bot[i]])
-       w = Part.makePolygon([top[i],top[j],bot[j],bot[i],top[i]])
+       print([poly0[i],poly0[j],poly1[j],poly1[i]])
+       w = Part.makePolygon([poly0[i],poly0[j],poly1[j],poly1[i],poly0[i]])
        faces.append(Part.Face(w))
-    printPolyVec("Top",top)
-    faces.append(Part.Face(Part.makePolygon(top)))
-    print("Faces : "+str(len(faces)))
+    print("Number of Faces : "+str(len(faces)))
     return(faces)
 
 class GDMLcommon :
@@ -359,22 +347,25 @@ class GDMLPolyhedra(GDMLcommon) :
        rmax0 = parms[0].rmax
        GDMLShared.trace("Top z    : "+str(z0))
        GDMLShared.trace("Top rmax : "+str(rmax0))
-       z1    = parms[1].z
-       rmax1 = parms[1].rmax
-       GDMLShared.trace("Bottom z    : "+str(z1))
-       GDMLShared.trace("Bottom rmax : "+str(rmax1))
-       #faces = []
-       #faces.append(makeFrustrum(numsides,z1-z0,rmax0,rmax1))
-       faces = makeFrustrum(numsides,z1-z0,rmax0,rmax1)
-       #for ptr in parms[2:] :
-       #    z    = ptr.z
-       #    rmax = ptr.rmax
-       #    print("z    : "+z)
-       #    print("rmax : "+rmax)
-       #    faces.append(makeFrustrum(numsides,z-z1,rmax,rmax1))
-       #    z1 = z
-       #    rmax1 = rmax
-       #faces = makeFrustrum(4,1,10,10)
+       faces = []
+       # Make top Polygon
+       poly0 = makeRegularPolygon(numsides,rmax0,z0)
+       # Add top face
+       faces.append(Part.Face(Part.makePolygon(poly0)))
+       for ptr in parms[1:] :
+           z1 = ptr.z
+           rmax1 = ptr.rmax
+           GDMLShared.trace("z1    : "+str(z1))
+           GDMLShared.trace("rmax1 : "+str(rmax1))
+           poly1 = makeRegularPolygon(numsides,rmax1,z1)
+           # Concat face lists
+           faces = faces + makeFrustrum(numsides,poly0,poly1)
+           # update for next zsection
+           poly0 = poly1
+           z0 = z1
+       # add bottom polygon face
+       faces.append(Part.Face(Part.makePolygon(poly1)))
+       GDMLShared.trace("Total Faces : "+str(len(faces)))
        shell = Part.makeShell(faces)
        solid = Part.makeSolid(shell)
        fp.Shape = solid
