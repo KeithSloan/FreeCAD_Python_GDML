@@ -160,6 +160,7 @@ and the following FreeCAD forum members
 * DeepSOIC
 * ickby
 * looo
+* easyw-fc
 
 ## Feedback
 

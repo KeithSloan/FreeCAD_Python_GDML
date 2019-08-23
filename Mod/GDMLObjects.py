@@ -7,13 +7,35 @@ import GDMLShared
 global MaterialsList
 MaterialsList = []
 
-
 # Get angle in Radians
 def getAngle(aunit,angle) :
    if aunit == 1 :   # 0 radians 1 Degrees
       return(angle*180/math.pi)
    else :
       return angle
+
+def makeRegularPolygon(n,r,z):
+    from math import cos, sin, pi
+    vecs = [FreeCAD.Vector(cos(2*pi*i/n)*r, sin(2*pi*i/n)*r, z) \
+            for i in range(n+1)]
+    return vecs
+
+def printPolyVec(n,v) :
+    print("Polygon : "+n)
+    for i in v :
+        print("Vertex - x : "+str(i[0])+" y : "+str(i[1])+" z : "+str(i[2]))
+
+def makeFrustrum(num,poly0,poly1) :
+    # return list of faces
+    print("Make Frustrum : "+str(num)+" Faces")
+    faces = []
+    for i in range(num) :
+       j = i + 1
+       print([poly0[i],poly0[j],poly1[j],poly1[i]])
+       w = Part.makePolygon([poly0[i],poly0[j],poly1[j],poly1[i],poly0[i]])
+       faces.append(Part.Face(w))
+    print("Number of Faces : "+str(len(faces)))
+    return(faces)
 
 class GDMLcommon :
    def __init__(self, obj):
@@ -278,6 +300,93 @@ class GDMLElTube(GDMLcommon) :
        newtube = tube.transformGeometry(mat)
        fp.Shape = newtube
        GDMLShared.trace("Recompute GDML ElTube Object \n")
+
+class GDMLPolyhedra(GDMLcommon) :
+   def __init__(self, obj, startphi, deltaphi, numsides, aunit, lunit, material) :
+      '''Add some custom properties for Polyhedra feature'''
+      obj.addProperty("App::PropertyFloat","startphi","GDMLPolyhedra", \
+                      "Start Angle").startphi=startphi
+      obj.addProperty("App::PropertyFloat","deltaphi","GDMLPolyhedra", \
+                      "Delta Angle").deltaphi=deltaphi
+      obj.addProperty("App::PropertyInteger","numsides","GDMLPolyhedra", \
+                      "Number of Side").numsides=numsides
+      obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolyhedra", \
+                       "aunit")
+      obj.aunit=["rad", "deg"]
+      obj.aunit=0
+      obj.addProperty("App::PropertyString","lunit","GDMLPolyhedra", \
+                      "lunit").lunit=lunit
+      obj.addProperty("App::PropertyEnumeration","material","GDMLPolyhedra", \
+                       "Material")
+      obj.material = MaterialsList
+      obj.material = MaterialsList.index(material)
+      obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolyhedra", \
+                      "Shape of the Polyhedra")
+      self.Type = 'GDMLPolyhedra'
+      self.Object = obj
+      obj.Proxy = self
+
+   def onChanged(self, fp, prop):
+       '''Do something when a property has changed'''
+       if prop in ['startphi', 'deltaphi', 'numsides', 'aunit','lunit'] :
+          self.execute(fp)
+       GDMLShared.trace("Change property: " + str(prop) + "\n")
+
+
+   def execute(self, fp):
+       '''Do something when doing a recomputation, this method is mandatory'''
+
+       print("Execute Polyhedra")
+       parms = self.Object.OutList
+       #print("OutList")
+       #print(parms)
+       GDMLShared.trace("Number of parms : "+str(len(parms)))
+       numsides = fp.numsides
+       GDMLShared.trace("Number of sides : "+str(numsides))
+       z0    = parms[0].z
+       rmin0 = parms[0].rmin
+       rmax0 = parms[0].rmax
+       GDMLShared.trace("Top z    : "+str(z0))
+       GDMLShared.trace("Top rmin : "+str(rmin0))
+       GDMLShared.trace("Top rmax : "+str(rmax0))
+       inner_faces = []
+       outer_faces = []
+       # Make top Polygon
+       inner_poly0 = makeRegularPolygon(numsides,rmin0,z0)
+       outer_poly0 = makeRegularPolygon(numsides,rmax0,z0)
+       # Add top face
+       inner_faces.append(Part.Face(Part.makePolygon(inner_poly0)))
+       outer_faces.append(Part.Face(Part.makePolygon(outer_poly0)))
+       for ptr in parms[1:] :
+           z1 = ptr.z
+           rmin1 = ptr.rmin
+           rmax1 = ptr.rmax
+           GDMLShared.trace("z1    : "+str(z1))
+           GDMLShared.trace("rmin1 : "+str(rmin1))
+           GDMLShared.trace("rmax1 : "+str(rmax1))
+           inner_poly1 = makeRegularPolygon(numsides,rmin1,z1)
+           outer_poly1 = makeRegularPolygon(numsides,rmax1,z1)
+           # Concat face lists
+           inner_faces = inner_faces + \
+                   makeFrustrum(numsides,inner_poly0,inner_poly1)
+           outer_faces = outer_faces + \
+                   makeFrustrum(numsides,outer_poly0,outer_poly1)
+           # update for next zsection
+           inner_poly0 = inner_poly1
+           outer_poly0 = outer_poly1
+           z0 = z1
+       # add bottom polygon face
+       inner_faces.append(Part.Face(Part.makePolygon(inner_poly1)))
+       outer_faces.append(Part.Face(Part.makePolygon(outer_poly1)))
+       GDMLShared.trace("Total Faces : "+str(len(inner_faces)))
+       inner_shell = Part.makeShell(inner_faces)
+       inner_solid = Part.makeSolid(inner_shell)
+       outer_shell = Part.makeShell(outer_faces)
+       outer_solid = Part.makeSolid(outer_shell)
+       fp.Shape = outer_solid.cut(inner_solid)
+       #fp.Shape = shell
+       #fp.Shape = Part.makeBox(10,10,10)
+       GDMLShared.trace("Recompute GDML Polyhedra")
 
 class GDMLXtru(GDMLcommon) :
    def __init__(self, obj, lunit, material) :
