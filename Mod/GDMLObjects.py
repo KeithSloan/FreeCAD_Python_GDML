@@ -14,16 +14,40 @@ def getAngle(aunit,angle) :
    else :
       return angle
 
-def makeRegularPolygon(n,r):
-    #from FreeCAD import Vector
-    #import Part
+def makeRegularPolygonVectors(n,r,z):
     from math import cos, sin, pi
-    vecs = [FreeCAD.Vector(cos(2*pi*i/n)*r, sin(2*pi*i/n)*r) \
+    vecs = [FreeCAD.Vector(cos(2*pi*i/n)*r, sin(2*pi*i/n)*r, z) \
             for i in range(n+1)]
-    return Part.makePolygon(vecs)
+    return vecs
 
-def makeFrustrum(sides,z1,z2,rmax1,rmax2):
+def printPolyVec(n,v) :
+    print("Polygon : "+n)
+    for i in v :
+        print("Vertex - x : "+str(i[0])+" y : "+str(i[1])+" z : "+str(i[2]))
+
+def makeFrustrum(sides,z,rmax0,rmax1):
+    # return list of faces
     print("Make Frustrum")
+    top = makeRegularPolygonVectors(sides,rmax0,z)
+    print(len(top))
+    bot = []
+    faces = []
+    for i in top :
+       bot.append(FreeCAD.Vector(i.x, i.y, 0 ))
+    printPolyVec("Bot",bot)
+    print(bot)
+    print(len(bot))
+    print("End Bot")
+    faces.append(Part.Face(Part.makePolygon(bot)))
+    for i in range(len(top) - 1) :
+       j = i + 1
+       print([top[i],top[j],bot[j],bot[i]])
+       w = Part.makePolygon([top[i],top[j],bot[j],bot[i],top[i]])
+       faces.append(Part.Face(w))
+    printPolyVec("Top",top)
+    faces.append(Part.Face(Part.makePolygon(top)))
+    print("Faces : "+str(len(faces)))
+    return(faces)
 
 class GDMLcommon :
    def __init__(self, obj):
@@ -331,27 +355,32 @@ class GDMLPolyhedra(GDMLcommon) :
        GDMLShared.trace("Number of parms : "+str(len(parms)))
        numsides = fp.numsides
        GDMLShared.trace("Number of sides : "+str(numsides))
-       top_rmax = parms[0].rmax
-       top_z    = parms[0].z
-       GDMLShared.trace("Top z    : "+str(top_z))
-       GDMLShared.trace("Top rmax : "+str(top_rmax))
-       bottom_rmax = parms[1].rmax
-       bottom_z    = parms[1].z
-       GDMLShared.trace("Bottom z    : "+str(bottom_z))
-       GDMLShared.trace("Bottom rmax : "+str(bottom_rmax))
-       makeFrustrum(numsides,top_z,bottom_z,top_rmax,bottom_rmax)
-       #top = makeRegularPolygon(6,2)
-       #tube = Part.makeCylinder(100,100)
-       #mat = FreeCAD.Matrix()
-       #mat.unity()
-       #mat.A11 = fp.dx / 100
-       #mat.A22 = fp.dy / 100
-       #mat.A33 = fp.dz / 50
-       #mat.A44 = 1
-       #trace mat
-       #newtube = tube.transformGeometry(mat)
-       #fp.Shape = newtube
-       GDMLShared.trace("Recompute GDML Polyhedra Object \n")
+       z0    = parms[0].z
+       rmax0 = parms[0].rmax
+       GDMLShared.trace("Top z    : "+str(z0))
+       GDMLShared.trace("Top rmax : "+str(rmax0))
+       z1    = parms[1].z
+       rmax1 = parms[1].rmax
+       GDMLShared.trace("Bottom z    : "+str(z1))
+       GDMLShared.trace("Bottom rmax : "+str(rmax1))
+       #faces = []
+       #faces.append(makeFrustrum(numsides,z1-z0,rmax0,rmax1))
+       faces = makeFrustrum(numsides,z1-z0,rmax0,rmax1)
+       #for ptr in parms[2:] :
+       #    z    = ptr.z
+       #    rmax = ptr.rmax
+       #    print("z    : "+z)
+       #    print("rmax : "+rmax)
+       #    faces.append(makeFrustrum(numsides,z-z1,rmax,rmax1))
+       #    z1 = z
+       #    rmax1 = rmax
+       #faces = makeFrustrum(4,1,10,10)
+       shell = Part.makeShell(faces)
+       solid = Part.makeSolid(shell)
+       fp.Shape = solid
+       #fp.Shape = shell
+       #fp.Shape = Part.makeBox(10,10,10)
+       GDMLShared.trace("Recompute GDML Polyhedra")
 
 class GDMLXtru(GDMLcommon) :
    def __init__(self, obj, lunit, material) :

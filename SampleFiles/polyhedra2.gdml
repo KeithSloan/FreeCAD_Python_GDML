@@ -127,6 +127,7 @@
 	   aunit="rad" lunit= "mm">
 <zplane rmin="1" rmax="5" z="0" />
 <zplane rmin="3" rmax="9" z="10" />
+<zplane rmin="4" rmax="12" z="15" />
 </polyhedra>
   </solids>
 <structure>
