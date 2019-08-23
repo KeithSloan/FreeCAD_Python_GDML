@@ -344,31 +344,46 @@ class GDMLPolyhedra(GDMLcommon) :
        numsides = fp.numsides
        GDMLShared.trace("Number of sides : "+str(numsides))
        z0    = parms[0].z
+       rmin0 = parms[0].rmin
        rmax0 = parms[0].rmax
        GDMLShared.trace("Top z    : "+str(z0))
+       GDMLShared.trace("Top rmin : "+str(rmin0))
        GDMLShared.trace("Top rmax : "+str(rmax0))
-       faces = []
+       inner_faces = []
+       outer_faces = []
        # Make top Polygon
-       poly0 = makeRegularPolygon(numsides,rmax0,z0)
+       inner_poly0 = makeRegularPolygon(numsides,rmin0,z0)
+       outer_poly0 = makeRegularPolygon(numsides,rmax0,z0)
        # Add top face
-       faces.append(Part.Face(Part.makePolygon(poly0)))
+       inner_faces.append(Part.Face(Part.makePolygon(inner_poly0)))
+       outer_faces.append(Part.Face(Part.makePolygon(outer_poly0)))
        for ptr in parms[1:] :
            z1 = ptr.z
+           rmin1 = ptr.rmin
            rmax1 = ptr.rmax
            GDMLShared.trace("z1    : "+str(z1))
+           GDMLShared.trace("rmin1 : "+str(rmin1))
            GDMLShared.trace("rmax1 : "+str(rmax1))
-           poly1 = makeRegularPolygon(numsides,rmax1,z1)
+           inner_poly1 = makeRegularPolygon(numsides,rmin1,z1)
+           outer_poly1 = makeRegularPolygon(numsides,rmax1,z1)
            # Concat face lists
-           faces = faces + makeFrustrum(numsides,poly0,poly1)
+           inner_faces = inner_faces + \
+                   makeFrustrum(numsides,inner_poly0,inner_poly1)
+           outer_faces = outer_faces + \
+                   makeFrustrum(numsides,outer_poly0,outer_poly1)
            # update for next zsection
-           poly0 = poly1
+           inner_poly0 = inner_poly1
+           outer_poly0 = outer_poly1
            z0 = z1
        # add bottom polygon face
-       faces.append(Part.Face(Part.makePolygon(poly1)))
-       GDMLShared.trace("Total Faces : "+str(len(faces)))
-       shell = Part.makeShell(faces)
-       solid = Part.makeSolid(shell)
-       fp.Shape = solid
+       inner_faces.append(Part.Face(Part.makePolygon(inner_poly1)))
+       outer_faces.append(Part.Face(Part.makePolygon(outer_poly1)))
+       GDMLShared.trace("Total Faces : "+str(len(inner_faces)))
+       inner_shell = Part.makeShell(inner_faces)
+       inner_solid = Part.makeSolid(inner_shell)
+       outer_shell = Part.makeShell(outer_faces)
+       outer_solid = Part.makeSolid(outer_shell)
+       fp.Shape = outer_solid.cut(inner_solid)
        #fp.Shape = shell
        #fp.Shape = Part.makeBox(10,10,10)
        GDMLShared.trace("Recompute GDML Polyhedra")
