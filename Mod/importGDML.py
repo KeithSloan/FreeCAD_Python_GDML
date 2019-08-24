@@ -582,7 +582,9 @@ def getVolSolid(name):
     return solid
 
 def parsePhysVol(volGrp,physVol,displayMode):
-    GDMLShared.trace("ParsePhyVol")
+    name = GDMLShared.getRef(physVol,"name")
+    name = physVol.get("name")
+    GDMLShared.trace("ParsePhyVol : "+str(name))
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
        pos = GDMLShared.define.find("position[@name='%s']" % posref )
