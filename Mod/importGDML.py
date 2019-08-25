@@ -598,8 +598,10 @@ def getVolSolid(name):
     solid = solids.find("*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(volGrp,part,physVol,solid,material,displayMode):
-    GDMLShared.trace("ParsePhyVol")
+def parsePhysVol(volGrp,physVol,displayMode):
+    name = GDMLShared.getRef(physVol,"name")
+    name = physVol.get("name")
+    GDMLShared.trace("ParsePhyVol : "+str(name))
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
        GDMLShared.trace("positionref : "+posref)
@@ -632,19 +634,28 @@ def parseVolume(parent,part,name,px,py,pz,rot,displayMode) :
     #part = parent.newObject("App::Part",name)
     newpart = part.newObject("App::Part",name)
     vol = structure.find("volume[@name='%s']" % name )
-    solidref = GDMLShared.getRef(vol,"solidref")
-    solid  = solids.find("*[@name='%s']" % solidref )
-    GDMLShared.trace(solid.tag)
-    # Material is the materialref value
-    material = GDMLShared.getRef(vol,"materialref")
-    #createSolid(volgrp,part,solid,material,px,py,pz,rot,displayMode)
-    createSolid(None,newpart,solid,material,px,py,pz,rot,displayMode)
-    # Volume may or maynot contain physvol's
-    displayMode = 1
-    for pv in vol.findall('physvol') : 
-        # create solids at pos & rot in physvols
-        #parsePhysVol(volgrp,part,pv,solid,material,displayMode)
-        parsePhysVol(None,newpart,pv,solid,material,displayMode)
+    if vol != None : # If not volume test for assembly
+       solidref = GDMLShared.getRef(vol,"solidref")
+       solid  = solids.find("*[@name='%s']" % solidref )
+       GDMLShared.trace(solid.tag)
+       # Material is the materialref value
+       material = GDMLShared.getRef(vol,"materialref")
+       createSolid(volgrp,solid,material,px,py,pz,rot,displayMode)
+       # Volume may or maynot contain physvol's
+       displayMode = 1
+       for pv in vol.findall('physvol') : 
+           # create solids at pos & rot in physvols
+           parsePhysVol(volgrp,pv,displayMode)
+
+    else :
+       assembly = structure.find("assembly[@name='%s']" % name)
+       if assembly != None :
+          print("Assembly : "+name)
+          for pv in assembly.findall('physvol') :
+              # create solids at pos & rot in physvols
+              parsePhysVol(volgrp,pv,displayMode)
+       else :
+          print("Not Volume or Assembly") 
 
 def getItem(element, attribute) :
     item = element.get(attribute)
