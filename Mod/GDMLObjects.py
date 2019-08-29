@@ -492,6 +492,7 @@ class GDMLXtru(GDMLcommon) :
            shell=Part.makeShell(faces_list)
            #solid=Part.Solid(shell).removeSplitter()
            solid=Part.Solid(shell)
+           print("Valid Solid : "+str(solid.isValid()))
            if solid.Volume < 0:
               solid.reverse()
        fp.Shape = solid
