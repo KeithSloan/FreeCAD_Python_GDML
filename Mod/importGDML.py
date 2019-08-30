@@ -510,6 +510,10 @@ def parseBoolean(part,solid,objType,material,px,py,pz,rot,displayMode) :
        base = FreeCAD.Vector(px,py,pz)
        mybool.Placement = GDMLShared.processPlacement(base,rot)
        #ViewProvider(mybool.ViewObject)
+       #print("Bool Shape : "+str(mybool.Shape.isValid()))
+       #print("Bool Base  : "+str(mybool.Base.Shape.isValid()))
+       #print("Bool Tool  : "+str(mybool.Tool.Shape.isValid()))
+       print(dir(mybool.Shape))
        return mybool
 
 def createSolid(part,solid,material,px,py,pz,rot,displayMode) :

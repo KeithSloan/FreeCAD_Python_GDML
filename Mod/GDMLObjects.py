@@ -463,6 +463,7 @@ class GDMLXtru(GDMLcommon) :
            # deal with base face       
            w1 = Part.makePolygon(baseList)
            f1 = Part.Face(w1)
+           f1.reverse()
            faces_list.append(f1)
            print("base list")
            print(baseList)
@@ -486,6 +487,7 @@ class GDMLXtru(GDMLcommon) :
            # deal with top face
            w1 = Part.makePolygon(topList)
            f1 = Part.Face(w1)
+           #f1.reverse()
            faces_list.append(f1)
            print("Faces List")
            print(faces_list)
