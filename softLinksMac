@@ -1,11 +1,13 @@
 #!/bin/bash
 # Need to make excutable chmod +x softLinks
-src=$(pwd)
-src2="/usr/local/lib/python3.7/site-packages"
+src1=$(pwd)
+src2="/usr/local/lib/python3.6/site-packages"
 tgt1="/Applications/FreeCAD.app/Contents/Resources"
 tgt2="/Applications/FreeCAD.app/Contents/Resources/lib/python3.6/site-packages"
 sudo rm -rf $tgt1/Mod/GDML
-sudo ln -s $src/Mod $tgt1/Mod/GDML
+sudo ln -s $src1/Mod $tgt1/Mod/GDML
 echo sudo ln -s $src/Mod $tgt1/Mod/GDML
 sudo rm -rf $tgt2/lxml
 sudo ln -s $src2/lxml $tgt2/lxml
+echo sudo ln -s $src2/lxml $tgt2/lxml
+
