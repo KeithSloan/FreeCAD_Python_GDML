@@ -176,11 +176,7 @@
 <structure>
  <volume name="v1">
   <materialref ref="SSteel0x56070ee87d10" />
-  <solidref ref="refLogicSol_50002"/>
- </volume>
- <volume name="v2">
-  <materialref ref="SSteel0x56070ee87d10" />
-  <solidref ref="refSol_50002"/>
+  <solidref ref="refSolSkin1_50002"/>
  </volume>
  <volume name="worldVol">
   <materialref ref="G4_AIR0x56070ee81710"/>
@@ -188,10 +184,6 @@
   <physvol>
      <volumeref ref="v1"/>
      <positionref ref="pos1"/>
-  </physvol>
-  <physvol>
-     <volumeref ref="v2"/>
-     <positionref ref="pos2"/>
   </physvol>
  </volume>  
 </structure>
