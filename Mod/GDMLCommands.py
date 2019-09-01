@@ -236,13 +236,22 @@ class CycleFeature :
 
 
         def cycle(obj) :
-            print ("Toggle : "+ obj.Label)
-            #print dir(obj)
-            
+            #print ("Toggle : "+ obj.Label)
+            #print (dir(obj))
+            #print("TypeId : "+str(obj.TypeId))
+            if obj.TypeId == "App::Part" :
+               for i in obj.OutList :
+                   #print(i)
+                   #print(dir(i))
+                   #print (i.TypeId)
+                   if i.TypeId != "App::Origin" :
+                      cycle(i) 
+            elif obj.TypeId =="App::Origin" :
+                return
             #print obj.isDerivedFrom('App::DocumentObjectGroupPython')
             # Is this a genuine group i.e. Volumes
             # Not Parts with Groups i.e. GDMLPolycone
-            if obj.isDerivedFrom('App::DocumentObjectGroupPython') :
+            elif obj.isDerivedFrom('App::DocumentObjectGroupPython') :
                #print "Toggle Group" 
                for s in obj.Group :
                    #print s
