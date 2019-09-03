@@ -96,6 +96,19 @@ class switch(object):
 def case(*args):
     return any((arg == switch.value for arg in args))
 
+def translate(shape,base) :
+    # Input Object and displacement vector - return a transformed shape
+    myPlacement = FreeCAD.Placement()
+    myPlacement.move(base)
+    mat1 = myPlacement.toMatrix()
+    print(mat1)
+    mat2 = shape.Matrix
+    mat  = mat1.multiply(mat2)
+    print(mat)
+    retShape = shape.copy()
+    retShape.transformShape(mat, True)
+    return retShape
+
 def checkConstant(vval):
     print (vval)
 
@@ -128,12 +141,14 @@ def createBox(volObj,solid,material,px,py,pz,rot,displayMode) :
     lunit = getText(solid,'lunit',"mm")
     GDMLBox(mycube,x,y,z,lunit,material)
     GDMLShared.trace("Logical Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
-    mycube.Placement = GDMLShared.processPlacement(base,rot)
-    GDMLShared.trace(mycube.Placement.Rotation)
+    #base = FreeCAD.Vector(px,py,pz)
+    #mycube.Placement = GDMLShared.processPlacement(base,rot)
+    #GDMLShared.trace(mycube.Placement.Rotation)
     # set ViewProvider before setDisplay
     ViewProvider(mycube.ViewObject)
     setDisplayMode(mycube,displayMode)
+    #base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
+    #myCube.Shape = translate(mycube.Shape,base)
     return mycube
 
 def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
@@ -174,7 +189,8 @@ def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLElCone(myelcone,dx,dy,zmax,zcut,lunit,material)
     GDMLShared.trace("CreateElCone : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz-zmax/2)
+    #base = FreeCAD.Vector(px,py,pz-zmax/2)
+    base = FreeCAD.Vector(px,py,pz)
     myelcone.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myelcone.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -197,8 +213,9 @@ def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLEllipsoid(myelli,ax, by, cz,zcut1,zcut2,lunit,material)
     GDMLShared.trace("CreateEllipsoid : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
-    #base = FreeCAD.Vector(px,py,pz-z/2)
+    #base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(px,py,pz+cz/2)
+    #base = FreeCAD.Vector(px,py,pz+cz)
     myelli.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myelli.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -218,8 +235,10 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLElTube(myeltube,dx, dy, dz,lunit,material)
     GDMLShared.trace("CreateElTube : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
-    #base = FreeCAD.Vector(px,py,pz-z/2)
+    #base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(px,py,pz-dz/2)
+    #base = FreeCAD.Vector(px,py,pz-dz)
+    #base = FreeCAD.Vector(px,py,pz+dz)
     myeltube.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myeltube.Placement.Rotation)
     # set ViewProvider before setDisplay

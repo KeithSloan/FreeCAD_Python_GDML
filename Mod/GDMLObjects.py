@@ -25,6 +25,19 @@ def printPolyVec(n,v) :
     for i in v :
         print("Vertex - x : "+str(i[0])+" y : "+str(i[1])+" z : "+str(i[2]))
 
+def translate(shape,base) :
+    # Input Object and displacement vector - return a transformed shape
+    myPlacement = FreeCAD.Placement()
+    myPlacement.move(base)
+    mat1 = myPlacement.toMatrix()
+    print(mat1)
+    mat2 = shape.Matrix
+    mat  = mat1.multiply(mat2)
+    print(mat)
+    retShape = shape.copy()
+    retShape.transformShape(mat, True)
+    return retShape
+
 def makeFrustrum(num,poly0,poly1) :
     # return list of faces
     print("Make Frustrum : "+str(num)+" Faces")
@@ -76,8 +89,16 @@ class GDMLBox(GDMLcommon) :
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
-       # Need to add code to check values make a valid cone
        box = Part.makeBox(fp.x,fp.y,fp.z)
+       #base = FreeCAD.Vector(fp.x/2,fp.y/2,fp.z/2)
+       #base = FreeCAD.Vector(50,60,70)
+       print(fp.TypeId)
+       print(dir(box))
+       print(box.Solids)
+       print(box.childShapes())
+       #newbox = box.translate(base)
+       #fp.Shape = translate(box.Solids[0],base)
+       #fp.Shape = translate(box,base)
        fp.Shape = box
        GDMLShared.trace("Recompute GDML Box Object \n")
 
