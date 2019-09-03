@@ -25,6 +25,19 @@ def printPolyVec(n,v) :
     for i in v :
         print("Vertex - x : "+str(i[0])+" y : "+str(i[1])+" z : "+str(i[2]))
 
+def translate(shape,base) :
+    # Input Object and displacement vector - return a transformed shape
+    myPlacement = FreeCAD.Placement()
+    myPlacement.move(base)
+    mat1 = myPlacement.toMatrix()
+    print(mat1)
+    mat2 = shape.Matrix
+    mat  = mat1.multiply(mat2)
+    print(mat)
+    retShape = shape.copy()
+    retShape.transformShape(mat, True)
+    return retShape
+
 def makeFrustrum(num,poly0,poly1) :
     # return list of faces
     print("Make Frustrum : "+str(num)+" Faces")
@@ -76,9 +89,11 @@ class GDMLBox(GDMLcommon) :
 
    def execute(self, fp):
        '''Do something when doing a recomputation, this method is mandatory'''
-       # Need to add code to check values make a valid cone
        box = Part.makeBox(fp.x,fp.y,fp.z)
-       fp.Shape = box
+       base = FreeCAD.Vector(-fp.x/2,-fp.y/2,-fp.z/2)
+       #print(fp.TypeId)
+       #print(dir(box))
+       fp.Shape = translate(box,base)
        GDMLShared.trace("Recompute GDML Box Object \n")
 
 class GDMLCone(GDMLcommon) :
@@ -121,7 +136,8 @@ class GDMLCone(GDMLcommon) :
        #print fp.rmax1
        #print fp.rmax2
        #print fp.z
-
+       
+       base = FreeCAD.Vector(0,0,-fp.z/2)
        cone1 = Part.makeCone(fp.rmin1,fp.rmax1,fp.z)
        if (fp.rmin1 != fp.rmin2 or fp.rmax1 != fp.rmax2 ) :
           cone2 = Part.makeCone(fp.rmin2,fp.rmax2,fp.z)
@@ -130,9 +146,10 @@ class GDMLCone(GDMLcommon) :
           else :
               cone3 = cone2.cut(cone1)
 
-          fp.Shape = cone3
+          fp.Shape = translate(cone3,base)
        else :   
-          fp.Shape = cone1
+          fp.Shape = translate(cone1,base)
+       
        GDMLShared.trace("Recompute GDML Cone Object \n")
 
 class GDMLElCone(GDMLcommon) :
@@ -254,9 +271,12 @@ class GDMLEllipsoid(GDMLcommon) :
           pl = FreeCAD.Placement()
           pl.move(FreeCAD.Vector(-ax,-by,-cz))
           box2.Placement = pl
-          fp.Shape = t2ellipsoid.cut(box2)
+          shape = t2ellipsoid.cut(box2)
        else :  
-          fp.Shape = t2ellipsoid
+          shape = t2ellipsoid
+       
+       base = FreeCAD.Vector(0,0,cz/4)
+       fp.Shape = translate(shape,base)   
        GDMLShared.trace("Recompute GDML Ellipsoid Object \n")
 
 class GDMLElTube(GDMLcommon) :
@@ -298,7 +318,8 @@ class GDMLElTube(GDMLcommon) :
        mat.A44 = 1
        #trace mat
        newtube = tube.transformGeometry(mat)
-       fp.Shape = newtube
+       base = FreeCAD.Vector(0,0,-fp.dz/2)
+       fp.Shape = translate(newtube,base)
        GDMLShared.trace("Recompute GDML ElTube Object \n")
 
 class GDMLPolyhedra(GDMLcommon) :
@@ -927,7 +948,10 @@ class GDMLTube(GDMLcommon) :
        cyl3 = cyl1.cut(cyl2) 
 
        tube = cyl3.cut(solid)
-       fp.Shape = tube
+       #base = FreeCAD.Vector(0,0,fp.z/2)
+       #base = FreeCAD.Vector(0,0,0)
+       base = FreeCAD.Vector(0,0,-fp.z/2)
+       fp.Shape = translate(tube,base)
        GDMLShared.trace("Recompute GDML Tube Object \n")
 
    def make_face3(self,v1,v2,v3):
