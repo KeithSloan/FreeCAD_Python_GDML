@@ -141,13 +141,12 @@ def createBox(volObj,solid,material,px,py,pz,rot,displayMode) :
     lunit = getText(solid,'lunit',"mm")
     GDMLBox(mycube,x,y,z,lunit,material)
     GDMLShared.trace("Logical Position : "+str(px)+','+str(py)+','+str(pz))
-    #base = FreeCAD.Vector(px,py,pz)
-    #mycube.Placement = GDMLShared.processPlacement(base,rot)
-    #GDMLShared.trace(mycube.Placement.Rotation)
+    base = FreeCAD.Vector(0,0,0)
+    mycube.Placement = GDMLShared.processPlacement(base,rot)
+    GDMLShared.trace(mycube.Placement.Rotation)
     # set ViewProvider before setDisplay
     ViewProvider(mycube.ViewObject)
     setDisplayMode(mycube,displayMode)
-    #base = FreeCAD.Vector(px-x/2,py-y/2,pz-z/2)
     #myCube.Shape = translate(mycube.Shape,base)
     return mycube
 
@@ -169,7 +168,7 @@ def createCone(volObj,solid,material,px,py,pz,rot,displayMode) :
              startphi,deltaphi,aunit,lunit,material)
     GDMLShared.trace("CreateCone : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz-z/2)
+    base = FreeCAD.Vector(0,0,0)
     mycone.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mycone.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -190,7 +189,7 @@ def createElcone(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLShared.trace("CreateElCone : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
     #base = FreeCAD.Vector(px,py,pz-zmax/2)
-    base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
     myelcone.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myelcone.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -213,9 +212,7 @@ def createEllipsoid(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLEllipsoid(myelli,ax, by, cz,zcut1,zcut2,lunit,material)
     GDMLShared.trace("CreateEllipsoid : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    #base = FreeCAD.Vector(px,py,pz)
-    base = FreeCAD.Vector(px,py,pz+cz/2)
-    #base = FreeCAD.Vector(px,py,pz+cz)
+    base = FreeCAD.Vector(px,py,pz)
     myelli.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myelli.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -235,10 +232,7 @@ def createEltube(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLElTube(myeltube,dx, dy, dz,lunit,material)
     GDMLShared.trace("CreateElTube : ")
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    #base = FreeCAD.Vector(px,py,pz)
-    base = FreeCAD.Vector(px,py,pz-dz/2)
-    #base = FreeCAD.Vector(px,py,pz-dz)
-    #base = FreeCAD.Vector(px,py,pz+dz)
+    base = FreeCAD.Vector(0,0,0)
     myeltube.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myeltube.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -274,7 +268,7 @@ def createPolycone(volObj,solid,material,px,py,pz,rot,displayMode) :
         ViewProvider(myzplane)
 
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
     mypolycone.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mypolycone.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -311,7 +305,7 @@ def createPolyhedra(volObj,solid,material,px,py,pz,rot,displayMode) :
         ViewProvider(myzplane)
 
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
     mypolyhedra.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mypolyhedra.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -332,8 +326,8 @@ def createSphere(volObj,solid,material,px,py,pz,rot,displayMode) :
     GDMLSphere(mysphere,rmin,rmax,startphi,deltaphi,0,3.00,aunit, \
                lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
-    mysphere.Placement = GDMLShared.prcessPlacement(base,rot)
+    base = FreeCAD.Vector(0,0,0)
+    mysphere.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mysphere.Placement.Rotation)
     # set ViewProvider before setDisplay
     setDisplayMode(mysphere,displayMode)
@@ -360,7 +354,7 @@ def createTrap(volObj,solid,material,px,py,pz,rot,displayMode) :
     mytrap=volObj.newObject("Part::FeaturePython","GDMLTrap:"+getName(solid))
     GDMLTrap(mytrap,z,theta,phi,x1,x2,x3,x4,y1,y2,alpha,aunit,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
     mytrap.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mytrap.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -382,7 +376,8 @@ def createTrd(volObj,solid,material,px,py,pz,rot,displayMode) :
     mytrd=volObj.newObject("Part::FeaturePython","GDMLTrd:"+getName(solid))
     GDMLTrd(mytrd,z,x1,x2,y1,y2,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    #base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
     mytrd.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mytrd.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -419,7 +414,8 @@ def createXtru(volObj,solid,material,px,py,pz,rot,displayMode) :
         ViewProvider(mysection)
 
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
+    #base = FreeCAD.Vector(px,py,pz)
     myXtru.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myXtru.Placement.Rotation)
     return(myXtru)
@@ -441,7 +437,8 @@ def createTube(volObj,solid,material,px,py,pz,rot,displayMode) :
     mytube=volObj.newObject("Part::FeaturePython","GDMLTube:"+getName(solid))
     GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
+    #base = FreeCAD.Vector(px,py,pz)
     mytube.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mytube.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -479,7 +476,8 @@ def createTessellated(volObj,solid,material,px,py,pz,rot,displayMode) :
            ViewProvider(myQuad)
 
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(px,py,pz)
+    #base = FreeCAD.Vector(px,py,pz)
+    base = FreeCAD.Vector(0,0,0)
     myTess.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myTess.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -509,7 +507,8 @@ def parseBoolean(volObj,solid,objType,material,px,py,pz,rot,displayMode) :
        mybool.Tool.Placement= GDMLShared.getPlacementFromRefs(solid) 
        # Okay deal with position of boolean
        GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-       base = FreeCAD.Vector(px,py,pz)
+       base = FreeCAD.Vector(0,0,0)
+       #base = FreeCAD.Vector(px,py,pz)
        mybool.Placement = GDMLShared.processPlacement(base,rot)
        #ViewProvider(mybool.ViewObject)
        return mybool
