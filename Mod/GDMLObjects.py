@@ -91,15 +91,15 @@ class GDMLBox(GDMLcommon) :
        '''Do something when doing a recomputation, this method is mandatory'''
        box = Part.makeBox(fp.x,fp.y,fp.z)
        #base = FreeCAD.Vector(fp.x/2,fp.y/2,fp.z/2)
-       #base = FreeCAD.Vector(50,60,70)
-       print(fp.TypeId)
-       print(dir(box))
-       print(box.Solids)
-       print(box.childShapes())
+       base = FreeCAD.Vector(50,60,70)
+       #print(fp.TypeId)
+       #print(dir(box))
+       #print(box.Solids)
+       #print(box.childShapes())
        #newbox = box.translate(base)
        #fp.Shape = translate(box.Solids[0],base)
-       #fp.Shape = translate(box,base)
-       fp.Shape = box
+       fp.Shape = translate(box,base)
+       #fp.Shape = box
        GDMLShared.trace("Recompute GDML Box Object \n")
 
 class GDMLCone(GDMLcommon) :
