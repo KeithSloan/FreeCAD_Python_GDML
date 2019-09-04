@@ -703,6 +703,37 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
            else :
               print("Not Volume or Assembly") 
 
+def scanPhysVol(parent,physVol):
+    volref = GDMLShared.getRef(physVol,"volumeref")
+    #part = parent.newObject("App::Part",volref)
+    if volref != None :
+       scanVolume(parent,volref)
+
+def scanVolume(parent,name) :
+    #global volDict
+    global volCount
+ 
+    # Has the volume already been parsed i.e in Assembly etc
+    #obj = volDict.get(name)
+    #if obj != None :
+    vol = structure.find("volume[@name='%s']" % name )
+    if vol != None : # If not volume test for assembly
+       obj = parent.newObject("App::Part",name)
+       volCount = volCount + 1
+       #if volCount > 250 : return
+       for pv in vol.findall("physvol") :
+           scanPhysVol(obj,pv)
+           # Add parsed Volume to dict
+           #volDict[name] = obj
+
+    else :
+      asm = structure.find("assembly[@name='%s']" % name)
+      #print("Assembly : "+name)
+      if asm != None :
+         for pv in asm.findall("physvol") :
+             scanPhysVol(parent,pv)
+      else :
+         print("Not Volume or Assembly") 
 
 def getItem(element, attribute) :
     item = element.get(attribute)
@@ -871,10 +902,13 @@ def processGDML(doc,filename):
     processElements(doc)
     processMaterials(doc)
 
+    part =doc.addObject("App::Part","Volumes")
     world = GDMLShared.getRef(setup,"world")
     #print(world)
-    part =doc.addObject("App::Part",world)
-    parseVolume(part,world,0,0,0,None,3)
+    global volCount
+    volCount = 0
+    scanVolume(part,world)
+    #parseVolume(part,world,0,0,0,None,3)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")
