@@ -75,7 +75,8 @@ class GDMLBox(GDMLcommon) :
       obj.addProperty("App::PropertyString","lunit","GDMLBox","lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLBox","Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLBox", "Shape of the Box")
       obj.Proxy = self
       self.Type = 'GDMLBox'
@@ -116,7 +117,8 @@ class GDMLCone(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLCone", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       self.Type = 'GDMLCone'
       obj.Proxy = self
 
@@ -170,7 +172,8 @@ class GDMLElCone(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLElCone", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       self.Type = 'GDMLElCone'
       obj.Proxy = self
 
@@ -227,7 +230,8 @@ class GDMLEllipsoid(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLEllipsoid", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLEllipsoid", \
                       "Shape of the Ellipsoid")
       self.Type = 'GDMLEllipsoid'
@@ -295,7 +299,8 @@ class GDMLElTube(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLElTube", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLElTube", \
                       "Shape of the ElTube")
       self.Type = 'GDMLElTube'
@@ -340,7 +345,8 @@ class GDMLPolyhedra(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLPolyhedra", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolyhedra", \
                       "Shape of the Polyhedra")
       self.Type = 'GDMLPolyhedra'
@@ -417,8 +423,8 @@ class GDMLXtru(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLXtru", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
       obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLXtru", \
                       "Shape of the Xtru")
       self.Type = 'GDMLXtru'
@@ -606,7 +612,8 @@ class GDMLPolycone(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLPolycone", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolycone", \
                       "Shape of the Polycone")
       self.Type = 'GDMLPolycone'
@@ -681,7 +688,8 @@ class GDMLSphere(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","material","GDMLSphere", \
                        "Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLSphere", \
                       "Shape of the Sphere")
       obj.Proxy = self
@@ -740,7 +748,8 @@ class GDMLTrap(GDMLcommon) :
                        lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTrap","Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTrap", \
                       "Shape of the Trap")
       obj.Proxy = self
@@ -838,7 +847,8 @@ class GDMLTrd(GDMLcommon) :
                        lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTrd","Material") 
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTrd", \
                       "Shape of the Trap")
       obj.Proxy = self
@@ -905,7 +915,8 @@ class GDMLTube(GDMLcommon) :
       obj.addProperty("App::PropertyString","lunit","GDMLTube","lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTube","Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material) 
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTube", "Shape of the Tube")
       obj.Proxy = self
       self.Type = 'GDMLTube'
@@ -1052,7 +1063,8 @@ class GDMLTessellated(GDMLcommon) :
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTessellated", "Shape of the Tesssellation")
       obj.addProperty("App::PropertyEnumeration","material","GDMLTessellated","Material")
       obj.material = MaterialsList
-      obj.material = MaterialsList.index(material)
+      obj.material = 0
+      if material != 0 : obj.material = MaterialsList.index(material)
       self.Type = 'GDMLTessellated'
       self.Object = obj
       obj.Proxy = self
