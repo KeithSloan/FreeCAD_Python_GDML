@@ -26,6 +26,8 @@ Assumes you already have FreeCAD and git installed
 5) make sure softLink script is executable - chmod +x softLinks
 
 6) Run softLink script to soft link the module into FreeCAD and FreeCAD-daily systems
+   
+   sudo ./softLinks
 
 ## Installation Windows
 
