@@ -30,13 +30,25 @@ def translate(shape,base) :
     myPlacement = FreeCAD.Placement()
     myPlacement.move(base)
     mat1 = myPlacement.toMatrix()
-    print(mat1)
+    #print(mat1)
     mat2 = shape.Matrix
     mat  = mat1.multiply(mat2)
-    print(mat)
+    #print(mat)
     retShape = shape.copy()
     retShape.transformShape(mat, True)
     return retShape
+
+def make_face3(v1,v2,v3):
+    # helper mehod to create the faces
+    wire = Part.makePolygon([v1,v2,v3,v1])
+    face = Part.Face(wire)
+    return face
+
+def make_face4(v1,v2,v3,v4):
+    # helper mehod to create the faces
+    wire = Part.makePolygon([v1,v2,v3,v4,v1])
+    face = Part.Face(wire)
+    return face
 
 def makeFrustrum(num,poly0,poly1) :
     # return list of faces
@@ -83,19 +95,21 @@ class GDMLBox(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       #if not hasattr(fp,'onchange') or not fp.onchange : return
-       if prop in ['x','y','z','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          #print(fp.State) 
+          if prop in ['x','y','z','lunit']  :
+             self.createGeometry(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
-       box = Part.makeBox(fp.x,fp.y,fp.z)
-       base = FreeCAD.Vector(-fp.x/2,-fp.y/2,-fp.z/2)
-       #print(fp.TypeId)
-       #print(dir(box))
-       fp.Shape = translate(box,base)
-       GDMLShared.trace("Recompute GDML Box Object \n")
+       self.createGeometry(fp)
+
+   def createGeometry(self,fp):
+       print(fp)
+       if all((fp.x,fp.y,fp.z)) :
+       #if (hasattr(fp,'x') and hasattr(fp,'y') and hasattr(fp,'z')) :
+          box = Part.makeBox(fp.x,fp.y,fp.z)
+          base = FreeCAD.Vector(-fp.x/2,-fp.y/2,-fp.z/2)
+          fp.Shape = translate(box,base)
 
 class GDMLCone(GDMLcommon) :
    def __init__(self, obj, rmin1,rmax1,rmin2,rmax2,z,startphi,deltaphi,aunit, \
@@ -124,14 +138,20 @@ class GDMLCone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['rmin1','rmax1','rmin2','rmax2','z','startphi','deltaphi' \
+       if not ('Restore' in fp.State) :
+          if prop in ['rmin1','rmax1','rmin2','rmax2','z','startphi','deltaphi' \
                ,'aunit', 'lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+             self.createGeometry(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
 
+   def createGeometry(self,fp):
+       print(fp)
+       if all((fp.rmin1,fp.rmin2,fp.rmax1,fp.rmax2,fp.z)) :
+       #if (hasattr(fp,'rmin1') and hasattr(fp,'rmax1') and \
+       #    hasattr(fp,'rmin2') and hasattr(fp,'rmax2') and \
+       #    hasattr(fp,'z')) :
        # Need to add code to check variables will make a valid cone
        # i.e.max > min etc etc
        #print("execute cone")
@@ -139,20 +159,18 @@ class GDMLCone(GDMLcommon) :
        #print fp.rmax2
        #print fp.z
        
-       base = FreeCAD.Vector(0,0,-fp.z/2)
-       cone1 = Part.makeCone(fp.rmin1,fp.rmax1,fp.z)
-       if (fp.rmin1 != fp.rmin2 or fp.rmax1 != fp.rmax2 ) :
-          cone2 = Part.makeCone(fp.rmin2,fp.rmax2,fp.z)
-          if  fp.rmax1 > fp.rmax2 :
-              cone3 = cone1.cut(cone2)
-          else :
-              cone3 = cone2.cut(cone1)
+          base = FreeCAD.Vector(0,0,-fp.z/2)
+          cone1 = Part.makeCone(fp.rmin1,fp.rmax1,fp.z)
+          if (fp.rmin1 != fp.rmin2 or fp.rmax1 != fp.rmax2 ) :
+             cone2 = Part.makeCone(fp.rmin2,fp.rmax2,fp.z)
+             if fp.rmax1 > fp.rmax2 :                
+                cone3 = cone1.cut(cone2)
+             else :
+                cone3 = cone2.cut(cone1)
 
-          fp.Shape = translate(cone3,base)
-       else :   
-          fp.Shape = translate(cone1,base)
-       
-       GDMLShared.trace("Recompute GDML Cone Object \n")
+             fp.Shape = translate(cone3,base)
+          else :   
+             fp.Shape = translate(cone1,base)
 
 class GDMLElCone(GDMLcommon) :
    def __init__(self, obj, dx, dy, zmax, zcut, lunit, material) :
@@ -179,13 +197,14 @@ class GDMLElCone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['dx','dy','zmax','zcut','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if prop in ['dx','dy','zmax','zcut','lunit'] :
+             self.execute(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
-
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        cone1 = Part.makeCone(100,0,100)
        mat = FreeCAD.Matrix()
        mat.unity()
@@ -239,12 +258,14 @@ class GDMLEllipsoid(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['ax','by','cz','zcut1','zcut2','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if prop in ['ax','by','cz','zcut1','zcut2','lunit'] :
+             self.execute(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        sphere = Part.makeSphere(100)
        ax = fp.ax
        by = fp.by
@@ -308,12 +329,14 @@ class GDMLElTube(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['dx','dy','dz','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if prop in ['dx','dy','dz','lunit'] :
+             self.execute(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        tube = Part.makeCylinder(100,100)
        mat = FreeCAD.Matrix()
        mat.unity()
@@ -355,18 +378,16 @@ class GDMLPolyhedra(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['startphi', 'deltaphi', 'numsides', 'aunit','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
-
+       if not ('Restore' in fp.State) :
+          if prop in ['startphi', 'deltaphi', 'numsides', 'aunit','lunit'] :
+             self.execute(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
-
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        print("Execute Polyhedra")
-       parms = self.Object.OutList
-       #print("OutList")
-       #print(parms)
+       parms = fp.OutList
        GDMLShared.trace("Number of parms : "+str(len(parms)))
        numsides = fp.numsides
        GDMLShared.trace("Number of sides : "+str(numsides))
@@ -410,8 +431,10 @@ class GDMLPolyhedra(GDMLcommon) :
        inner_solid = Part.makeSolid(inner_shell)
        outer_shell = Part.makeShell(outer_faces)
        outer_solid = Part.makeSolid(outer_shell)
-       fp.Shape = outer_solid.cut(inner_solid)
+       shape = outer_solid.cut(inner_solid)
        #fp.Shape = shell
+       base = FreeCAD.Vector(0,0,-z0/2)
+       fp.Shape = translate(shape,base)
        #fp.Shape = Part.makeBox(10,10,10)
        GDMLShared.trace("Recompute GDML Polyhedra")
 
@@ -428,17 +451,19 @@ class GDMLXtru(GDMLcommon) :
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLXtru", \
                       "Shape of the Xtru")
       self.Type = 'GDMLXtru'
-      self.Object = obj
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       #if prop in ['startphi','deltaphi','aunit','lunit'] :
-       #   self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if prop in ['startphi','deltaphi','aunit','lunit'] :
+             self.execute(fp)
 
    def execute(self, fp):
-       parms = self.Object.OutList
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
+       parms = fp.OutList
        #print("OutList")
        #print(parms)
        GDMLShared.trace("Number of parms : "+str(len(parms)))
@@ -541,8 +566,8 @@ class GDML2dVertex(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['x','y'] :
-          self.execute(fp)
+       #if prop in ['x','y'] :
+       #   self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -568,14 +593,13 @@ class GDMLSection(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['zOrder','zPosition','xOffset','yOffset','scaleFactor'] :
-          self.execute(fp)
+       #if prop in ['zOrder','zPosition','xOffset','yOffset','scaleFactor'] :
+       #   self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        GDMLShared.trace("Recompute GDML 2dVertex Object \n")
       
-
 class GDMLzplane(GDMLcommon) :
    def __init__(self, obj, rmin, rmax, z):
       obj.addProperty("App::PropertyFloat","rmin","zplane", \
@@ -588,14 +612,14 @@ class GDMLzplane(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['rmin','rmax','z'] :
-          self.execute(fp)
+       #if not ('Restore' in fp.State) :
+       #if prop in ['rmin','rmax','z'] :
+       #   self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        GDMLShared.trace("Recompute GDML zplane Object \n")
       
-
 class GDMLPolycone(GDMLcommon) :
    def __init__(self, obj, startphi, deltaphi, aunit, lunit, material) :
       '''Add some custom properties to our Polycone feature'''
@@ -617,21 +641,26 @@ class GDMLPolycone(GDMLcommon) :
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLPolycone", \
                       "Shape of the Polycone")
       self.Type = 'GDMLPolycone'
-      self.Object = obj
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['startphi','deltaphi','aunit','lunit'] :
-          self.execute(fp)
+       if not ('Restore' in fp.State) :
+          if prop in ['startphi','deltaphi','aunit','lunit'] :
+             #print(dir(fp)) 
+             self.createGeometry(fp)
+
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
+       self.createGeometry(fp)
+
+   def createGeometry(self,fp) :    
        startphi = getAngle(fp.aunit,fp.startphi)
        deltaphi = getAngle(fp.aunit,fp.deltaphi)
        GDMLShared.trace("Start phi : "+str(startphi))
        GDMLShared.trace("Delta phi : "+str(deltaphi)) 
-       zplanes = self.Object.OutList
+       zplanes = fp.OutList
        cones = []
        GDMLShared.trace("Number of zplanes : "+str(len(zplanes)))
        for i in range(0,len(zplanes)-1) :
@@ -697,14 +726,15 @@ class GDMLSphere(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['rmin','rmax','startphi','deltaphi','starttheta', \
+       if not ('Restore' in fp.State) :
+          if prop in ['rmin','rmax','startphi','deltaphi','starttheta', \
                     'deltatheta','aunit','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
-
-
+              self.execute(fp)
+   
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        import math
        # Need to add code to check values make a valid sphere
        cp = FreeCAD.Vector(0,0,0)
@@ -756,20 +786,15 @@ class GDMLTrap(GDMLcommon) :
       self.Type = 'GDMLTrap'
 
    def onChanged(self, fp, prop):
-       '''Do something when a property has changed'''
-       if prop in ['z','theta','phi','x1','x2','x3','x4','y1','y2','alpha', \
+       if not ('Restore' in fp.State) :
+          if prop in ['z','theta','phi','x1','x2','x3','x4','y1','y2','alpha', \
                    'aunit', 'lunit'] :
-           self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+             self.execute(fp)
    
-   def make_face4(self,v1,v2,v3,v4):
-       # helper mehod to create the faces
-       wire = Part.makePolygon([v1,v2,v3,v4,v1])
-       face = Part.Face(wire)
-       return face
-
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        import math
        # Define six vetices for the shape
        alpha = getAngle(fp.aunit,fp.alpha)
@@ -817,12 +842,12 @@ class GDMLTrap(GDMLcommon) :
        v8 = FreeCAD.Vector(mx3, py2, z)
 
        # Make the wires/faces
-       f1 = self.make_face4(v1,v2,v3,v4)
-       f2 = self.make_face4(v1,v2,v6,v5)
-       f3 = self.make_face4(v2,v3,v7,v6)
-       f4 = self.make_face4(v3,v4,v8,v7)
-       f5 = self.make_face4(v1,v4,v8,v5)
-       f6 = self.make_face4(v5,v6,v7,v8)
+       f1 = make_face4(v1,v2,v3,v4)
+       f2 = make_face4(v1,v2,v6,v5)
+       f3 = make_face4(v2,v3,v7,v6)
+       f4 = make_face4(v3,v4,v8,v7)
+       f5 = make_face4(v1,v4,v8,v5)
+       f6 = make_face4(v5,v6,v7,v8)
        shell=Part.makeShell([f1,f2,f3,f4,f5,f6])
        solid=Part.makeSolid(shell)
 
@@ -855,19 +880,14 @@ class GDMLTrd(GDMLcommon) :
       self.Type = 'GDMLTrd'
 
    def onChanged(self, fp, prop):
-       '''Do something when a property has changed'''
-       if prop in ['z','x1','x2','y1','y2','lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if prop in ['z','x1','x2','y1','y2','lunit'] :
+             self.execute(fp)
    
-   def make_face4(self,v1,v2,v3,v4):
-       # helper mehod to create the faces
-       wire = Part.makePolygon([v1,v2,v3,v4,v1])
-       face = Part.Face(wire)
-       return face
-
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        import math
        GDMLShared.trace("x2  : "+str(fp.x2))
 
@@ -886,12 +906,12 @@ class GDMLTrd(GDMLcommon) :
        v7 = FreeCAD.Vector(x2,  +y2,  z)
        v8 = FreeCAD.Vector(x2,  -y2,  z)
        # Make the wires/faces
-       f1 = self.make_face4(v1,v2,v3,v4)
-       f2 = self.make_face4(v1,v2,v6,v5)
-       f3 = self.make_face4(v2,v3,v7,v6)
-       f4 = self.make_face4(v3,v4,v8,v7)
-       f5 = self.make_face4(v1,v4,v8,v5)
-       f6 = self.make_face4(v5,v6,v7,v8)
+       f1 = make_face4(v1,v2,v3,v4)
+       f2 = make_face4(v1,v2,v6,v5)
+       f3 = make_face4(v2,v3,v7,v6)
+       f4 = make_face4(v3,v4,v8,v7)
+       f5 = make_face4(v1,v4,v8,v5)
+       f6 = make_face4(v5,v6,v7,v8)
        shell=Part.makeShell([f1,f2,f3,f4,f5,f6])
        solid=Part.makeSolid(shell)
 
@@ -922,14 +942,15 @@ class GDMLTube(GDMLcommon) :
       self.Type = 'GDMLTube'
 
    def onChanged(self, fp, prop):
-       '''Do something when a property has changed'''
-       if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
+       if not ('Restore' in fp.State) :
+          if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
                    'lunit'] :
-          self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+             self.execute(fp)
 
    def execute(self, fp):
-       '''Do something when doing a recomputation, this method is mandatory'''
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        import math
        # Need to add code to check values make a valid Tube
        # Define six vetices for the shape
@@ -947,10 +968,10 @@ class GDMLTube(GDMLcommon) :
        v6 = FreeCAD.Vector(x2,y2,fp.z)
 
        # Make the wires/faces
-       f1 = self.make_face3(v1,v2,v3)
-       f2 = self.make_face4(v1,v3,v6,v4)
-       f3 = self.make_face3(v4,v6,v5)
-       f4 = self.make_face4(v5,v2,v1,v4)
+       f1 = make_face3(v1,v2,v3)
+       f2 = make_face4(v1,v3,v6,v4)
+       f3 = make_face3(v4,v6,v5)
+       f4 = make_face4(v5,v2,v1,v4)
        shell=Part.makeShell([f1,f2,f3,f4])
        solid=Part.makeSolid(shell)
 
@@ -964,26 +985,6 @@ class GDMLTube(GDMLcommon) :
        base = FreeCAD.Vector(0,0,-fp.z/2)
        fp.Shape = translate(tube,base)
        GDMLShared.trace("Recompute GDML Tube Object \n")
-
-   def make_face3(self,v1,v2,v3):
-       # helper mehod to create the faces
-       wire = Part.makePolygon([v1,v2,v3,v1])
-       face = Part.Face(wire)
-       return face
-
-   def make_face4(self,v1,v2,v3,v4):
-       # helper mehod to create the faces
-       wire = Part.makePolygon([v1,v2,v3,v4,v1])
-       face = Part.Face(wire)
-       return face
-
-   def onChanged(self, fp, prop):
-       '''Do something when a property has changed'''
-       if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
-               'lunit']:
-           self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
-
 
 class GDMLVertex(GDMLcommon) :
    def __init__(self, obj, x, y, z, lunit):
@@ -999,8 +1000,9 @@ class GDMLVertex(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['x','y', 'z'] :
-          self.execute(fp)
+       #if not ('Restore' in fp.State) :
+       #   if prop in ['x','y', 'z'] :
+       #      self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -1019,13 +1021,13 @@ class GDMLTriangular(GDMLcommon) :
       obj.vtype=["Absolute", "Relative"]
       obj.vtype=0
       self.Type = 'GDMLTriangular'
-      self.Object = obj
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['v1','v2','v3','type'] :
-          self.execute(fp)
+       #if not ('Restore' in fp.State) :
+       #   if prop in ['v1','v2','v3','type'] :
+       #      self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
@@ -1045,20 +1047,21 @@ class GDMLQuadrangular(GDMLcommon) :
       obj.vtype=["Absolute", "Relative"]
       obj.vtype=0
       self.Type = 'GDMLQuadrangular'
-      self.Object = obj
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       if prop in ['v1','v2','v3','v4','type'] :
-          self.execute(fp)
+       #if not ('Restore' in fp.State) :
+       #   if prop in ['v1','v2','v3','v4','type'] :
+       #      self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
 
    def execute(self, fp):
        GDMLShared.trace("Recompute GDML Quqdrang\n")
        
 class GDMLTessellated(GDMLcommon) :
-    def __init__(self, obj, material ) :
+    
+   def __init__(self, obj, material ) :
       obj.addExtension('App::OriginGroupExtensionPython', self)
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLTessellated", "Shape of the Tesssellation")
       obj.addProperty("App::PropertyEnumeration","material","GDMLTessellated","Material")
@@ -1069,16 +1072,18 @@ class GDMLTessellated(GDMLcommon) :
       self.Object = obj
       obj.Proxy = self
 
-    def onChanged(self, fp, prop):
+   def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
-       #if prop in ['v1','v2','v3','v4','type'] :
-       #   self.execute(fp)
-       #self.execute(fp)
-       GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if prop in ['v1','v2','v3','v4','type'] :
+             self.execute(fp)
 
-    def execute(self, fp):
+   def execute(self, fp):
+       self.createGeometry(fp)
+   
+   def createGeometry(self,fp):
        print("Tessellated")
-       parms = self.Object.OutList
+       parms = fp.OutList
        GDMLShared.trace("Number of parms : "+str(len(parms)))
        faces = []
        for ptr in parms :
@@ -1110,7 +1115,24 @@ class GDMLTessellated(GDMLcommon) :
        solid=Part.Solid(shell)
        if solid.Volume < 0:
           solid.reverse()
-       fp.Shape = solid
+       print(dir(solid))   
+       bbox = solid.BoundBox
+       print(bbox)
+       print(bbox.XMin)
+       print(bbox.YMin)
+       print(bbox.ZMin)
+       #print(bbox.XLength)
+       #print(bbox.YLength)
+       #print(bbox.ZLength)
+       print(bbox.XMax)
+       print(bbox.YMax)
+       print(bbox.ZMax)
+       base = FreeCAD.Vector(-(bbox.XMin+bbox.XMax)/2, \
+                             -(bbox.YMin+bbox.YMax)/2 \
+                             -(bbox.ZMin+bbox.ZMax)/2)
+       print(base)
+
+       fp.Shape = translate(solid,base)
        #fp.Shape = faces[0]
        #fp.Shape = Part.makeBox(10,10,10)
 
@@ -1136,10 +1158,8 @@ class GDMLFiles(GDMLcommon) :
       '''Do something when doing a recomputation, this method is mandatory'''
 
    def onChanged(self, fp, prop):
-      '''Do something when a property has changed'''
-      if not hasattr(fp,'onchange') or not fp.onchange : return
-      #self.execute(fp)
-      GDMLShared.trace("Change property: " + str(prop) + "\n")
+       if not ('Restore' in fp.State) :
+          if not hasattr(fp,'onchange') or not fp.onchange : return
 
 class GDMLvolume :
    def __init__(self,obj) :
