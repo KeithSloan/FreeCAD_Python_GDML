@@ -164,6 +164,10 @@ and the following FreeCAD forum members
 * looo
 * easyw-fc
 
+OpenCascade Forum members
+
+* Sergey Slyadnev
+
 ## Feedback
 
 To contact the author email keith[at]sloan-home.co.uk
