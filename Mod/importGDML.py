@@ -402,7 +402,7 @@ def createXtru(part,solid,material,px,py,pz,rot,displayMode) :
     #myXtru=volObj.newObject("Part::FeaturePython","GDMLXtru"+getName(solid))
     print(solid)
     print(getName(solid))
-    myXtru=part.newObject("Part::FeaturePython","GDMLXtru"+getName(solid))
+    myXtru=part.newObject("Part::FeaturePython","GDMLXtru-"+getName(solid))
     #myXtru.addExtension("App::OriginGroupExtensionPython", None)
     lunit = getText(solid,'lunit',"mm")
     GDMLXtru(myXtru,lunit,material)
@@ -431,6 +431,9 @@ def createXtru(part,solid,material,px,py,pz,rot,displayMode) :
     #base = FreeCAD.Vector(px,py,pz)
     myXtru.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(myXtru.Placement.Rotation)
+    # Shape is still Null at this point
+    #print("Xtru Shape : ")
+    #print("Is Null : "+str(myXtru.Shape.isNull()))
     return(myXtru)
 
 def createTube(part,solid,material,px,py,pz,rot,displayMode) :
@@ -528,10 +531,13 @@ def parseBoolean(part,solid,objType,material,px,py,pz,rot,displayMode) :
        #base = FreeCAD.Vector(px,py,pz)
        mybool.Placement = GDMLShared.processPlacement(base,rot)
        #ViewProvider(mybool.ViewObject)
+       mybool.Base.Shape.exportBrep("/tmp/"+mybool.Base.Label+"base.brep")
+       mybool.Tool.Shape.exportBrep("/tmp/"+mybool.Tool.Label+"tool.brep")
+       mybool.Shape.exportBrep("/tmp/"+mybool.Label+"boolean.brep")
        #print("Bool Shape : "+str(mybool.Shape.isValid()))
        #print("Bool Base  : "+str(mybool.Base.Shape.isValid()))
        #print("Bool Tool  : "+str(mybool.Tool.Shape.isValid()))
-       print(dir(mybool.Shape))
+       #print(dir(mybool.Shape))
        return mybool
 
 def createSolid(part,solid,material,px,py,pz,rot,displayMode) :

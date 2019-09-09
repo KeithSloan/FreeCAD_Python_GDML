@@ -27,6 +27,7 @@ def printPolyVec(n,v) :
 
 def translate(shape,base) :
     # Input Object and displacement vector - return a transformed shape
+    #return shape
     myPlacement = FreeCAD.Placement()
     myPlacement.move(base)
     mat1 = myPlacement.toMatrix()
@@ -95,9 +96,10 @@ class GDMLBox(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
-          #print(fp.State) 
-          if prop in ['x','y','z','lunit']  :
+          #if prop in ['x','y','z','lunit']  :
+          if prop in ['x','y','z']  :
              self.createGeometry(fp)
 
    def execute(self, fp):
@@ -199,7 +201,7 @@ class GDMLElCone(GDMLcommon) :
        '''Do something when a property has changed'''
        if not ('Restore' in fp.State) :
           if prop in ['dx','dy','zmax','zcut','lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
 
    def execute(self, fp):
        self.createGeometry(fp)
@@ -260,7 +262,7 @@ class GDMLEllipsoid(GDMLcommon) :
        '''Do something when a property has changed'''
        if not ('Restore' in fp.State) :
           if prop in ['ax','by','cz','zcut1','zcut2','lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
 
    def execute(self, fp):
        self.createGeometry(fp)
@@ -331,7 +333,7 @@ class GDMLElTube(GDMLcommon) :
        '''Do something when a property has changed'''
        if not ('Restore' in fp.State) :
           if prop in ['dx','dy','dz','lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
 
    def execute(self, fp):
        self.createGeometry(fp)
@@ -380,7 +382,7 @@ class GDMLPolyhedra(GDMLcommon) :
        '''Do something when a property has changed'''
        if not ('Restore' in fp.State) :
           if prop in ['startphi', 'deltaphi', 'numsides', 'aunit','lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
 
    def execute(self, fp):
        self.createGeometry(fp)
@@ -455,14 +457,17 @@ class GDMLXtru(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['startphi','deltaphi','aunit','lunit'] :
-             self.execute(fp)
-
+             #self.execute(fp)
+             self.createGeometry(fp)
+            
    def execute(self, fp):
        self.createGeometry(fp)
    
    def createGeometry(self,fp):
+       print("Create Geometry")
        parms = fp.OutList
        #print("OutList")
        #print(parms)
@@ -476,7 +481,6 @@ class GDMLXtru(GDMLcommon) :
               GDMLShared.trace('x : '+str(x))
               GDMLShared.trace('y : '+str(y))
               polyList.append([x, y])
-
            if hasattr(ptr,'zOrder') :
               zOrder = ptr.zOrder
               xOffset = ptr.xOffset
@@ -491,6 +495,7 @@ class GDMLXtru(GDMLcommon) :
        topList = []
        # close polygon
        polyList.append(polyList[0])
+       print("Start Range "+str(len(sections)-1))
        for s in range(0,len(sections)-1) :
            xOffset1   = sections[s][1]
            yOffset1   = sections[s][2]
@@ -523,7 +528,8 @@ class GDMLXtru(GDMLcommon) :
            print(topList)
            # deal with side faces
            # remember first point is added to end of list
-           for i in range(0,len(baseList)-1) :
+           print("Number Sides : "+str(len(baseList)-1))
+           for i in range(0,len(baseList)-2) :
                sideList = []
                sideList.append(baseList[i])
                sideList.append(baseList[i+1])
@@ -549,6 +555,8 @@ class GDMLXtru(GDMLcommon) :
            print("Valid Solid : "+str(solid.isValid()))
            if solid.Volume < 0:
               solid.reverse()
+       #print(dir(fp))       
+       solid.exportBrep("/tmp/"+fp.Label+".brep")       
        fp.Shape = solid
 
 class GDML2dVertex(GDMLcommon) :
@@ -729,7 +737,7 @@ class GDMLSphere(GDMLcommon) :
        if not ('Restore' in fp.State) :
           if prop in ['rmin','rmax','startphi','deltaphi','starttheta', \
                     'deltatheta','aunit','lunit'] :
-              self.execute(fp)
+             self.createGeometry(fp)
    
    def execute(self, fp):
        self.createGeometry(fp)
@@ -789,7 +797,7 @@ class GDMLTrap(GDMLcommon) :
        if not ('Restore' in fp.State) :
           if prop in ['z','theta','phi','x1','x2','x3','x4','y1','y2','alpha', \
                    'aunit', 'lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
    
    def execute(self, fp):
        self.createGeometry(fp)
@@ -882,7 +890,7 @@ class GDMLTrd(GDMLcommon) :
    def onChanged(self, fp, prop):
        if not ('Restore' in fp.State) :
           if prop in ['z','x1','x2','y1','y2','lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
    
    def execute(self, fp):
        self.createGeometry(fp)
@@ -945,7 +953,7 @@ class GDMLTube(GDMLcommon) :
        if not ('Restore' in fp.State) :
           if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
                    'lunit'] :
-             self.execute(fp)
+             self.createGeometry(fp)
 
    def execute(self, fp):
        self.createGeometry(fp)
@@ -1076,7 +1084,7 @@ class GDMLTessellated(GDMLcommon) :
        '''Do something when a property has changed'''
        if not ('Restore' in fp.State) :
           if prop in ['v1','v2','v3','v4','type'] :
-             self.execute(fp)
+             self.createGeometry(fp)
 
    def execute(self, fp):
        self.createGeometry(fp)
