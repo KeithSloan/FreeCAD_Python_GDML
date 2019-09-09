@@ -140,6 +140,7 @@ class GDMLCone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['rmin1','rmax1','rmin2','rmax2','z','startphi','deltaphi' \
                ,'aunit', 'lunit'] :
@@ -149,17 +150,18 @@ class GDMLCone(GDMLcommon) :
        self.createGeometry(fp)
 
    def createGeometry(self,fp):
-       print(fp)
-       if all((fp.rmin1,fp.rmin2,fp.rmax1,fp.rmax2,fp.z)) :
-       #if (hasattr(fp,'rmin1') and hasattr(fp,'rmax1') and \
-       #    hasattr(fp,'rmin2') and hasattr(fp,'rmax2') and \
-       #    hasattr(fp,'z')) :
+       print("fp : ")
+       print(vars(fp))
+       #if all((fp.rmin1,fp.rmin2,fp.rmax1,fp.rmax2,fp.z)) :
+       if (hasattr(fp,'rmin1') and hasattr(fp,'rmax1') and \
+           hasattr(fp,'rmin2') and hasattr(fp,'rmax2') and \
+           hasattr(fp,'z')) :
        # Need to add code to check variables will make a valid cone
        # i.e.max > min etc etc
-       #print("execute cone")
-       #print fp.rmax1
-       #print fp.rmax2
-       #print fp.z
+          print("execute cone")
+          print(fp.rmax1)
+          print(fp.rmax2)
+          print(fp.z)
        
           base = FreeCAD.Vector(0,0,-fp.z/2)
           cone1 = Part.makeCone(fp.rmin1,fp.rmax1,fp.z)
@@ -495,7 +497,7 @@ class GDMLXtru(GDMLcommon) :
        topList = []
        # close polygon
        polyList.append(polyList[0])
-       print("Start Range "+str(len(sections)-1))
+       #print("Start Range "+str(len(sections)-1))
        for s in range(0,len(sections)-1) :
            xOffset1   = sections[s][1]
            yOffset1   = sections[s][2]
@@ -505,9 +507,9 @@ class GDMLXtru(GDMLcommon) :
            yOffset2   = sections[s+1][2]
            zPosition2 = sections[s+1][3]
            sf2        = sections[s+1][4]
-           print("polyList")
+           #print("polyList")
            for p in polyList :
-              print(p)
+              #print(p)
               vb=FreeCAD.Vector(p[0]*sf1+xOffset1, p[1]*sf1+yOffset1,zPosition1)
               #vb=FreeCAD.Vector(-20, p[1]*sf1+yOffset1,zPosition1)
               vt=FreeCAD.Vector(p[0]*sf2+xOffset2, p[1]*sf2+yOffset2,zPosition2)
@@ -522,13 +524,13 @@ class GDMLXtru(GDMLcommon) :
            f1 = Part.Face(w1)
            #f1.reverse()
            faces_list.append(f1)
-           print("base list")
-           print(baseList)
-           print("Top list")
-           print(topList)
+           #print("base list")
+           #print(baseList)
+           #print("Top list")
+           #print(topList)
            # deal with side faces
            # remember first point is added to end of list
-           print("Number Sides : "+str(len(baseList)-1))
+           #print("Number Sides : "+str(len(baseList)-1))
            for i in range(0,len(baseList)-2) :
                sideList = []
                sideList.append(baseList[i])
@@ -547,8 +549,8 @@ class GDMLXtru(GDMLcommon) :
            f1 = Part.Face(w1)
            #f1.reverse()
            faces_list.append(f1)
-           print("Faces List")
-           print(faces_list)
+           #print("Faces List")
+           #print(faces_list)
            shell=Part.makeShell(faces_list)
            #solid=Part.Solid(shell).removeSplitter()
            solid=Part.Solid(shell)
@@ -556,7 +558,7 @@ class GDMLXtru(GDMLcommon) :
            if solid.Volume < 0:
               solid.reverse()
        #print(dir(fp))       
-       solid.exportBrep("/tmp/"+fp.Label+".brep")       
+       #solid.exportBrep("/tmp/"+fp.Label+".brep")       
        fp.Shape = solid
 
 class GDML2dVertex(GDMLcommon) :
