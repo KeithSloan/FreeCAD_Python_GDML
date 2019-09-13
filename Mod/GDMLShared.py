@@ -48,8 +48,7 @@ def getVal(ptr,var,vtype = 1) :
     if var in ptr.attrib :
        # if yes get its value
        vval = ptr.attrib.get(var)
-       print("vval")
-       print(vval)
+       print("vval : "+str(vval))
        if vval[0] == '&' :  # Is this refering to an HTML entity constant
          chkval = vval[1:]
        else :
@@ -61,10 +60,13 @@ def getVal(ptr,var,vtype = 1) :
        #   return(eval(c))
        #
        #else :
+       print("chkval : "+str(chkval))
        if vtype == 1 :
-          return(float(eval(chkval)))
+          ret = float(eval(chkval))
        else :
-          return(int(eval(chkval)))
+          ret = int(eval(chkval))
+       print('return value : '+str(ret))
+       return(ret)
     else :
        if vtype == 1 :
           return (0.0)

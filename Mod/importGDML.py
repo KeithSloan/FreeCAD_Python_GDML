@@ -441,8 +441,8 @@ def createTube(part,solid,material,px,py,pz,rot,displayMode) :
     mytube=part.newObject("Part::FeaturePython","GDMLTube:"+getName(solid))
     GDMLTube(mytube,rmin,rmax,z,startphi,deltaphi,aunit,lunit,material)
     GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-    base = FreeCAD.Vector(0,0,0)
-    #base = FreeCAD.Vector(px,py,pz)
+    #base = FreeCAD.Vector(0,0,0)
+    base = FreeCAD.Vector(px,py,pz)
     mytube.Placement = GDMLShared.processPlacement(base,rot)
     GDMLShared.trace(mytube.Placement.Rotation)
     # set ViewProvider before setDisplay
@@ -603,6 +603,7 @@ def getVolSolid(name):
     return solid
 
 def parsePhysVol(parent,physVol,displayMode):
+    print("ParsePhyVol")
     GDMLShared.trace("ParsePhyVol")
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
@@ -626,6 +627,7 @@ def parsePhysVol(parent,physVol,displayMode):
     volref = GDMLShared.getRef(physVol,"volumeref")
     GDMLShared.trace("Volume ref : "+volref)
     part = parent.newObject("App::Part",volref)
+    print("px : "+str(px)+" : "+str(py)+" : "+str(pz))
     parseVolume(part,volref,px,py,pz,rot,displayMode)
 
 # ParseVolume name - structure is global

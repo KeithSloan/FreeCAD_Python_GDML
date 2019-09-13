@@ -101,6 +101,8 @@ class GDMLBox(GDMLcommon) :
           #if prop in ['x','y','z','lunit']  :
           if prop in ['x','y','z']  :
              self.createGeometry(fp)
+          else :
+             print("Not Create")
 
    def execute(self, fp):
        self.createGeometry(fp)
@@ -201,6 +203,7 @@ class GDMLElCone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['dx','dy','zmax','zcut','lunit'] :
              self.createGeometry(fp)
@@ -262,6 +265,7 @@ class GDMLEllipsoid(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['ax','by','cz','zcut1','zcut2','lunit'] :
              self.createGeometry(fp)
@@ -332,6 +336,7 @@ class GDMLElTube(GDMLcommon) :
       obj.Proxy = self
 
    def onChanged(self, fp, prop):
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        '''Do something when a property has changed'''
        if not ('Restore' in fp.State) :
           if prop in ['dx','dy','dz','lunit'] :
@@ -382,6 +387,7 @@ class GDMLPolyhedra(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['startphi', 'deltaphi', 'numsides', 'aunit','lunit'] :
              self.createGeometry(fp)
@@ -576,6 +582,7 @@ class GDML2dVertex(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        #if prop in ['x','y'] :
        #   self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
@@ -603,6 +610,7 @@ class GDMLSection(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        #if prop in ['zOrder','zPosition','xOffset','yOffset','scaleFactor'] :
        #   self.execute(fp)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
@@ -622,6 +630,7 @@ class GDMLzplane(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        #if not ('Restore' in fp.State) :
        #if prop in ['rmin','rmax','z'] :
        #   self.execute(fp)
@@ -655,6 +664,7 @@ class GDMLPolycone(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['startphi','deltaphi','aunit','lunit'] :
              #print(dir(fp)) 
@@ -736,6 +746,7 @@ class GDMLSphere(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['rmin','rmax','startphi','deltaphi','starttheta', \
                     'deltatheta','aunit','lunit'] :
@@ -796,6 +807,7 @@ class GDMLTrap(GDMLcommon) :
       self.Type = 'GDMLTrap'
 
    def onChanged(self, fp, prop):
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['z','theta','phi','x1','x2','x3','x4','y1','y2','alpha', \
                    'aunit', 'lunit'] :
@@ -890,6 +902,7 @@ class GDMLTrd(GDMLcommon) :
       self.Type = 'GDMLTrd'
 
    def onChanged(self, fp, prop):
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['z','x1','x2','y1','y2','lunit'] :
              self.createGeometry(fp)
@@ -940,8 +953,13 @@ class GDMLTube(GDMLcommon) :
       obj.addProperty("App::PropertyFloat","startphi","GDMLTube","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLTube","aunit")
-      obj.aunit=["rad", "deg"]
+      #aunitList=["rad", "deg"]
+      #obj.aunit=aunitList
+      obj.aunit=['rad','deg']
       obj.aunit=0
+      #obj.aunit.setValue(1)
+      #obj.aunit=aunitList.index(aunit)
+      if aunit == 'deg' : obj.aunit=1
       obj.addProperty("App::PropertyString","lunit","GDMLTube","lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTube","Material")
       obj.material = MaterialsList
@@ -952,6 +970,7 @@ class GDMLTube(GDMLcommon) :
       self.Type = 'GDMLTube'
 
    def onChanged(self, fp, prop):
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['rmin','rmax','z','startphi','deltaphi','aunit',  \
                    'lunit'] :
@@ -964,8 +983,13 @@ class GDMLTube(GDMLcommon) :
        import math
        # Need to add code to check values make a valid Tube
        # Define six vetices for the shape
+       print("aunit : "+fp.aunit)
+       print("startphi : "+str(fp.startphi))
+       print("deltaphi : "+str(fp.deltaphi))
        startphirad = getAngle(fp.aunit,fp.startphi)
        deltaphirad = getAngle(fp.aunit,fp.deltaphi)
+       print("startphirad : "+str(startphirad))
+       print("deltaphirad : "+str(deltaphirad))
        x1 = fp.rmax*math.sin(startphirad)
        y1 = fp.rmax*math.cos(startphirad)
        x2 = fp.rmax*math.sin(startphirad+deltaphirad)
@@ -1010,6 +1034,7 @@ class GDMLVertex(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        #if not ('Restore' in fp.State) :
        #   if prop in ['x','y', 'z'] :
        #      self.execute(fp)
@@ -1035,6 +1060,7 @@ class GDMLTriangular(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        #if not ('Restore' in fp.State) :
        #   if prop in ['v1','v2','v3','type'] :
        #      self.execute(fp)
@@ -1061,6 +1087,7 @@ class GDMLQuadrangular(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        #if not ('Restore' in fp.State) :
        #   if prop in ['v1','v2','v3','v4','type'] :
        #      self.execute(fp)
@@ -1084,6 +1111,7 @@ class GDMLTessellated(GDMLcommon) :
 
    def onChanged(self, fp, prop):
        '''Do something when a property has changed'''
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if prop in ['v1','v2','v3','v4','type'] :
              self.createGeometry(fp)
@@ -1168,6 +1196,7 @@ class GDMLFiles(GDMLcommon) :
       '''Do something when doing a recomputation, this method is mandatory'''
 
    def onChanged(self, fp, prop):
+       print(fp.Label+" State : "+str(fp.State)+" prop : "+prop)
        if not ('Restore' in fp.State) :
           if not hasattr(fp,'onchange') or not fp.onchange : return
 
@@ -1252,6 +1281,7 @@ class ViewProvider(GDMLcommon):
  
    def updateData(self, fp, prop):
        '''If a property of the handled feature has changed we have the chance to handle this here'''
+       print("updateData")
        # fp is the handled feature, prop is the name of the property that has changed
        #l = fp.getPropertyByName("Length")
        #w = fp.getPropertyByName("Width")
@@ -1261,6 +1291,7 @@ class ViewProvider(GDMLcommon):
  
    def getDisplayModes(self,obj):
        '''Return a list of display modes.'''
+       print("getDisplayModes")
        modes=[]
        modes.append("Shaded")
        modes.append("Wireframe")
@@ -1277,6 +1308,10 @@ class ViewProvider(GDMLcommon):
  
    def onChanged(self, vp, prop):
        '''Here we can do something when a single property got changed'''
+       if hasattr(vp,'Name') :
+          print("View Provider : "+vp.Name+" State : "+str(vp.State)+" prop : "+prop)
+       else :   
+          print("View Provider : prop : "+prop)
        GDMLShared.trace("Change property: " + str(prop) + "\n")
        #if prop == "Color":
        #    c = vp.getPropertyByName("Color")
