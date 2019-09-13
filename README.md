@@ -92,9 +92,17 @@ One in particular is lhcbvelo.gdml. This file takes a LONG LONG time to import/o
 If when it is displayed you go down the Volumes tree to VelovVelo under the World volume then click on the toggle icon ( 1st GDML icon in the workbench) Again wait patiently and the display will change to wireframe. You can
 then decend further down the Volumes tree, select one and again use the toggle icon and that volume and children will change to Solid. In this way various parts in different volumes can be examined.
 
-## Exporter
+## GDML Objects Exporter 
+
+To export to GDML 
+
+1. Select the 'world' Volume, should be first Part in Design
+2. File export
+3. Select GDML as filetype
+4. Make sure file has GDML as file extension
 
 ### GDML Objects
+
 GDMLObjects are output as straight GDML solids
 
 ### FreeCAD Objects
@@ -118,6 +126,7 @@ create the same GDML definitions as imported.
 The Ability to change to change these maybe implemented in the future.
  
 ## Preferences
+
 There is now an option to toggle Printverbose flag to reduce printing to the python console.
 
 ## Future Development Road Map
@@ -132,6 +141,7 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
   * Add facility to edit Elements 
 
 * Workbench
+
   * Analize FreeCAD file for direct conversion of object to GDML solid
   * Display mesh for objects that will not directly convert
   * Provide options to control meshing objects that will be Tessellated
@@ -153,6 +163,7 @@ Cycle icon by Flaticon see www.flaticon.com
 Thanks to
 
 * Wouter Deconnick
+* Hilden Timo
 
 and the following FreeCAD forum members
 
