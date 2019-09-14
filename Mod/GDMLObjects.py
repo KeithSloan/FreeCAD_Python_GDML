@@ -994,10 +994,10 @@ class GDMLTube(GDMLcommon) :
        deltaphirad = getAngle(fp.aunit,fp.deltaphi)
        print("startphirad : "+str(startphirad))
        print("deltaphirad : "+str(deltaphirad))
-       x1 = fp.rmax*math.sin(startphirad)
-       y1 = fp.rmax*math.cos(startphirad)
-       x2 = fp.rmax*math.sin(startphirad+deltaphirad)
-       y2 = fp.rmax*math.cos(startphirad+deltaphirad)
+       y1 = fp.rmax*math.sin(startphirad)
+       x1 = fp.rmax*math.cos(startphirad)
+       y2 = fp.rmax*math.sin(startphirad+deltaphirad)
+       x2 = fp.rmax*math.cos(startphirad+deltaphirad)
        v1 = FreeCAD.Vector(0,0,0)
        v2 = FreeCAD.Vector(x1,y1,0)
        v3 = FreeCAD.Vector(x2,y2,0)
@@ -1016,12 +1016,15 @@ class GDMLTube(GDMLcommon) :
        cyl1 = Part.makeCylinder(fp.rmax,fp.z)
        cyl2 = Part.makeCylinder(fp.rmin,fp.z)
        cyl3 = cyl1.cut(cyl2) 
-
-       tube = cyl3.cut(solid)
+       if deltaphirad < math.pi :
+          tube = cyl3.common(solid)
+       else :   
+          tube = cyl3.cut(solid)
        #base = FreeCAD.Vector(0,0,fp.z/2)
        #base = FreeCAD.Vector(0,0,0)
        base = FreeCAD.Vector(0,0,-fp.z/2)
        fp.Shape = translate(tube,base)
+       #fp.Shape = solid
        GDMLShared.trace("Recompute GDML Tube Object \n")
 
 class GDMLVertex(GDMLcommon) :
