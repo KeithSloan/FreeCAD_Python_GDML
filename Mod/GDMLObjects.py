@@ -994,32 +994,35 @@ class GDMLTube(GDMLcommon) :
        deltaphirad = getAngle(fp.aunit,fp.deltaphi)
        print("startphirad : "+str(startphirad))
        print("deltaphirad : "+str(deltaphirad))
-       y1 = fp.rmax*math.sin(startphirad)
-       x1 = fp.rmax*math.cos(startphirad)
-       y2 = fp.rmax*math.sin(startphirad+deltaphirad)
-       x2 = fp.rmax*math.cos(startphirad+deltaphirad)
-       v1 = FreeCAD.Vector(0,0,0)
-       v2 = FreeCAD.Vector(x1,y1,0)
-       v3 = FreeCAD.Vector(x2,y2,0)
-       v4 = FreeCAD.Vector(0,0,fp.z)
-       v5 = FreeCAD.Vector(x1,y1,fp.z)
-       v6 = FreeCAD.Vector(x2,y2,fp.z)
-
-       # Make the wires/faces
-       f1 = make_face3(v1,v2,v3)
-       f2 = make_face4(v1,v3,v6,v4)
-       f3 = make_face3(v4,v6,v5)
-       f4 = make_face4(v5,v2,v1,v4)
-       shell=Part.makeShell([f1,f2,f3,f4])
-       solid=Part.makeSolid(shell)
-
        cyl1 = Part.makeCylinder(fp.rmax,fp.z)
        cyl2 = Part.makeCylinder(fp.rmin,fp.z)
        cyl3 = cyl1.cut(cyl2) 
-       if deltaphirad < math.pi :
-          tube = cyl3.common(solid)
-       else :   
-          tube = cyl3.cut(solid)
+
+       if checkFullCircle(fp.aunit,fp.deltaphi) == False :
+          y1 = fp.rmax*math.sin(startphirad)
+          x1 = fp.rmax*math.cos(startphirad)
+          y2 = fp.rmax*math.sin(startphirad+deltaphirad)
+          x2 = fp.rmax*math.cos(startphirad+deltaphirad)
+          v1 = FreeCAD.Vector(0,0,0)
+          v2 = FreeCAD.Vector(x1,y1,0)
+          v3 = FreeCAD.Vector(x2,y2,0)
+          v4 = FreeCAD.Vector(0,0,fp.z)
+          v5 = FreeCAD.Vector(x1,y1,fp.z)
+          v6 = FreeCAD.Vector(x2,y2,fp.z)
+
+          # Make the wires/faces
+          f1 = make_face3(v1,v2,v3)
+          f2 = make_face4(v1,v3,v6,v4)
+          f3 = make_face3(v4,v6,v5)
+          f4 = make_face4(v5,v2,v1,v4)
+          shell=Part.makeShell([f1,f2,f3,f4])
+          solid=Part.makeSolid(shell)
+          if deltaphirad < math.pi :
+             tube = cyl3.common(solid)
+          else :   
+             tube = cyl3.cut(solid)
+       else :
+           tube = cyl3
        #base = FreeCAD.Vector(0,0,fp.z/2)
        #base = FreeCAD.Vector(0,0,0)
        base = FreeCAD.Vector(0,0,-fp.z/2)
