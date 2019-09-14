@@ -116,7 +116,8 @@ def getName(ptr) :
     return (ptr.attrib.get('name'))
 
 def getText(ptr,var,default) :
-    if var in ptr :
+    #print("Get Texti : "+str(ptr.attrib.get(var))+" : "+str(var))
+    if var in ptr.attrib :
        return (ptr.attrib.get(var))
     else :
        return default
@@ -434,6 +435,7 @@ def createTube(part,solid,material,px,py,pz,rot,displayMode) :
     startphi = GDMLShared.getVal(solid,'startphi')
     deltaphi = GDMLShared.getVal(solid,'deltaphi')
     aunit = getText(solid,'aunit','rad')
+    print("aunit : "+aunit)
     lunit = getText(solid,'lunit',"mm")
     GDMLShared.trace(rmin)
     GDMLShared.trace(rmax)

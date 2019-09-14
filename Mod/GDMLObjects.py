@@ -1,16 +1,24 @@
 import FreeCAD, FreeCADGui, Part
 from pivy import coin
-
+import math
 import GDMLShared
 
 # Global Material List
 global MaterialsList
 MaterialsList = []
 
+def checkFullCircle(aunit, angle) :
+    if aunit == 'deg' and angle == 360 :
+       return True
+    if aunit == 'rad' and angle == math.pi :
+       return True
+    return False
+
 # Get angle in Radians
 def getAngle(aunit,angle) :
-   if aunit == 1 :   # 0 radians 1 Degrees
-      return(angle*180/math.pi)
+   print("aunit : "+str(aunit))
+   if aunit == 'deg' :   # 0 radians 1 Degrees
+      return(angle*math.pi/180)
    else :
       return angle
 
@@ -128,7 +136,7 @@ class GDMLCone(GDMLcommon) :
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLCone","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=0
+      obj.aunit=['rad','deg'].index(aunit)
       obj.addProperty("App::PropertyString","lunit","GDMLCone","lunit").lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
                       "Shape of the Cone")
@@ -371,7 +379,7 @@ class GDMLPolyhedra(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolyhedra", \
                        "aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=0
+      obj.aunit=['rad','deg'].index(aunit)
       obj.addProperty("App::PropertyString","lunit","GDMLPolyhedra", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLPolyhedra", \
@@ -649,7 +657,7 @@ class GDMLPolycone(GDMLcommon) :
              "Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolycone","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=0
+      obj.aunit=['rad','deg'].index(aunit)
       obj.addProperty("App::PropertyString","lunit","GDMLPolycone", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLPolycone", \
@@ -731,7 +739,7 @@ class GDMLSphere(GDMLcommon) :
              "Delta Angle").deltatheta=deltatheta
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLSphere","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=0
+      obj.aunit=['rad','deg'].index(aunit)
       obj.addProperty("App::PropertyString","lunit","GDMLSphere", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLSphere", \
@@ -794,7 +802,7 @@ class GDMLTrap(GDMLcommon) :
                      alpha=alpha
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLTrap","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=0
+      obj.aunit=['rad','deg'].index(aunit)
       obj.addProperty("App::PropertyString","lunit","GDMLTrap","lunit"). \
                        lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTrap","Material")
@@ -953,13 +961,8 @@ class GDMLTube(GDMLcommon) :
       obj.addProperty("App::PropertyFloat","startphi","GDMLTube","Start Angle").startphi=startphi
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLTube","aunit")
-      #aunitList=["rad", "deg"]
-      #obj.aunit=aunitList
       obj.aunit=['rad','deg']
-      obj.aunit=0
-      #obj.aunit.setValue(1)
-      #obj.aunit=aunitList.index(aunit)
-      if aunit == 'deg' : obj.aunit=1
+      obj.aunit=['rad','deg'].index(aunit)
       obj.addProperty("App::PropertyString","lunit","GDMLTube","lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTube","Material")
       obj.material = MaterialsList
@@ -986,6 +989,7 @@ class GDMLTube(GDMLcommon) :
        print("aunit : "+fp.aunit)
        print("startphi : "+str(fp.startphi))
        print("deltaphi : "+str(fp.deltaphi))
+       print("Full Circle : "+str(checkFullCircle(fp.aunit,fp.deltaphi)))
        startphirad = getAngle(fp.aunit,fp.startphi)
        deltaphirad = getAngle(fp.aunit,fp.deltaphi)
        print("startphirad : "+str(startphirad))
