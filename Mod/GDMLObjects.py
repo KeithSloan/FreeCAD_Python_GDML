@@ -71,6 +71,39 @@ def makeFrustrum(num,poly0,poly1) :
     print("Number of Faces : "+str(len(faces)))
     return(faces)
 
+def angleSectionSolid(fp, rmax, z, shape) :
+    # Different Solids have different rmax and height
+    import math
+    print("aunit : "+fp.aunit)
+    print("startphi : "+str(fp.startphi))
+    print("deltaphi : "+str(fp.deltaphi))
+    startphirad = getAngle(fp.aunit,fp.startphi)
+    deltaphirad = getAngle(fp.aunit,fp.deltaphi)
+    print("startphirad : "+str(startphirad))
+    print("deltaphirad : "+str(deltaphirad))
+    x1 = rmax*math.cos(startphirad)
+    y1 = rmax*math.sin(startphirad)
+    x2 = rmax*math.cos(startphirad+deltaphirad)
+    y2 = rmax*math.sin(startphirad+deltaphirad)
+    v1 = FreeCAD.Vector(0,0,0)
+    v2 = FreeCAD.Vector(x1,y1,0)
+    v3 = FreeCAD.Vector(x2,y2,0)
+    v4 = FreeCAD.Vector(0,0,z)
+    v5 = FreeCAD.Vector(x1,y1,z)
+    v6 = FreeCAD.Vector(x2,y2,z)
+
+    # Make the wires/faces
+    f1 = make_face3(v1,v2,v3)
+    f2 = make_face4(v1,v3,v6,v4)
+    f3 = make_face3(v4,v6,v5)
+    f4 = make_face4(v5,v2,v1,v4)
+    shell=Part.makeShell([f1,f2,f3,f4])
+    solid=Part.makeSolid(shell)
+    if deltaphirad < math.pi :
+       return(shape.common(solid))
+    else :   
+       return(shape.cut(solid))
+
 class GDMLcommon :
    def __init__(self, obj):
        '''Init'''
@@ -173,7 +206,6 @@ class GDMLCone(GDMLcommon) :
           print(fp.rmax2)
           print(fp.z)
        
-          base = FreeCAD.Vector(0,0,-fp.z/2)
           cone1 = Part.makeCone(fp.rmin1,fp.rmax1,fp.z)
           if (fp.rmin1 != fp.rmin2 or fp.rmax1 != fp.rmax2 ) :
              cone2 = Part.makeCone(fp.rmin2,fp.rmax2,fp.z)
@@ -181,10 +213,15 @@ class GDMLCone(GDMLcommon) :
                 cone3 = cone1.cut(cone2)
              else :
                 cone3 = cone2.cut(cone1)
-
-             fp.Shape = translate(cone3,base)
+          else :
+             cone3 = cone1
+          base = FreeCAD.Vector(0,0,-fp.z/2)
+          if checkFullCircle(fp.aunit,fp.deltaphi) == False :
+             rmax = max(fp.rmax1, fp.rmax2)
+             cone = angleSectionSolid(fp, rmax, fp.z, cone3)
+             fp.Shape = translate(cone,base)
           else :   
-             fp.Shape = translate(cone1,base)
+             fp.Shape = translate(cone3,base)
 
 class GDMLElCone(GDMLcommon) :
    def __init__(self, obj, dx, dy, zmax, zcut, lunit, material) :
@@ -452,8 +489,11 @@ class GDMLPolyhedra(GDMLcommon) :
        shape = outer_solid.cut(inner_solid)
        #fp.Shape = shell
        base = FreeCAD.Vector(0,0,-z0/2)
-       fp.Shape = translate(shape,base)
-       #fp.Shape = Part.makeBox(10,10,10)
+       if checkFullCircle(fp.aunit,fp.deltaphi) == False :
+          newShape  = angleSectionSolid(fp, rmax1, z0, shape)
+          fp.Shape = translate(newShape,base)
+       else :
+          fp.Shape = translate(shape,base)
        GDMLShared.trace("Recompute GDML Polyhedra")
 
 class GDMLXtru(GDMLcommon) :
@@ -684,10 +724,6 @@ class GDMLPolycone(GDMLcommon) :
        self.createGeometry(fp)
 
    def createGeometry(self,fp) :    
-       startphi = getAngle(fp.aunit,fp.startphi)
-       deltaphi = getAngle(fp.aunit,fp.deltaphi)
-       GDMLShared.trace("Start phi : "+str(startphi))
-       GDMLShared.trace("Delta phi : "+str(deltaphi)) 
        zplanes = fp.OutList
        cones = []
        GDMLShared.trace("Number of zplanes : "+str(len(zplanes)))
@@ -716,8 +752,10 @@ class GDMLPolycone(GDMLcommon) :
        if len(cones) > 1 :
           for merge in cones[1:] :
               cone = cone.fuse(merge)
-
-       fp.Shape = cone    
+       if checkFullCircle(fp.aunit,fp.deltaphi) == False :
+          fp.Shape = angleSectionSolid(fp, rM1, h, cone)
+       else :
+          fp.Shape = cone    
        GDMLShared.trace("Recompute GDMLPolycone Object \n")
 
 class GDMLSphere(GDMLcommon) :
@@ -983,46 +1021,16 @@ class GDMLTube(GDMLcommon) :
        self.createGeometry(fp)
    
    def createGeometry(self,fp):
-       import math
        # Need to add code to check values make a valid Tube
        # Define six vetices for the shape
-       print("aunit : "+fp.aunit)
-       print("startphi : "+str(fp.startphi))
-       print("deltaphi : "+str(fp.deltaphi))
-       print("Full Circle : "+str(checkFullCircle(fp.aunit,fp.deltaphi)))
-       startphirad = getAngle(fp.aunit,fp.startphi)
-       deltaphirad = getAngle(fp.aunit,fp.deltaphi)
-       print("startphirad : "+str(startphirad))
-       print("deltaphirad : "+str(deltaphirad))
        cyl1 = Part.makeCylinder(fp.rmax,fp.z)
        cyl2 = Part.makeCylinder(fp.rmin,fp.z)
        cyl3 = cyl1.cut(cyl2) 
 
        if checkFullCircle(fp.aunit,fp.deltaphi) == False :
-          y1 = fp.rmax*math.sin(startphirad)
-          x1 = fp.rmax*math.cos(startphirad)
-          y2 = fp.rmax*math.sin(startphirad+deltaphirad)
-          x2 = fp.rmax*math.cos(startphirad+deltaphirad)
-          v1 = FreeCAD.Vector(0,0,0)
-          v2 = FreeCAD.Vector(x1,y1,0)
-          v3 = FreeCAD.Vector(x2,y2,0)
-          v4 = FreeCAD.Vector(0,0,fp.z)
-          v5 = FreeCAD.Vector(x1,y1,fp.z)
-          v6 = FreeCAD.Vector(x2,y2,fp.z)
-
-          # Make the wires/faces
-          f1 = make_face3(v1,v2,v3)
-          f2 = make_face4(v1,v3,v6,v4)
-          f3 = make_face3(v4,v6,v5)
-          f4 = make_face4(v5,v2,v1,v4)
-          shell=Part.makeShell([f1,f2,f3,f4])
-          solid=Part.makeSolid(shell)
-          if deltaphirad < math.pi :
-             tube = cyl3.common(solid)
-          else :   
-             tube = cyl3.cut(solid)
+          tube = angleSectionSolid(fp, fp.rmax, fp.z, cyl3)
        else :
-           tube = cyl3
+          tube = cyl3
        #base = FreeCAD.Vector(0,0,fp.z/2)
        #base = FreeCAD.Vector(0,0,0)
        base = FreeCAD.Vector(0,0,-fp.z/2)
@@ -1064,7 +1072,7 @@ class GDMLTriangular(GDMLcommon) :
               "v1").v3=v3
       obj.addProperty("App::PropertyEnumeration","vtype","Triangular","vtype")
       obj.vtype=["Absolute", "Relative"]
-      obj.vtype=0
+      obj.vtype=["Absolute", "Relative"].index(vtype)
       self.Type = 'GDMLTriangular'
       obj.Proxy = self
 
