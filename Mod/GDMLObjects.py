@@ -169,7 +169,7 @@ class GDMLCone(GDMLcommon) :
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLCone","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLCone","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=['rad','deg'].index(aunit)
+      obj.aunit=['rad','deg'].index(aunit[0:3])
       obj.addProperty("App::PropertyString","lunit","GDMLCone","lunit").lunit=lunit
       obj.addProperty("Part::PropertyPartShape","Shape","GDMLCone", \
                       "Shape of the Cone")
@@ -416,7 +416,7 @@ class GDMLPolyhedra(GDMLcommon) :
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolyhedra", \
                        "aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=['rad','deg'].index(aunit)
+      obj.aunit=['rad','deg'].index(aunit[0:3])
       obj.addProperty("App::PropertyString","lunit","GDMLPolyhedra", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLPolyhedra", \
@@ -697,7 +697,7 @@ class GDMLPolycone(GDMLcommon) :
              "Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLPolycone","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=['rad','deg'].index(aunit)
+      obj.aunit=['rad','deg'].index(aunit[0:3])
       obj.addProperty("App::PropertyString","lunit","GDMLPolycone", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLPolycone", \
@@ -777,7 +777,7 @@ class GDMLSphere(GDMLcommon) :
              "Delta Angle").deltatheta=deltatheta
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLSphere","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=['rad','deg'].index(aunit)
+      obj.aunit=['rad','deg'].index(aunit[0:3])
       obj.addProperty("App::PropertyString","lunit","GDMLSphere", \
                       "lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLSphere", \
@@ -840,7 +840,7 @@ class GDMLTrap(GDMLcommon) :
                      alpha=alpha
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLTrap","aunit")
       obj.aunit=["rad", "deg"]
-      obj.aunit=['rad','deg'].index(aunit)
+      obj.aunit=['rad','deg'].index(aunit[0:3])
       obj.addProperty("App::PropertyString","lunit","GDMLTrap","lunit"). \
                        lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTrap","Material")
@@ -1000,7 +1000,7 @@ class GDMLTube(GDMLcommon) :
       obj.addProperty("App::PropertyFloat","deltaphi","GDMLTube","Delta Angle").deltaphi=deltaphi
       obj.addProperty("App::PropertyEnumeration","aunit","GDMLTube","aunit")
       obj.aunit=['rad','deg']
-      obj.aunit=['rad','deg'].index(aunit)
+      obj.aunit=['rad','deg'].index(aunit[0:3])
       obj.addProperty("App::PropertyString","lunit","GDMLTube","lunit").lunit=lunit
       obj.addProperty("App::PropertyEnumeration","material","GDMLTube","Material")
       obj.material = MaterialsList

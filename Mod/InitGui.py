@@ -90,9 +90,10 @@ class GDML_Workbench ( Workbench ):
         App.addDocumentObserver(self.obs)
         doc = FreeCAD.activeDocument()
         if doc != None :
-           #self.processDefault(doc)
-           #processDefault(doc)
-           self.MyObserver.slotCreatedDocument(self,doc)
+           if doc.Objects[0].Name != "Constants" : 
+              #self.processDefault(doc)
+              #processDefault(doc)
+              self.MyObserver.slotCreatedDocument(self,doc)
         return
 
     def Deactivated(self):
