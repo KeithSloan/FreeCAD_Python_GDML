@@ -28,7 +28,7 @@ __url__ = ["https://github.com/KeithSloan/FreeCAD_Geant4"]
 
 import FreeCAD, os, Part, math
 from FreeCAD import Vector
-from GDMLObjects import GDMLBox
+from GDMLObjects import GDMLcommon, GDMLBox, GDMLTube
 
 # xml handling
 #import argparse
@@ -1135,7 +1135,9 @@ def processWorldVol(first) :
           name = first.Name
           # Also allow for App::Origin 
           print(objList[1].TypeId)
-          if isinstance(objList[1].Proxy,GDMLBox) :
+          if isinstance(objList[1].Proxy,GDMLcommon) : 
+          #if isinstance(objList[1].Proxy,GDMLBox) or \
+          #   isinstance(objList[1].Proxy,GDMLTube) :
              print("Adjust Setup")
              ET.SubElement(setup,'world', {'ref':name})
              return(structure)
