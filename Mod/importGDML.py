@@ -509,12 +509,13 @@ def parseBoolean(part,solid,objType,material,px,py,pz,rot,displayMode) :
        mybool.Base = createSolid(part,base,material,0,0,0,None,displayMode)
        # second solid is placed at position and rotation relative to first
        mybool.Tool = createSolid(part,tool,material,0,0,0,None,displayMode)
-       mybool.Tool.Placement= GDMLShared.getPlacementFromRefs(solid) 
+       #mybool.Tool.Placement= GDMLShared.getPlacementFromRefs(solid) 
        # Okay deal with position of boolean
-       GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
-       base = FreeCAD.Vector(0,0,0)
+       #GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
+       #base = FreeCAD.Vector(0,0,0)
        #base = FreeCAD.Vector(px,py,pz)
-       mybool.Placement = GDMLShared.processPlacement(base,rot)
+       #/mybool.Placement = GDMLShared.processPlacement(base,rot)
+       mybool.Placement= GDMLShared.getPlacementFromRefs(solid) 
        #ViewProvider(mybool.ViewObject)
        return mybool
 

@@ -491,7 +491,38 @@ def addPhysVol(obj, vol, volName) :
     ET.SubElement(pvol,'volumeref',{'ref':volName})
     return pvol
     
+def addPositionReferenceSolid(obj, solid) :
+    # not also function to add without reference
+    global POScount, ROTcount
+
+    print("Add pos and rot references to PhysVol")
+    pos = obj.Placement.Base
+    print(pos)
+    x = pos[0]
+    y = pos[1]
+    z = pos[2]
+    name = obj.Name
+    posName = 'PS'+name+str(POScount)
+    POScount += 1
+    ET.SubElement(define,'position',{'name' : posName, 'unit': 'mm', \
+            'x': str(x), 'y': str(y), 'z': str(z) })
+    ET.SubElement(solid,'positionref',{'ref' : posName})
+    angles = obj.Placement.Rotation.toEuler()
+    print ("Angles")
+    print (angles)
+    a0 = angles[0]
+    a1 = angles[1]
+    a2 = angles[2]
+    if a0!=0 or a1!=0 or a2!=0 :
+       rotName = 'Rot'+name+str(ROTcount)
+       ROTcount += 1
+       ET.SubElement(define, 'rotation', {'name': rotName, 'unit': 'deg', \
+                  'x': str(-a2), 'y': str(-a1), 'z': str(-a0)})
+       ET.SubElement(solid,'rotationref',{'ref' : rotName})
+
+
 def addPositionRotationPVol(obj,pvol) :
+    # This does not add references - Is it redundant
     global POScount, ROTcount
 
     print("Add pos and rot to PhysVol")
@@ -510,7 +541,7 @@ def addPositionRotationPVol(obj,pvol) :
     a0 = angles[0]
     a1 = angles[1]
     a2 = angles[2]
-    if a0!=0 and a1!=0 and a2!=0 :
+    if a0!=0 or a1!=0 or a2!=0 :
        rotName = 'Rot'+name+str(ROTcount)
        ROTcount += 1
        ET.SubElement(pvol, 'rotation', {'name': rotName, 'unit': 'deg', \
@@ -992,20 +1023,19 @@ def processObject(obj, vol, newVol, pName, addVolsFlag) :
          break
 
       if case("Part::Cut") :
+         # Maybe Booleans could be grouped with GDML solids 
          print("   Cut")
          cutName = 'Cut'+obj.Name
-         #ref1 = processObject(obj.Base, vol, newVol, pName, False)
          ref1 = processGDMLsolid(obj.Base, vol, False)
-         #ref2 = processObject(obj.Tool, vol, newVol, pName, False)
          ref2 = processGDMLsolid(obj.Tool, vol, False)
          subtract = ET.SubElement(solids,'subtraction',{'name': cutName })
          ET.SubElement(subtract,'first', {'ref': ref1})
          ET.SubElement(subtract,'second',{'ref': ref2})
-         #addBooleanPositionAndRotation(subtract,obj.Base,obj.Tool)
-         #if addVolsFlag :
-         #   createLVandPV(obj, obj.Name, cutName)
          addVolRef(newVol,cutName,obj.Base.material)
-         addPhysVol(obj,vol,pName)
+         pvol = addPhysVol(obj,vol,pName)
+         defaultPlacement = testDefaultPlacement(obj)
+         if defaultPlacement == False :
+            addPositionReferenceSolid(obj,subtract)    
          consume(lst)
          return cutName
          break
@@ -1018,9 +1048,12 @@ def processObject(obj, vol, newVol, pName, addVolsFlag) :
          union = ET.SubElement(solids,'union',{'name': unionName })
          ET.SubElement(union,'first', {'ref': ref1})
          ET.SubElement(union,'second',{'ref': ref2})
-         addBooleanPositionAndRotation(union,obj.Base,obj.Tool)
          addVolRef(newVol,unionName,obj.Base.material)
-         addPhysVol(obj,vol,pName)
+         pvol = addPhysVol(obj,vol,pName)
+         defaultPlacement = testDefaultPlacement(obj)
+         if defaultPlacement == False :
+            addPositionReferenceSolid(obj,union)    
+         consume(lst)
          return unionName
          break
 
@@ -1032,10 +1065,12 @@ def processObject(obj, vol, newVol, pName, addVolsFlag) :
          intersect = ET.SubElement(solids,'intersection',{'name': intersectName })
          ET.SubElement(intersect,'first', {'ref': ref1})
          ET.SubElement(intersect,'second',{'ref': ref2})
-         #addBooleanPositionAndRotation(intersect,obj.Base,obj.Tool)
-         #addBooleanPositionAndRotation(union,obj.Base,obj.Tool)
          addVolRef(newVol,intersectName,obj.Base.material)
-         addPhysVol(obj,vol,pName)
+         pvol = addPhysVol(obj,vol,pName)
+         defaultPlacement = testDefaultPlacement(obj)
+         if defaultPlacement == False :
+            addPositionReferenceSolid(obj,intersect)    
+         consume(lst)
          return intersectName
          break
 
