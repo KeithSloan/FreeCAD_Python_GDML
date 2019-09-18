@@ -708,7 +708,7 @@
   </material>
  </materials>
  <solids>
-  <box aunit="radian" lunit="mm" name="WorldBox" x="100000" y="100000" z="100000"/>
+  <box aunit="radian" lunit="mm" name="WorldBox" x="1000" y="1000" z="1000"/>
   <tube aunit="degree" deltaphi="360" lunit="mm" name="VeloTubs1" rmax="590" rmin="0" startphi="0" z="1670"/>
   <tube aunit="degree" deltaphi="180.5" lunit="mm" name="PuStationTubs" rmax="44.01" rmin="6.99" startphi="-90.25" z="3.25"/>
   <box aunit="radian" lunit="mm" name="PuStationBox1" x="3.5" y="37.02" z="3.25"/>
