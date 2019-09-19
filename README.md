@@ -50,9 +50,11 @@ GDML Solids are implemented as FreeCAD Python Objects and have the same properti
    This will load the Default GDML File with materials and create a World Volume.
    ( The Default GDML file is located GDML/Mod/Resources/Default.gdml )
 4) Create 1-n Volumes in the World Volume by
+
    Clicking on the Part icon ( Yellow blockish icon)
    Then draging the created **Part** to the World Volume is the **Tree** window
    **Part** maybe renamed vi right click on __Part__ and selected rename
+   
 5) Create GDML Solids by 
    Clicking on the corresponding icon of thw workbench.
    Drag the GDML object to the appropriate **Part** again via the **Tree** window
