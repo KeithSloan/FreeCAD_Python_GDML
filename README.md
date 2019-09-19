@@ -40,21 +40,52 @@ GDML in the windows FreeCAD Mod directory
 
 ## GDML Solids
 
-GDML Solids are implemented as FreeCAD Python Objects and have the same properties as defined by GDML. By selecting an Object the properties can be changed
-via the FreeCAD properties windows and the resulting changes displayed
+GDML Solids are implemented as FreeCAD Python Objects and have the same properties as defined by GDML. By selecting an Object the properties can be changed via the FreeCAD properties windows and the resulting changes displayed.
+
+## To created a new GDML design
+
+    1) Start FreeCAD
+    2) Select the GDML workbench (Selecting a workbench varies with different versions of FreeCAD)
+    3) Via the **File** menu select **New** 
+        This will load the Default GDML File with materials and create a World Volume.
+        ( The Default GDML file is located GDML/Mod/Resources/Default.gdml )
+    4) Create 1-n Volumes in the World Volume by
+        Clicking on the Part icon ( Yellow blockish icon)
+        Then draging the created **Part** to the World Volume is the **Tree** window
+        **Part** maybe renamed vi right click on __Part__ and selected rename
+    5) Create GDML Solids by 
+        Clicking on the corresponding icon of thw workbench.
+        Drag the GDML object to the appropriate **Part** again via the **Tree** window
+        You can then change the attributes by selecting the GDMLObject in the **Tree** window
+         then changing the properties in the **Property View**
+      
+       So a valid structure for a GDML file is
+
+          * Single World Volume (Part)
+          * A number of Volumes (Parts) under the World Volume
+          * A number of GDML Objects can exist in one Part ( GDML Logical Volume)
+ 
+     6) To Export to GDML
+        1. Select the 'World' Volume ( Default Name WorldVol )
+        2. File export
+        3. Select filetype as GDML ( Bottom Box of **Export file** window)
+        4. Select Destination and file name with **GDML** as file extension 
+     
 
 ## Opening a new file when the GDML workbench is active will load a Default file.
 The Default file is defined in GDML/Mod/Resources/Default.gdml.
 
-New GDML object have the material set to SSteel0x56070ee87d10 so the Default file should define this material. Other materials can be set by editing the FreeCAD parmeters of the object after creation.
+New GDML object have the material set to SSteel0x56070ee87d10 i.e. the first material in the Default file.
+Other materials can be set by editing the material property via the FreeCAD parmeters View of the Object after creation.
 
 ## GDML Object creation
 
-Switching to the GDML workbench a number of icons are then available on the Workbench bar,
+Switching to the GDML workbench a number of icons are then available on the Workbench bar.
 clicking on one the icons will create a GDML object with default values.
+It should then be dragged to the appropriate __Part__ ( GDML Logical Volume )
 You can then edit the properties via the properties window. The parameters should be the same as in the GDML user guide.
 
-GDML objects supported in this
+GDML objects currently supported in this
 
 1. GDMLBox
 2. GDMLCone
@@ -182,4 +213,7 @@ OpenCascade Forum members
 ## Feedback
 
 To contact the author email keith[at]sloan-home.co.uk
+
+* Please report bugs
+* I am always on the look out for test gdml files ( Small to medium size )
 
