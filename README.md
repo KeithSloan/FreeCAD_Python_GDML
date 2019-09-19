@@ -88,7 +88,7 @@ Switching to the GDML workbench a number of icons are then available on the Work
 clicking on one the icons will create a GDML object with default values.
 It should then be dragged to the appropriate __Part__ ( GDML Logical Volume )
 You can then edit the properties via the properties window. The parameters should be the same as in the GDML user guide.
-If the Object is part of a Boolean you will have to use the recompute facility of FreeCAD to see the change to the Boolean
+If the Object is part of a Boolean you will have to use the **recompute** facility of FreeCAD to see the change to the Boolean
 
 GDML objects currently supported in this
 
