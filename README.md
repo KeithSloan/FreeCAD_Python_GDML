@@ -44,34 +44,34 @@ GDML Solids are implemented as FreeCAD Python Objects and have the same properti
 
 ## To created a new GDML design
 
-    1) Start FreeCAD
-    2) Select the GDML workbench (Selecting a workbench varies with different versions of FreeCAD)
-    3) Via the **File** menu select **New** 
-        This will load the Default GDML File with materials and create a World Volume.
-        ( The Default GDML file is located GDML/Mod/Resources/Default.gdml )
-    4) Create 1-n Volumes in the World Volume by
-        Clicking on the Part icon ( Yellow blockish icon)
-        Then draging the created **Part** to the World Volume is the **Tree** window
-        **Part** maybe renamed vi right click on __Part__ and selected rename
-    5) Create GDML Solids by 
-        Clicking on the corresponding icon of thw workbench.
-        Drag the GDML object to the appropriate **Part** again via the **Tree** window
-        You can then change the attributes by selecting the GDMLObject in the **Tree** window
-         then changing the properties in the **Property View**
+1) Start FreeCAD
+2) Select the GDML workbench (Selecting a workbench varies with different versions of FreeCAD)
+3) Via the **File** menu select **New** 
+   This will load the Default GDML File with materials and create a World Volume.
+   ( The Default GDML file is located GDML/Mod/Resources/Default.gdml )
+4) Create 1-n Volumes in the World Volume by
+   Clicking on the Part icon ( Yellow blockish icon)
+   Then draging the created **Part** to the World Volume is the **Tree** window
+   **Part** maybe renamed vi right click on __Part__ and selected rename
+5) Create GDML Solids by 
+   Clicking on the corresponding icon of thw workbench.
+   Drag the GDML object to the appropriate **Part** again via the **Tree** window
+   You can then change the attributes by selecting the GDMLObject in the **Tree** window
+   then changing the properties in the **Property View**
       
-       So a valid structure for a GDML file is
+   So a valid structure for a GDML file is
 
-          * Single World Volume (Part)
-          * A number of Volumes (Parts) under the World Volume
-          * A number of GDML Objects can exist in one Part ( GDML Logical Volume)
+   * Single World Volume (Part)
+   * A number of Volumes (Parts) under the World Volume
+   * A number of GDML Objects can exist in one Part ( GDML Logical Volume)
  
-     6) To Export to GDML
-        1. Select the 'World' Volume ( Default Name WorldVol )
-        2. File export
-        3. Select filetype as GDML ( Bottom Box of **Export file** window)
-        4. Select Destination and file name with **GDML** as file extension 
+ 6) To Export to GDML
+           
+    1. Select the 'World' Volume ( Default Name WorldVol )
+    2. File export
+    3. Select filetype as GDML ( Bottom Box of **Export file** window)
+    4. Select Destination and file name with **GDML** as file extension 
      
-
 ## Opening a new file when the GDML workbench is active will load a Default file.
 The Default file is defined in GDML/Mod/Resources/Default.gdml.
 
