@@ -279,6 +279,53 @@ class CycleFeature :
                 QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup', \
                 'Cycle Object and all children display')}    
 
+class CompoundFeature :
+    
+
+    def Activated(self) :
+
+        from GDMLObjects import GDMLcommon
+    
+        def addToList(objList,obj) :
+            print(obj.Name)
+            if hasattr(obj,'Proxy') :
+               print("Has proxy")
+               if isinstance(obj.Proxy,GDMLcommon) :
+                  objList.append(obj)
+       
+            if obj.TypeId == 'App::Part' and hasattr(obj,'OutList') :
+            #if hasattr(obj,'OutList') :
+               print("Has OutList + len "+str(len(obj.OutList)))
+               for i in obj.OutList : 
+                   print('Call add to List '+i.Name)
+                   addToList(objList,i)
+
+        def myaddCompound(obj) :
+            print ("Add Compound "+obj.Label)
+            volList = []
+            addToList(volList,obj)
+            print(volList)
+            #comp = FreeCAD.ActiveDocument.addObject("Part::Compound","Compound")
+            comp = obj.newObject("Part::Compound","Compound")
+            comp.Links = volList
+            FreeCAD.ActiveDocument.recompute()
+
+
+        objs = FreeCADGui.Selection.getSelection()
+        #if len(obj.InList) == 0: # allowed only for for top level objects
+        obj = objs[0]
+        if obj.TypeId == 'App::Part' :
+           myaddCompound(obj)
+
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDML_Compound', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_Compound',\
+                'Add compound to Volume'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_Compound', \
+                'Add a Compound of Volume')}    
+
+FreeCADGui.addCommand('AddCompound',CompoundFeature())
 FreeCADGui.addCommand('CycleCommand',CycleFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())

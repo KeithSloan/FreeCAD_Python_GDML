@@ -64,10 +64,10 @@ class GDML_Workbench ( Workbench ):
         #import GDMLCommands, GDMLResources
         commands=['CycleCommand','BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
-                  'TrapCommand','TubeCommand']
+                  'TrapCommand','TubeCommand','AddCompound']
         toolbarcommands=['CycleCommand','BoxCommand','ConeCommand', \
                          'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
-                         'TrapCommand','TubeCommand']
+                         'TrapCommand','TubeCommand','AddCompound']
 
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common']
 
