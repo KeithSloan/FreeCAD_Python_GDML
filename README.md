@@ -4,6 +4,9 @@ FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
+Includes **experimental branch** <compound> to facilitate use of __FreeCAD FEM__ with GDML Files.
+For more details see Experimental branch section.
+
 ## Current stable version of FreeCAD is 18.01 which uses Python3
 
 As I had to make a lot of changes to get things working with Python3 the
@@ -165,6 +168,36 @@ The Ability to change to change these maybe implemented in the future.
 
 There is now an option to toggle Printverbose flag to reduce printing to the python console.
 
+## Experimental branch
+
+### compound
+
+   **To use the branch**
+   
+   git fetch compound
+   git checkout compound
+   
+   A new icon/command is added to the GDML workbench ( Currently an X )
+   
+   **To use** select a volume/Part i.e. The first Part which is the GDML world volume
+   click on the compound icon ( Currently an X ) this will 
+    
+     1. Create an object named Compound under the selected Volume
+     2. Create an FEM Analysis Object.
+     3. All the materials of the objects in the Volume/Part/Compound are added to the Analysis Object.
+     
+     You can then switch to the FEM ( Finite Element ) Workbench and proceed with an analysis which would
+     include
+     
+     1) Double click on each of the materials to edit their properties
+     2) From the FEM workbench select the Compound Object and click on the icon to create a Mesh.
+     3) Rest would depend on what analysys and what solver it is intended to use.
+     
+     Also as an experiment thermal parameters have been added to the GDMLmaterial object so these could
+     be changed before creating a compound. One option to be would be to add elements to GDML files to enable
+     loading and exporting, but then they would **NOT** be standard GDML files (maybe a different file extension)
+     What do people think?   
+
 ## Future Development Road Map
 
   * Workbench Dialog for initial GDML Object values(?)
@@ -210,6 +243,7 @@ and the following FreeCAD forum members
 * ickby
 * looo
 * easyw-fc
+* bernd
 
 OpenCascade Forum members
 
