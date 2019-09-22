@@ -174,8 +174,8 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
 
    **To use the branch**
    
-   git fetch compound
-   git checkout compound
+   * git fetch compound
+   * git checkout compound
    
    A new icon/command is added to the GDML workbench ( Currently an X )
    
