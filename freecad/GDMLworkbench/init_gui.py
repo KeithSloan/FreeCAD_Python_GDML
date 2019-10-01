@@ -30,10 +30,11 @@
 #* Also copyright Keith Sloan                                              * 
 #***************************************************************************/
 
-#import FreeCAD
+import FreeCAD
 from FreeCAD import *
+from FreeCADGui import Workbench
 import PartGui
-import GDMLCommands, GDMLResources
+from . import GDMLCommands, GDMLResources
 
 def processDefault(doc) :
     from importGDML import processGDML
