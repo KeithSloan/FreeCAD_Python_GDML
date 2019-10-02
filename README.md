@@ -241,10 +241,9 @@ and the following FreeCAD forum members
 * chrisb
 * DeepSOIC
 * ickby
-* looo
+* looooo
 * easyw-fc
 * bernd
-* looooo
 
 OpenCascade Forum members
 
