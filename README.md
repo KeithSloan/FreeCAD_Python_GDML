@@ -244,6 +244,7 @@ and the following FreeCAD forum members
 * looo
 * easyw-fc
 * bernd
+* looooo
 
 OpenCascade Forum members
 
