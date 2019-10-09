@@ -120,29 +120,48 @@
     <fraction n="0.24" ref="O0x56070eea0370" />
     <fraction n="0.01" ref="Ar0x56070eea07c0" />
     </material>
-  <material Z="1" name="G4_Galactic" state="gas">
-      <T unit="K" value="2.73" />
-    <P unit="pascal" value="3e-18" />
-    <D unit="g/cm3" value="1e-25" />
-    <atom unit="g/mole" value="1.01" />
-    </material>
   </materials>
 <solids>
-    <box lunit="mm" name="WorldBox" x="14.0" y="13.9402784681" z="20.0" />
-  <cone aunit="rad" deltaphi="2.0" lunit="mm" name="ConeGDMLCone" rmax1="3.0" rmax2="7.0" rmin1="1.0" rmin2="4.0" startphi="0.0" z="10.0" />
+<box lunit="mm" name="WorldBox" x="20.0" y="20.0" z="20.0" />
+<xtru name = "refLogicSol_50002" lunit= "mm" >
+ <twoDimVertex x="25.1085688928823" y="40.7797075281135" />
+ <twoDimVertex x="-70.5934810648633" y="21.3089054046484" />
+ <twoDimVertex x="-8.06145970792809" y="-40" />
+ <twoDimVertex x="8.6737516495137" y="-40" />
+ <section zOrder="1" zPosition="-41.895909044445" xOffset="0" yOffset="0" scalingFactor="1" />
+ <section zOrder="2" zPosition="41.895909044445" xOffset="0" yOffset="0" scalingFactor="1"/>
+</xtru>
+
+<xtru name = "refSol_50002" lunit= "mm" >
+ <twoDimVertex x="21.276183953896" y="40" />
+ <twoDimVertex x="-67.6537069510008" y="21.9070092079" />
+ <twoDimVertex x="-5" y="-40" />
+ <twoDimVertex x="5" y="-40" />
+ <section zOrder="1" zPosition="-38.895909044445" xOffset="0" yOffset="0" scalingFactor="1" />
+ <section zOrder="2" zPosition="38.895909044445" xOffset="0" yOffset="0" scalingFactor="1"/>
+</xtru>
+
+<subtraction name ="refSolSkin_50002">
+        <first ref="refLogicSol_50002"/>
+        <second ref="refSol_50002"/>
+        <position unit="mm" name="refSolPos_50002" x="0" y="0" z="0"/>
+        <rotation unit="rad" name="refSolRot_50002" x="0" y="0" z="0"/>
+</subtraction>
+
+
   </solids>
 <structure>
-    <volume name="PVGDMLCone1">
+    <volume name="Test">
       <materialref ref="SSteel0x56070ee87d10" />
-    <solidref ref="ConeGDMLCone" />
+    <solidref ref="refSolSkin_50002" />
     </volume>
   <volume name="worldVOL">
-      <materialref ref="G4_Galactic" />
+      <materialref ref="G4_AIR0x56070ee81710" />
     <solidref ref="WorldBox" />
     <physvol>
-        <volumeref ref="PVGDMLCone1" />
-      <position name="PosGDMLCone1" unit="mm" x="0.0" y="0.0" z="5.0" />
-      <rotation name="RotGDMLCone1" unit="deg" x="-0.0" y="-0.0" z="-0.0" />
+        <volumeref ref="Test" />
+      <position name="PosBox1" unit="mm" x="5.0" y="5.0" z="5.0" />
+      <rotation name="RotBox1" unit="deg" x="-0.0" y="-0.0" z="-0.0" />
       </physvol>
     </volume>
   </structure>

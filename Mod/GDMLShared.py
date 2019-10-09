@@ -48,8 +48,7 @@ def getVal(ptr,var,vtype = 1) :
     if var in ptr.attrib :
        # if yes get its value
        vval = ptr.attrib.get(var)
-       print("vval")
-       print(vval)
+       print("vval : "+str(vval))
        if vval[0] == '&' :  # Is this refering to an HTML entity constant
          chkval = vval[1:]
        else :
@@ -61,10 +60,13 @@ def getVal(ptr,var,vtype = 1) :
        #   return(eval(c))
        #
        #else :
+       print("chkval : "+str(chkval))
        if vtype == 1 :
-          return(float(eval(chkval)))
+          ret = float(eval(chkval))
        else :
-          return(int(eval(chkval)))
+          ret = int(eval(chkval))
+       print('return value : '+str(ret))
+       return(ret)
     else :
        if vtype == 1 :
           return (0.0)
@@ -85,22 +87,25 @@ def processPlacement(base,rot) :
     # Different Objects will have adjusted base GDML-FreeCAD
     # rot is rotation or None if default 
     # set angle & axis in case not set by rotation attribute
-    axis = FreeCAD.Vector(1,0,0)
-    angle = 0
+    #axis = FreeCAD.Vector(1,0,0)
+    #angle = 0
+    Xangle = Yangle = Zangle = 0.0
     if rot != None :
         trace("Rotation : ")
         trace(rot.attrib)
         if 'y' in rot.attrib :
-            axis = FreeCAD.Vector(0,1,0)
-            angle = float(eval(rot.attrib['y']))
+            #axis = FreeCAD.Vector(0,1,0)
+            Yangle = float(eval(rot.attrib['y']))
         if 'x' in rot.attrib :
-            axis = FreeCAD.Vector(1,0,0)
-            angle = float(eval(rot.attrib['x']))
+            #axis = FreeCAD.Vector(1,0,0)
+            Xangle = float(eval(rot.attrib['x']))
         if 'z' in rot.attrib :
-            axis = FreeCAD.Vector(0,0,1)
-            angle = float(eval(rot.attrib['z']))
-    trace(angle)
-    place = FreeCAD.Placement(base,axis,angle)
+            #axis = FreeCAD.Vector(0,0,1)
+            Zangle = float(eval(rot.attrib['z']))
+        rot = FreeCAD.Rotation(Zangle,Yangle,Xangle)
+    else :
+        rot = FreeCAD.Rotation(0,0,0)
+    place = FreeCAD.Placement(base,rot)
     return place
 
 # Return a FreeCAD placement for positionref & rotateref
@@ -108,7 +113,6 @@ def getPlacementFromRefs(ptr) :
     trace("getPlacementFromRef")
     pos = define.find("position[@name='%s']" % getRef(ptr,'positionref'))
     trace(pos)
-    rot = define.find("rotation[@name='%s']" % getRef(ptr,'rotationref'))
     base = FreeCAD.Vector(0.0,0.0,0.0)
     if pos != None :
        trace(pos.attrib)
@@ -117,6 +121,7 @@ def getPlacementFromRefs(ptr) :
        y = getVal(pos,'y')
        z = getVal(pos,'z')
        base = FreeCAD.Vector(x,y,z)
+    rot = define.find("rotation[@name='%s']" % getRef(ptr,'rotationref'))
     return(processPlacement(base,rot))
 
 

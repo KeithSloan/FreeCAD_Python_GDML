@@ -1,9 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-<define>
- <position name="pos1" unit="mm" x="105.0" y="5.0" z="5.0" />
- <position name="pos2" unit="mm" x="5.0" y="5.0" z="5.0" />
-</define>>
+  <define />
 <materials>
     <isotope N="12" Z="6" name="C120x56070ee874f0">
       <atom unit="g/mole" value="12" />
@@ -124,10 +121,16 @@
     <fraction n="0.01" ref="Ar0x56070eea07c0" />
     </material>
   </materials>
-
-  <solids>
-
-	  <box name = "WorldBox" x="500" y="500" z="500" />	  
+<solids>
+<box lunit="mm" name="WorldBox" x="20.0" y="20.0" z="20.0" />
+<xtru name = "refLogicSol_50002" lunit= "mm" >
+ <twoDimVertex x="25.1085688928823" y="40.7797075281135" />
+ <twoDimVertex x="-70.5934810648633" y="21.3089054046484" />
+ <twoDimVertex x="-8.06145970792809" y="-40" />
+ <twoDimVertex x="8.6737516495137" y="-40" />
+ <section zOrder="1" zPosition="-41.895909044445" xOffset="0" yOffset="0" scalingFactor="1" />
+ <section zOrder="2" zPosition="41.895909044445" xOffset="0" yOffset="0" scalingFactor="1"/>
+</xtru>
 
 <xtru name = "refSol_50002" lunit= "mm" >
  <twoDimVertex x="21.276183953896" y="40" />
@@ -138,31 +141,6 @@
  <section zOrder="2" zPosition="38.895909044445" xOffset="0" yOffset="0" scalingFactor="1"/>
 </xtru>
 
- <xtru name = "reflectorSol_50002" lunit= "mm" >
- <twoDimVertex x="21.9149147770604" y="40.1299512546856" />
- <twoDimVertex x="21.276183953896" y="40" />
- <twoDimVertex x="5" y="-40" />
- <twoDimVertex x="5.61229194158562" y="-40" />
- <section zOrder="1" zPosition="-38.895909044445" xOffset="0" yOffset="0" scalingFactor="1" />
- <section zOrder="2" zPosition="38.895909044445" xOffset="0" yOffset="0" scalingFactor="1"/>
-</xtru>
-	
-<xtru name = "refLogicSol_50002" lunit= "mm" >
- <twoDimVertex x="25.1085688928823" y="40.7797075281135" />
- <twoDimVertex x="-70.5934810648633" y="21.3089054046484" />
- <twoDimVertex x="-8.06145970792809" y="-40" />
- <twoDimVertex x="8.6737516495137" y="-40" />
- <section zOrder="1" zPosition="-41.895909044445" xOffset="0" yOffset="0" scalingFactor="1" />
- <section zOrder="2" zPosition="41.895909044445" xOffset="0" yOffset="0" scalingFactor="1"/>
-</xtru>
-
-<subtraction name ="refSolSkin1_50002">
-   <first ref="refSolSkin_50002"/>
-   <second ref="reflectorSol_50002"/>
-   <position name="reflectorSolPos_50002" unit="mm" x="0" y="0" z="0"/>
-   <rotation name="reflectorSolRot_50002" unit="rad" x="0" y="0" z="0"/>
-</subtraction>
-
 <subtraction name ="refSolSkin_50002">
         <first ref="refLogicSol_50002"/>
         <second ref="refSol_50002"/>
@@ -171,27 +149,23 @@
 </subtraction>
 
 
-
-</solids>
+  </solids>
 <structure>
- <volume name="v1">
-  <materialref ref="SSteel0x56070ee87d10" />
-  <solidref ref="refSolSkin1_50002"/>
- </volume>
- <volume name="v2">
-  <materialref ref="SSteel0x56070ee87d10" />
-  <solidref ref="refSol_50002"/>
- </volume>
- <volume name="worldVol">
-  <materialref ref="G4_AIR0x56070ee81710"/>
-  <solidref ref="WorldBox"/>
-  <physvol>
-     <volumeref ref="v1"/>
-     <positionref ref="pos1"/>
-  </physvol>
- </volume>  
-</structure>
+    <volume name="Test">
+      <materialref ref="SSteel0x56070ee87d10" />
+    <solidref ref="refSol_50002" />
+    </volume>
+  <volume name="worldVOL">
+      <materialref ref="G4_AIR0x56070ee81710" />
+    <solidref ref="WorldBox" />
+    <physvol>
+        <volumeref ref="Test" />
+      <position name="PosBox1" unit="mm" x="5.0" y="5.0" z="5.0" />
+      <rotation name="RotBox1" unit="deg" x="-0.0" y="-0.0" z="-0.0" />
+      </physvol>
+    </volume>
+  </structure>
 <setup name="Default" version="1.0">
-  <world ref="worldVol" />
-</setup>
+    <world ref="worldVOL" />
+  </setup>
 </gdml>

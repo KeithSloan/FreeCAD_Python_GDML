@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-  <define />
+  <define>
+   <constant name="PI" value="1.*pi"/>
+ </define>
 <materials>
     <isotope N="12" Z="6" name="C120x56070ee874f0">
       <atom unit="g/mole" value="12" />
@@ -120,29 +122,23 @@
     <fraction n="0.24" ref="O0x56070eea0370" />
     <fraction n="0.01" ref="Ar0x56070eea07c0" />
     </material>
-  <material Z="1" name="G4_Galactic" state="gas">
-      <T unit="K" value="2.73" />
-    <P unit="pascal" value="3e-18" />
-    <D unit="g/cm3" value="1e-25" />
-    <atom unit="g/mole" value="1.01" />
-    </material>
   </materials>
 <solids>
-    <box lunit="mm" name="WorldBox" x="12.0" y="14.0" z="20.0" />
-  <trap alpha1="0.0" alpha2="0.0" aunit="rad" lunit="mm" name="TrapGDMLTrap" phi="0.0" theta="0.0" x1="6.0" x2="6.0" x3="6.0" x4="6.0" y1="7.0" y2="7.0" z="10.0" />
+<box lunit="mm" name="WorldBox" x="20.0" y="20.0" z="20.0" />
+<cone aunit="rad" deltaphi="2*PI" lunit="mm" name="coneMotherSol_Mainz_v2" rmax1="499" rmax2="499" rmin1="0" rmin2="0" startphi="0" z="2000"/>
   </solids>
 <structure>
-    <volume name="PVGDMLTrap1">
+    <volume name="PVPolyCone1">
       <materialref ref="SSteel0x56070ee87d10" />
-    <solidref ref="TrapGDMLTrap" />
+    <solidref ref="coneMotherSol_Mainz_v2" />
     </volume>
   <volume name="worldVOL">
-      <materialref ref="G4_Galactic" />
+      <materialref ref="G4_AIR0x56070ee81710" />
     <solidref ref="WorldBox" />
     <physvol>
-        <volumeref ref="PVGDMLTrap1" />
-      <position name="PosGDMLTrap1" unit="mm" x="0.0" y="0.0" z="5.0" />
-      <rotation name="RotGDMLTrap1" unit="deg" x="-0.0" y="-0.0" z="-0.0" />
+        <volumeref ref="PVPolyCone1" />
+      <position name="PosBox1" unit="mm" x="5.0" y="5.0" z="5.0" />
+      <rotation name="RotBox1" unit="deg" x="-0.0" y="-0.0" z="-0.0" />
       </physvol>
     </volume>
   </structure>

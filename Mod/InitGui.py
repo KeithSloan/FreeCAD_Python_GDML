@@ -35,6 +35,11 @@ from FreeCAD import *
 import PartGui
 import GDMLCommands, GDMLResources
 
+def processDefault(doc) :
+    from importGDML import processGDML
+    processGDML(doc,FreeCAD.getResourceDir() + \
+                "Mod/GDML/Resources/Default.gdml")
+
 class GDML_Workbench ( Workbench ):
 
     class MyObserver():
@@ -44,7 +49,7 @@ class GDML_Workbench ( Workbench ):
        def slotCreatedDocument(self, doc):
            from importGDML import processGDML
            processGDML(doc,FreeCAD.getResourceDir() + \
-                       "Mod/GDML/Resources/Default.gdml")
+                "Mod/GDML/Resources/Default.gdml")
     
     "GDML workbench object"
     def __init__(self):
@@ -85,6 +90,12 @@ class GDML_Workbench ( Workbench ):
         print ("Activated")
         self.obs = self.MyObserver()
         App.addDocumentObserver(self.obs)
+        doc = FreeCAD.activeDocument()
+        if doc != None :
+           if doc.Objects[0].Name != "Constants" : 
+              #self.processDefault(doc)
+              #processDefault(doc)
+              self.MyObserver.slotCreatedDocument(self,doc)
         return
 
     def Deactivated(self):
