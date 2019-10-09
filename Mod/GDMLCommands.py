@@ -279,6 +279,31 @@ class CycleFeature :
                 QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup', \
                 'Cycle Object and all children display')}    
 
+class ExpandFeature :
+
+    def Activated(self) :
+       
+        for obj in FreeCADGui.Selection.getSelection():
+            from importGDML import expandVolume
+            #if len(obj.InList) == 0: # allowed only for for top level objects
+            # add check for Part i.e. Volume
+            print("Selected")
+            print(obj.Label[:12])
+            if obj.Label[:12] == "NOT_Expanded" :
+               #parent = obj.InList[0]
+               name = obj.Label[13:]
+               obj.Label = name
+               print("Name : "+name)
+               expandVolume(obj,name,0,0,0,None,0,3)
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDML_ExpandVol', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_ExpandVol',\
+                'Expand Volume'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_ExpandVol', \
+                'Expand Volume')}    
+
+FreeCADGui.addCommand('ExpandCommand',ExpandFeature())
 FreeCADGui.addCommand('CycleCommand',CycleFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())

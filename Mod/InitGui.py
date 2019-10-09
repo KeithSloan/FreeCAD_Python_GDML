@@ -57,10 +57,12 @@ class GDML_Workbench ( Workbench ):
             return text
         
         #import GDMLCommands, GDMLResources
-        commands=['CycleCommand','BoxCommand','ConeCommand','ElTubeCommand', \
+        commands=['CycleCommand','ExpandCommand', \
+                 'BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
                   'TrapCommand','TubeCommand']
-        toolbarcommands=['CycleCommand','BoxCommand','ConeCommand', \
+        toolbarcommands=['CycleCommand','ExpandCommand', \
+                         'BoxCommand','ConeCommand', \
                          'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
                          'TrapCommand','TubeCommand']
 
