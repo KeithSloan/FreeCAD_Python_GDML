@@ -606,7 +606,7 @@ def getVolSolid(name):
     return solid
 
 def parsePhysVol(parent,physVol,phylvl,displayMode):
-    GDMLShared.trace("ParsePhyVol")
+    GDMLShared.trace("ParsePhyVol : level : "+str(phylvl))
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
        GDMLShared.trace("positionref : "+posref)
@@ -703,7 +703,7 @@ def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
               # create solids at pos & rot in physvols
               #parsePhysVol(part,pv,displayMode)
               #obj = parent.newObject("App::Part",name)
-              parsePhysVol(parent,pv,displayMode)
+              parsePhysVol(parent,pv,phylvl,displayMode)
        else :
            print("Not Volume or Assembly") 
 
