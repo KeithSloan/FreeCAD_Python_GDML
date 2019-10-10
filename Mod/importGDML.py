@@ -674,7 +674,8 @@ def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
        displayMode = 1
        for pv in vol.findall("physvol") :
            # create solids at pos & rot in physvols
-           if phylvl < 1 :
+           #if phylvl < 1 :
+           if phylvl < 0 :
               parsePhysVol(parent,pv,phylvl+1,displayMode)
            else :  # Just Add to structure 
               from PySide import QtGui, QtCore 
