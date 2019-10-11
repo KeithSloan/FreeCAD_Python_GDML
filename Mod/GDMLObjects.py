@@ -454,11 +454,12 @@ class GDMLPolyhedra(GDMLcommon) :
        GDMLShared.trace("Top rmax : "+str(rmax0))
        inner_faces = []
        outer_faces = []
-       # Make top Polygon
-       inner_poly0 = makeRegularPolygon(numsides,rmin0,z0)
+       # Deal with Inner Top Face
+       if rmin0 > 0 :
+          inner_poly0 = makeRegularPolygon(numsides,rmin0,z0)
+          inner_faces.append(Part.Face(Part.makePolygon(inner_poly0)))
+       # Deal with Outer Top Face 
        outer_poly0 = makeRegularPolygon(numsides,rmax0,z0)
-       # Add top face
-       inner_faces.append(Part.Face(Part.makePolygon(inner_poly0)))
        outer_faces.append(Part.Face(Part.makePolygon(outer_poly0)))
        for ptr in parms[1:] :
            z1 = ptr.z
@@ -467,26 +468,31 @@ class GDMLPolyhedra(GDMLcommon) :
            GDMLShared.trace("z1    : "+str(z1))
            GDMLShared.trace("rmin1 : "+str(rmin1))
            GDMLShared.trace("rmax1 : "+str(rmax1))
-           inner_poly1 = makeRegularPolygon(numsides,rmin1,z1)
-           outer_poly1 = makeRegularPolygon(numsides,rmax1,z1)
            # Concat face lists
-           inner_faces = inner_faces + \
+           if rmin0 > 0 :
+              inner_poly1 = makeRegularPolygon(numsides,rmin1,z1)
+              inner_faces = inner_faces + \
                    makeFrustrum(numsides,inner_poly0,inner_poly1)
+              inner_poly0 = inner_poly1
+              inner_faces.append(Part.Face(Part.makePolygon(inner_poly1)))
+           # Deal with Outer   
+           outer_poly1 = makeRegularPolygon(numsides,rmax1,z1)
            outer_faces = outer_faces + \
                    makeFrustrum(numsides,outer_poly0,outer_poly1)
            # update for next zsection
-           inner_poly0 = inner_poly1
            outer_poly0 = outer_poly1
            z0 = z1
        # add bottom polygon face
-       inner_faces.append(Part.Face(Part.makePolygon(inner_poly1)))
        outer_faces.append(Part.Face(Part.makePolygon(outer_poly1)))
        GDMLShared.trace("Total Faces : "+str(len(inner_faces)))
-       inner_shell = Part.makeShell(inner_faces)
-       inner_solid = Part.makeSolid(inner_shell)
        outer_shell = Part.makeShell(outer_faces)
        outer_solid = Part.makeSolid(outer_shell)
-       shape = outer_solid.cut(inner_solid)
+       if rmin0 > 0 :
+          inner_shell = Part.makeShell(inner_faces)
+          inner_solid = Part.makeSolid(inner_shell)
+          shape = outer_solid.cut(inner_solid)
+       else :   
+          shape = outer_solid 
        #fp.Shape = shell
        base = FreeCAD.Vector(0,0,-z0/2)
        if checkFullCircle(fp.aunit,fp.deltaphi) == False :
