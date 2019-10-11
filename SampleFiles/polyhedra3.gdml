@@ -132,7 +132,7 @@
 <structure>
     <volume name="PVPolyHedra">
       <materialref ref="SSteel0x56070ee87d10" />
-    <solidref ref="thepolyhedra" />
+    <solidref ref="ALIC" />
     </volume>
   <volume name="worldVOL">
       <materialref ref="G4_AIR0x56070ee81710" />
