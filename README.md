@@ -4,10 +4,10 @@ FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
-Includes **experimental branch** compound to facilitate use of __FreeCAD FEM__ with GDML Files.
+Includes **experimental branch compound** to facilitate use of __FreeCAD FEM__ with GDML Files.
 For more details see Experimental branch section.
    
-Includes **experimental branch** scan to facilitate processing large GDML files like Alice   
+Includes **experimental branch scan** to facilitate processing large GDML files like Alice   
 
 ## Current stable version of FreeCAD is 18.01 which uses Python3
 
