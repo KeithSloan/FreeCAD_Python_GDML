@@ -170,7 +170,7 @@ The Ability to change to change these maybe implemented in the future.
 
 There is now an option to toggle Printverbose flag to reduce printing to the python console.
 
-## Experimental branchs
+## Experimental branches
 
 ### compound
 
