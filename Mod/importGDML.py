@@ -657,6 +657,7 @@ def parseVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
         expandVolume(part,name,px,py,pz,rot,phylvl,displayMode)
 
 def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
+    import FreeCAD as App
     # also used in ScanCommand
     vol = structure.find("volume[@name='%s']" % name )
     if vol != None : # If not volume test for assembly
@@ -694,6 +695,7 @@ def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
               #vpart.TextColor = (100., 0., 0., 0.)
        # Add parsed Volume to dict
        volDict[name] = obj
+       App.ActiveDocument.recompute() 
        return obj
 
     else :
