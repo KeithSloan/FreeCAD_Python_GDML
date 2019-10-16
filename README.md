@@ -4,8 +4,10 @@ FreeCAD python Importer & Exporter for GDML files.
 
 Note: Sister development https://github.com/KeithSloan/FreeCAD_Geant4
 
-Includes **experimental branch** <compound> to facilitate use of __FreeCAD FEM__ with GDML Files.
+Includes **experimental branch compound** to facilitate use of __FreeCAD FEM__ with GDML Files.
 For more details see Experimental branch section.
+   
+Includes **experimental branch scan** to facilitate processing large GDML files like Alice   
 
 ## Current stable version of FreeCAD is 18.01 which uses Python3
 
@@ -168,7 +170,7 @@ The Ability to change to change these maybe implemented in the future.
 
 There is now an option to toggle Printverbose flag to reduce printing to the python console.
 
-## Experimental branch
+## Experimental branchs
 
 ### compound
 
@@ -196,8 +198,33 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
      Also as an experiment thermal parameters have been added to the GDMLmaterial object so these could
      be changed before creating a compound. One option to be would be to add elements to GDML files to enable
      loading and exporting, but then they would **NOT** be standard GDML files (maybe a different file extension)
-     What do people think?   
+     What do people think? see https://github.com/KeithSloan/FreeCAD_Python_GDML/issues/30
 
+
+### scan
+
+    **To use**
+    Large files like Alice.GDML are not handled well as they take too long to load.
+    The scan branch does a limit volume depth scan where volume names are determined but not processed.
+    For unprocessed volume the names are preceeded by 'NOT_Expanded' so a volume name is 'NOT_Expanded_<VolumeName>
+    
+    Un expanded Volumes can be expanded by 
+     1) Switching to the GDML workbench.
+     2)Selecting a volume in the 'labels & attributes Window'
+     3)clicking on the Expand Volume icon currently an X
+    
+   **To use the branch**
+   
+   * git fetch scan
+   * git checkout scan
+   
+   A new icon/command is added to the GDML workbench ( Currently an X )
+
+   The branch is experimental and I would appreciate feedback see https://github.com/KeithSloan/FreeCAD_Python_GDML/issues/29
+   
+   
+   
+    
 ## Future Development Road Map
 
   * Workbench Dialog for initial GDML Object values(?)
@@ -254,5 +281,5 @@ OpenCascade Forum members
 To contact the author email keith[at]sloan-home.co.uk
 
 * Please report bugs
-* I am always on the look out for test gdml files ( Small to medium size )
+* I am always on the look out for test gdml files ( Small to medium size )XXXX# FreeCAD_Python_GDML
 
