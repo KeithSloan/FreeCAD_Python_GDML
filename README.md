@@ -63,7 +63,7 @@ GDML Solids are implemented as FreeCAD Python Objects and have the same properti
    
 5) Create GDML Solids by
 
-   * Clicking on the corresponding icon of thw workbench.
+   * Clicking on the corresponding icon of the workbench.
    * Drag the GDML object to the appropriate **Part** again via the **Tree** window
    * You can then change the attributes by selecting the GDMLObject in the **Tree** window
      then changing the properties in the **Property View**
@@ -210,8 +210,8 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
     
     Un expanded Volumes can be expanded by 
      1) Switching to the GDML workbench.
-     2)Selecting a volume in the 'labels & attributes Window'
-     3)clicking on the Expand Volume icon currently an X
+     2) Selecting a volume in the 'labels & attributes Window'
+     3) Clicking on the Expand Volume icon currently an X
     
    **To use the branch**
    
