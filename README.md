@@ -21,11 +21,16 @@ development branch `<workbench>` has now been merged with the master branch
 
 ## Installation 
 
+As stated above, this WB requires `python3-lxml`  
+For example on Ubuntu or Debian derivatives you can install via:  
+```bash
+apt-get install python3-lxml
+```
+
 ### Linux and MacOS
 
 * Invoke the following in the CLI
 ```bash
-sudo apt-get install python3-lxml
 git clone https://github.com/KeithSloan/FreeCAD_Python_GDML.git
 cd FreeCAD_Python_GDML
 chmod +x softLinks
