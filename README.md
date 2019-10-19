@@ -200,7 +200,6 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
      loading and exporting, but then they would **NOT** be standard GDML files (maybe a different file extension)
      What do people think? see https://github.com/KeithSloan/FreeCAD_Python_GDML/issues/30
 
-
 ### scan
 
     **To use**
@@ -225,7 +224,10 @@ There is now an option to toggle Printverbose flag to reduce printing to the pyt
    It could be that files like Alic.gdml do not load with the master branch due to a bug(s). So if you do find a volume
    that will not expand then please report this so things can be debugged.
    
+   **To use the both experimental branches**
    
+   * git fetch comp+scan
+   * git checkout comp+scan
    
     
 ## Future Development Road Map
