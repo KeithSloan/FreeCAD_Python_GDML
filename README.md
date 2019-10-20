@@ -263,7 +263,7 @@ git checkout scan
 
    The branch is experimental and I would appreciate feedback see https://github.com/KeithSloan/FreeCAD_Python_GDML/issues/29
    
-   It could be that files like Alic.gdml do not load with the master branch due to a bug(s). So if you do find a volume
+   It could be that files like Alice.gdml do not load with the master branch due to a bug(s). So if you do find a volume
    that will not expand then please report this so things can be debugged.
 
 ### The `comp+scan` (experimental branch)
