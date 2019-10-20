@@ -49,6 +49,14 @@ GDML in the windows FreeCAD Mod directory
 * A correct version of `python3-lxml` for your version of windows should be downloaded and installed.
 * Start or Restart FreeCAD
 
+## Details of GDML
+
+For more information on GDML see
+
+[GDML User Guide](http://lcgapp.cern.ch/project/simu/framework/GDML/doc/GDMLmanual.pdf)
+
+[GDML Solids](http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Detector/Geometry/geomSolids.html)
+
 ## Usage
 
 ### GDML Solids
