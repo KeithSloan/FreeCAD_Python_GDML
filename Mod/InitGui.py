@@ -65,11 +65,11 @@ class GDML_Workbench ( Workbench ):
         commands=['CycleCommand','ExpandCommand', \
                  'BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
+                  'TrapCommand','TubeCommand','AddCompound']
         toolbarcommands=['CycleCommand','ExpandCommand', \
                          'BoxCommand','ConeCommand', \
+                  'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
                   'TrapCommand','TubeCommand','AddCompound']
-                         'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
-                         'TrapCommand','TubeCommand','AddCompound']
 
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common']
 

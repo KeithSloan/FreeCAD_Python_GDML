@@ -279,7 +279,6 @@ class CycleFeature :
                 QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup', \
                 'Cycle Object and all children display')}    
 
-<<<<<<< HEAD
 class ExpandFeature :
 
     def Activated(self) :
@@ -304,11 +303,8 @@ class ExpandFeature :
                 QtCore.QT_TRANSLATE_NOOP('GDML_ExpandVol', \
                 'Expand Volume')}    
 
-FreeCADGui.addCommand('ExpandCommand',ExpandFeature())
-=======
 class CompoundFeature :
     
-
     def Activated(self) :
 
         from GDMLObjects import GDMLcommon
@@ -390,7 +386,7 @@ class CompoundFeature :
                 'Add a Compound of Volume')}    
 
 FreeCADGui.addCommand('AddCompound',CompoundFeature())
->>>>>>> compound
+FreeCADGui.addCommand('ExpandCommand',ExpandFeature())
 FreeCADGui.addCommand('CycleCommand',CycleFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())
