@@ -279,6 +279,7 @@ class CycleFeature :
                 QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup', \
                 'Cycle Object and all children display')}    
 
+<<<<<<< HEAD
 class ExpandFeature :
 
     def Activated(self) :
@@ -304,6 +305,92 @@ class ExpandFeature :
                 'Expand Volume')}    
 
 FreeCADGui.addCommand('ExpandCommand',ExpandFeature())
+=======
+class CompoundFeature :
+    
+
+    def Activated(self) :
+
+        from GDMLObjects import GDMLcommon
+        import ObjectsFem
+   
+        def allocateMaterial(doc, analObj, materials, material) :
+            print("Allocate Material : ",material)
+            for n in materials.OutList :
+                if n.Label == material :
+                   print("Found Material") 
+                   matObj = ObjectsFem.makeMaterialSolid(doc, material)
+                   mat = matObj.Material
+                   mat['Name'] = material
+                   mat['Density'] = str(n.density) + " kg/m^3"
+                   mat['ThermalConductivity'] = str(n.conduct) + " W/m/K"
+                   mat['ThermalExpansionCoefficient'] = str(n.expand) + " m/m/K"
+                   mat['SpecificHeat'] = str(n.specific) + " J/kg/K"
+                   print(mat)
+                   print(mat['Density'])
+                   matObj.Material = mat
+                   analObj.addObject(matObj)
+
+        def addToList(objList, matList, obj) :
+            print(obj.Name) 
+            if hasattr(obj,'Proxy') :
+               #print("Has proxy")
+               #material_object = ObjectsFem.makeMaterialSolid \
+               #                  (doc,obj.Name+"-Material")
+               #allocateMaterial(material_object, obj.Material)
+               if isinstance(obj.Proxy,GDMLcommon) :
+                  objList.append(obj)
+                  if obj.material not in matList :
+                     matList.append(obj.material) 
+       
+            if obj.TypeId == 'App::Part' and hasattr(obj,'OutList') :
+               #if hasattr(obj,'OutList') :
+               #print("Has OutList + len "+str(len(obj.OutList)))
+               for i in obj.OutList : 
+                  #print('Call add to List '+i.Name)
+                  addToList(objList, matList, i)
+
+        def myaddCompound(obj,count) :
+            # count == 0 World Volume
+            print ("Add Compound "+obj.Label)
+            volList = []
+            matList = []
+            addToList(volList, matList, obj)
+            if count == 0 :
+               del volList[0]
+               del matList[0]
+            # DO not delete World Material as it may be repeat
+            print('vol List')   
+            print(volList)
+            print('Material List')
+            print(matList)
+            doc = FreeCAD.activeDocument()
+            analysis_object = ObjectsFem.makeAnalysis(doc,"Analysis")
+            materials = FreeCAD.ActiveDocument.Materials
+            for m in matList :
+                allocateMaterial(doc, analysis_object, materials, m)
+            comp = obj.newObject("Part::Compound","Compound")
+            comp.Links = volList
+            FreeCAD.ActiveDocument.recompute()
+
+
+        objs = FreeCADGui.Selection.getSelection()
+        #if len(obj.InList) == 0: # allowed only for for top level objects
+        print(len(objs))
+        if len(objs) > 0 :
+           obj = objs[0]
+           if obj.TypeId == 'App::Part' :
+              myaddCompound(obj,len(obj.InList))
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDML_Compound', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_Compound',\
+                'Add compound to Volume'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_Compound', \
+                'Add a Compound of Volume')}    
+
+FreeCADGui.addCommand('AddCompound',CompoundFeature())
+>>>>>>> compound
 FreeCADGui.addCommand('CycleCommand',CycleFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())

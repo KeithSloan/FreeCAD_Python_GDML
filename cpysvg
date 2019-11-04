@@ -7,5 +7,5 @@ trg=$(pwd)/Mod/Resources/icons
 #cp $src/GDML_Sphere_mauve.svg              $trg/GDMLSphereFeature.svg
 #cp $src/GDML_Generic_Trapezoid_mauve_blackline.svg  $trg/GDMLTrapFeature.svg
 #cp $src/GDML_Cut_Tube_mauve_blackline.svg $trg/GDMLTubeFeature.svg
-#cp $src/GDML_Compound.svg $trg/GDML_Compound.svg
+cp $src/GDML_Compound.svg $trg/GDML_Compound.svg
 cp $src/GDML_ExpandVol.svg $trg/GDML_ExpandVol.svg
