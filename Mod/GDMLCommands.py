@@ -7,7 +7,42 @@ This Script includes the GUI Commands of the GDML module
 '''
 
 import FreeCAD,FreeCADGui
-from PySide import QtCore, QtGui
+from PySide import QtGui, QtCore
+
+class importPrompt(QtGui.QDialog):
+    def __init__(self, *args):
+        super(importPrompt, self).__init__()
+        self.initUI()
+                
+    def initUI(self):
+        importButton = QtGui.QPushButton('Import')
+        importButton.clicked.connect(self.onImport)
+        scanButton = QtGui.QPushButton('Scan Vol')
+        scanButton .clicked.connect(self.onScan)
+        #
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonBox.setFixedWidth(400)
+        #buttonBox = Qt.QDialogButtonBox(QtCore.Qt.Vertical)
+        buttonBox.addButton(importButton, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(scanButton, QtGui.QDialogButtonBox.ActionRole)
+        #
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addWidget(buttonBox)
+        self.setLayout(mainLayout)
+        #self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+	# define window		xLoc,yLoc,xDim,yDim
+        self.setGeometry(	650, 650, 0, 50)
+        self.setWindowTitle("Choose an Option    ")
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.retStatus = 0
+
+    def onImport(self):
+        self.retStatus = 1
+        self.close()
+
+    def onScan(self):
+        self.retStatus = 2
+        self.close()
 
 class BoxFeature:
     #    def IsActive(self):

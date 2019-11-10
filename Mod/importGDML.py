@@ -73,7 +73,7 @@ def open(filename):
     docname = os.path.splitext(os.path.basename(filename))[0]
     doc = FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
-        processGDML(doc,filename)
+        processGDML(doc,filename,True)
     return doc
 
 def insert(filename,docname):
@@ -85,7 +85,7 @@ def insert(filename,docname):
     except NameError:
         doc=FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
-        processGDML(doc,filename)
+        processGDML(doc,filename,True)
 
 class switch(object):
     value = None
@@ -674,10 +674,14 @@ def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
        # Volume may or maynot contain physvol's
        displayMode = 1
        for pv in vol.findall("physvol") :
+           # Need to clean up use of phylvl flag
            # create solids at pos & rot in physvols
            #if phylvl < 1 :
            if phylvl < 0 :
-              parsePhysVol(parent,pv,phylvl+1,displayMode)
+              if phylvl >= 0 :
+                 phylvl += 1 
+              # If negative always parse otherwise increase level    
+              parsePhysVol(parent,pv,phylvl,displayMode)
            else :  # Just Add to structure 
               from PySide import QtGui, QtCore 
               volref = GDMLShared.getRef(pv,"volumeref")
@@ -832,10 +836,30 @@ def processMaterials(doc) :
     print("Materials List :")
     print(MaterialsList)
 
-def processGDML(doc,filename):
+def processGDML(doc,filename,prompt):
 
     import GDMLShared
     import GDMLObjects
+    import GDMLCommands
+    from   GDMLCommands import importPrompt
+
+    if prompt : 
+       dialog = importPrompt()
+       dialog.exec_()
+       #FreeCADGui.Control.showDialog(dialog)
+       #if dialog.retStatus == 1 :
+       #   print('Import')
+       #   phylvl = -1
+
+       if dialog.retStatus == 2 :
+          print('Scan Vol') 
+          phylvl = 0 
+
+       else :
+          phylvl = -1
+
+    else :   
+       phylvl = 0
 
     params = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/GDML")
     GDMLShared.printverbose = params.GetBool('printVerbose',False)
@@ -883,7 +907,7 @@ def processGDML(doc,filename):
     global volCount
     volCount = 0
     #scanVolume(part,world)
-    parseVolume(part,world,0,0,0,None,0,3)
+    parseVolume(part,world,0,0,0,None,phylvl,3)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")
