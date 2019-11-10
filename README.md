@@ -2,10 +2,7 @@
 
 FreeCAD's python Importer & Exporter for GDML files.
 
-Includes **experimental branch compound** to facilitate use of __FreeCAD FEM__ with GDML Files.
-For more details see Experimental branch section.
-   
-Includes **experimental branch scan** to facilitate processing large GDML files like Alice   
+The experimental branches **compound** and **scan** have now been merged into master  
 
 **Note:** Sister project development https://github.com/KeithSloan/FreeCAD_Geant4
 
@@ -136,6 +133,26 @@ _Short decription_
 
 ## GDML Import
 
+On import or open of a GDML file a Dialog box will open with two options
+
+- Import
+- Scan Vol
+
+Import will do a straight import of GDML Objects etc.
+
+Scan Vol is for large files like Alice.GDML that take far too long to process. 
+
+Volumes are only processed to a limit depth i.e. volume names are determined but not processed
+For unprocessed volume the names are preceded by **`NOT_Expanded`** so an example volume name would be: `NOT_Expanded_<VolumeName>`
+
+#### Expansion of Scanned Volume
+
+Unexpanded Volumes can be expanded by:  
+1. Switching to the GDML workbench.
+2. Selecting a volume in the **_labels & attributes_** window
+3. Clicking on the experimental Expand Volume icon **'E'**
+
+
 On opening of a GDML file the appropriate FreeCAD implemented python Object is created for each solid
 
 ## Viewing Volumes
@@ -199,20 +216,16 @@ The Ability to change to change these maybe implemented in the future.
 
 There is now an option to toggle `Printverbose` flag to reduce printing to the python console.
 
-## Experimental branches
+## New facility compound
 
-Listed below are different experimental branches that are available for testing
-
-### The `compound` (experimental branch)
-
-#### Description
+### Use of `compound` to facilitate preperation for FEM analysis
 
 * A new experimental icon/command called **compound** is added to the GDML workbench (currently an 'X')  
 * Thermal parameters have been added to the `GDMLmaterial` object
 
 #### Usage
 
-* **Select** a volume/Part i.e. the first Part which is the GDML world volume and **click on** the experimental `compound` icon (currently an 'X') this will:
+* **Select** a volume/Part i.e. the first Part which is the GDML world volume and **click on** the `compound` icon **'C'**
   1. Create an object named **Compound** under the selected Volume
   2. Create an FEM Analysis Object.
   3. All the materials of the objects in the Volume/Part/Compound are added to the Analysis Object.
@@ -226,57 +239,6 @@ Listed below are different experimental branches that are available for testing
   Also as an experiment: thermal parameters have been added to the `GDMLmaterial` object so these could
   be changed before creating a compound. One option to be would be to add elements to GDML files to enable
   loading and exporting, but then they would **NOT** be standard GDML files (maybe a different file extension?)  
-
-#### Feedback
-What do people think?  
-Please visit issue [#30](https://github.com/KeithSloan/FreeCAD_Python_GDML/issues/30) to discuss futher.
-
-
-#### Installing `compound` branch
-
-```bash
-git fetch compound
-git checkout compound
-```
-
-### The `scan` (experimental branch)
-
-#### Description
-
-Large files like `Alice.GDML` are not handled well as they take too long to load. **The scan branch does a limit volume depth scan where volume names are determined but not processed.**
-For unprocessed volume the names are preceded by **`NOT_Expanded`** so an example volume name would be: `NOT_Expanded_<VolumeName>`
-
-#### Usage
-
-Unexpanded Volumes can be expanded by:  
-1. Switching to the GDML workbench.
-2. Selecting a volume in the **_labels & attributes_** window
-3. Clicking on the experimental Expand Volume icon (currently an X)
-
-
-#### Installing `scan` branch
-```bash
-git fetch scan
-git checkout scan
-```   
-   A new icon/command is added to the GDML workbench ( Currently an X )
-
-   The branch is experimental and I would appreciate feedback see https://github.com/KeithSloan/FreeCAD_Python_GDML/issues/29
-   
-   It could be that files like Alice.gdml do not load with the master branch due to a bug(s). So if you do find a volume
-   that will not expand then please report this so things can be debugged.
-
-### The `comp+scan` (experimental branch)
-
-This branch combines both the above experimental branches for more efficient testing.
-
-#### Installing comp+scan 
-```bash
-git fetch comp+scan
-git checkout comp+scan
-```
-
-***
 
 ## Roadmap
 
@@ -303,7 +265,6 @@ git checkout comp+scan
 
 **Note:**
 For NIST Materials database see http://physics.nist.gov/PhysRefData
-
 
 ## Acknowledgements 
 
