@@ -73,7 +73,7 @@ def open(filename):
     docname = os.path.splitext(os.path.basename(filename))[0]
     doc = FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
-        processGDML(doc,filename)
+        processGDML(doc,filename,True)
     return doc
 
 def insert(filename,docname):
@@ -85,7 +85,7 @@ def insert(filename,docname):
     except NameError:
         doc=FreeCAD.newDocument(docname)
     if filename.lower().endswith('.gdml'):
-        processGDML(doc,filename)
+        processGDML(doc,filename,True)
 
 class switch(object):
     value = None
@@ -605,9 +605,8 @@ def getVolSolid(name):
     solid = solids.find("*[@name='%s']" % name )
     return solid
 
-def parsePhysVol(parent,physVol,displayMode):
-    print("ParsePhyVol")
-    GDMLShared.trace("ParsePhyVol")
+def parsePhysVol(parent,physVol,phylvl,displayMode):
+    GDMLShared.trace("ParsePhyVol : level : "+str(phylvl))
     posref = GDMLShared.getRef(physVol,"positionref")
     if posref is not None :
        GDMLShared.trace("positionref : "+posref)
@@ -631,12 +630,12 @@ def parsePhysVol(parent,physVol,displayMode):
     GDMLShared.trace("Volume ref : "+volref)
     part = parent.newObject("App::Part",volref)
     print("px : "+str(px)+" : "+str(py)+" : "+str(pz))
-    parseVolume(part,volref,px,py,pz,rot,displayMode)
+    parseVolume(part,volref,px,py,pz,rot,phylvl,displayMode)
 
 # ParseVolume name - structure is global
 # We get passed position and rotation
 # displayMode 1 normal 2 hide 3 wireframe
-def parseVolume(parent,name,px,py,pz,rot,displayMode) :
+def parseVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
     global volDict
 
     # Has the volume already been parsed i.e in Assembly etc
@@ -654,42 +653,66 @@ def parseVolume(parent,name,px,py,pz,rot,displayMode) :
 
     else :
         GDMLShared.trace("ParseVolume : "+name)
-        #part = parent.newObject("App::Part",name)
-        vol = structure.find("volume[@name='%s']" % name )
-        if vol != None : # If not volume test for assembly
-           solidref = GDMLShared.getRef(vol,"solidref")
-           if solidref != None :
-              solid  = solids.find("*[@name='%s']" % solidref )
-              GDMLShared.trace(solid.tag)
-              # Material is the materialref value
-              # need to add default
-              #material = GDMLShared.getRef(vol,"materialref")
-              material = GDMLShared.getRef(vol,"materialref")
-              #createSolid(part,solid,material,px,py,pz,rot,displayMode)
-              obj = createSolid(parent,solid,material,px,py,pz,rot,displayMode)
-           # Volume may or maynot contain physvol's
-           displayMode = 1
-           for pv in vol.findall("physvol") :
-               # create solids at pos & rot in physvols
-               #parsePhysVol(part,pv,displayMode)
-               #obj = parent.newObject("App::Part",name)
-               parsePhysVol(parent,pv,displayMode)
-           # Add parsed Volume to dict
-           volDict[name] = obj
-           return obj
+        part = parent.newObject("App::Part",name)
+        expandVolume(part,name,px,py,pz,rot,phylvl,displayMode)
 
-        else :
-           asm = structure.find("assembly[@name='%s']" % name)
-           print("Assembly : "+name)
-           if asm != None :
-              for pv in asm.findall("physvol") :
-                  # create solids at pos & rot in physvols
-                  #parsePhysVol(part,pv,displayMode)
-                  #obj = parent.newObject("App::Part",name)
-                  parsePhysVol(parent,pv,displayMode)
-           else :
-              print("Not Volume or Assembly") 
+def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
+    import FreeCAD as App
+    # also used in ScanCommand
+    vol = structure.find("volume[@name='%s']" % name )
+    if vol != None : # If not volume test for assembly
+       solidref = GDMLShared.getRef(vol,"solidref")
+       if solidref != None :
+          solid  = solids.find("*[@name='%s']" % solidref )
+          GDMLShared.trace(solid.tag)
+          # Material is the materialref value
+          # need to add default
+          #material = GDMLShared.getRef(vol,"materialref")
+          material = GDMLShared.getRef(vol,"materialref")
+          #createSolid(part,solid,material,px,py,pz,rot,displayMode)
+          obj = createSolid(parent,solid,material,px,py,pz,rot,displayMode)
+       # Volume may or maynot contain physvol's
+       displayMode = 1
+       for pv in vol.findall("physvol") :
+           # Need to clean up use of phylvl flag
+           # create solids at pos & rot in physvols
+           #if phylvl < 1 :
+           if phylvl < 0 :
+              if phylvl >= 0 :
+                 phylvl += 1 
+              # If negative always parse otherwise increase level    
+              parsePhysVol(parent,pv,phylvl,displayMode)
+           else :  # Just Add to structure 
+              from PySide import QtGui, QtCore 
+              volref = GDMLShared.getRef(pv,"volumeref")
+              GDMLShared.trace("Volume ref : "+volref)
+              #part = parent.newObject("App::Part","\033[1;40;31m"+volref)
+              part = parent.newObject("App::Part","NOT-Expanded_"+volref)
+              #obj = part.newObject("App::Annotation","Not Expanded")
+              #obj.LabelText="Annotation"
+              #view = obj.ViewObject
+              #print(dir(view))
+              #part = parent.newObject("App::DocumentObjectGroup",volref)
+              #vpart2 = part2.ViewObject
+              #print(dir(vpart2))
+              # 100% red, 0% Green, 0% Blue
+              #vpart.TextColor = (100., 0., 0., 0.)
+       # Add parsed Volume to dict
+       volDict[name] = obj
+       App.ActiveDocument.recompute() 
+       return obj
 
+    else :
+       asm = structure.find("assembly[@name='%s']" % name)
+       print("Assembly : "+name)
+       if asm != None :
+          for pv in asm.findall("physvol") :
+              # create solids at pos & rot in physvols
+              #parsePhysVol(part,pv,displayMode)
+              #obj = parent.newObject("App::Part",name)
+              parsePhysVol(parent,pv,phylvl,displayMode)
+       else :
+           print("Not Volume or Assembly") 
 
 def getItem(element, attribute) :
     item = element.get(attribute)
@@ -813,10 +836,30 @@ def processMaterials(doc) :
     print("Materials List :")
     print(MaterialsList)
 
-def processGDML(doc,filename):
+def processGDML(doc,filename,prompt):
 
     import GDMLShared
     import GDMLObjects
+    import GDMLCommands
+    from   GDMLCommands import importPrompt
+
+    if prompt : 
+       dialog = importPrompt()
+       dialog.exec_()
+       #FreeCADGui.Control.showDialog(dialog)
+       #if dialog.retStatus == 1 :
+       #   print('Import')
+       #   phylvl = -1
+
+       if dialog.retStatus == 2 :
+          print('Scan Vol') 
+          phylvl = 0 
+
+       else :
+          phylvl = -1
+
+    else :   
+       phylvl = 0
 
     params = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/GDML")
     GDMLShared.printverbose = params.GetBool('printVerbose',False)
@@ -858,10 +901,13 @@ def processGDML(doc,filename):
     processElements(doc)
     processMaterials(doc)
 
+    part =doc.addObject("App::Part","Volumes")
     world = GDMLShared.getRef(setup,"world")
     #print(world)
-    part =doc.addObject("App::Part",world)
-    parseVolume(part,world,0,0,0,None,3)
+    global volCount
+    volCount = 0
+    #scanVolume(part,world)
+    parseVolume(part,world,0,0,0,None,phylvl,3)
 
     doc.recompute()
     FreeCADGui.SendMsgToActiveView("ViewFit")

@@ -7,7 +7,42 @@ This Script includes the GUI Commands of the GDML module
 '''
 
 import FreeCAD,FreeCADGui
-from PySide import QtCore, QtGui
+from PySide import QtGui, QtCore
+
+class importPrompt(QtGui.QDialog):
+    def __init__(self, *args):
+        super(importPrompt, self).__init__()
+        self.initUI()
+                
+    def initUI(self):
+        importButton = QtGui.QPushButton('Import')
+        importButton.clicked.connect(self.onImport)
+        scanButton = QtGui.QPushButton('Scan Vol')
+        scanButton .clicked.connect(self.onScan)
+        #
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonBox.setFixedWidth(400)
+        #buttonBox = Qt.QDialogButtonBox(QtCore.Qt.Vertical)
+        buttonBox.addButton(importButton, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(scanButton, QtGui.QDialogButtonBox.ActionRole)
+        #
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addWidget(buttonBox)
+        self.setLayout(mainLayout)
+        #self.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False)
+	# define window		xLoc,yLoc,xDim,yDim
+        self.setGeometry(	650, 650, 0, 50)
+        self.setWindowTitle("Choose an Option    ")
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.retStatus = 0
+
+    def onImport(self):
+        self.retStatus = 1
+        self.close()
+
+    def onScan(self):
+        self.retStatus = 2
+        self.close()
 
 class BoxFeature:
     #    def IsActive(self):
@@ -279,6 +314,114 @@ class CycleFeature :
                 QtCore.QT_TRANSLATE_NOOP('GDML_CycleGroup', \
                 'Cycle Object and all children display')}    
 
+class ExpandFeature :
+
+    def Activated(self) :
+       
+        for obj in FreeCADGui.Selection.getSelection():
+            from importGDML import expandVolume
+            #if len(obj.InList) == 0: # allowed only for for top level objects
+            # add check for Part i.e. Volume
+            print("Selected")
+            print(obj.Label[:12])
+            if obj.Label[:12] == "NOT_Expanded" :
+               #parent = obj.InList[0]
+               name = obj.Label[13:]
+               obj.Label = name
+               print("Name : "+name)
+               expandVolume(obj,name,0,0,0,None,0,3)
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDML_ExpandVol', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_ExpandVol',\
+                'Expand Volume'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_ExpandVol', \
+                'Expand Volume')}    
+
+class CompoundFeature :
+    
+    def Activated(self) :
+
+        from GDMLObjects import GDMLcommon
+        import ObjectsFem
+   
+        def allocateMaterial(doc, analObj, materials, material) :
+            print("Allocate Material : ",material)
+            for n in materials.OutList :
+                if n.Label == material :
+                   print("Found Material") 
+                   matObj = ObjectsFem.makeMaterialSolid(doc, material)
+                   mat = matObj.Material
+                   mat['Name'] = material
+                   mat['Density'] = str(n.density) + " kg/m^3"
+                   mat['ThermalConductivity'] = str(n.conduct) + " W/m/K"
+                   mat['ThermalExpansionCoefficient'] = str(n.expand) + " m/m/K"
+                   mat['SpecificHeat'] = str(n.specific) + " J/kg/K"
+                   print(mat)
+                   print(mat['Density'])
+                   matObj.Material = mat
+                   analObj.addObject(matObj)
+
+        def addToList(objList, matList, obj) :
+            print(obj.Name) 
+            if hasattr(obj,'Proxy') :
+               #print("Has proxy")
+               #material_object = ObjectsFem.makeMaterialSolid \
+               #                  (doc,obj.Name+"-Material")
+               #allocateMaterial(material_object, obj.Material)
+               if isinstance(obj.Proxy,GDMLcommon) :
+                  objList.append(obj)
+                  if obj.material not in matList :
+                     matList.append(obj.material) 
+       
+            if obj.TypeId == 'App::Part' and hasattr(obj,'OutList') :
+               #if hasattr(obj,'OutList') :
+               #print("Has OutList + len "+str(len(obj.OutList)))
+               for i in obj.OutList : 
+                  #print('Call add to List '+i.Name)
+                  addToList(objList, matList, i)
+
+        def myaddCompound(obj,count) :
+            # count == 0 World Volume
+            print ("Add Compound "+obj.Label)
+            volList = []
+            matList = []
+            addToList(volList, matList, obj)
+            if count == 0 :
+               del volList[0]
+               del matList[0]
+            # DO not delete World Material as it may be repeat
+            print('vol List')   
+            print(volList)
+            print('Material List')
+            print(matList)
+            doc = FreeCAD.activeDocument()
+            analysis_object = ObjectsFem.makeAnalysis(doc,"Analysis")
+            materials = FreeCAD.ActiveDocument.Materials
+            for m in matList :
+                allocateMaterial(doc, analysis_object, materials, m)
+            comp = obj.newObject("Part::Compound","Compound")
+            comp.Links = volList
+            FreeCAD.ActiveDocument.recompute()
+
+
+        objs = FreeCADGui.Selection.getSelection()
+        #if len(obj.InList) == 0: # allowed only for for top level objects
+        print(len(objs))
+        if len(objs) > 0 :
+           obj = objs[0]
+           if obj.TypeId == 'App::Part' :
+              myaddCompound(obj,len(obj.InList))
+
+    def GetResources(self):
+        return {'Pixmap'  : 'GDML_Compound', 'MenuText': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_Compound',\
+                'Add compound to Volume'), 'ToolTip': \
+                QtCore.QT_TRANSLATE_NOOP('GDML_Compound', \
+                'Add a Compound of Volume')}    
+
+FreeCADGui.addCommand('AddCompound',CompoundFeature())
+FreeCADGui.addCommand('ExpandCommand',ExpandFeature())
 FreeCADGui.addCommand('CycleCommand',CycleFeature())
 FreeCADGui.addCommand('BoxCommand',BoxFeature())
 FreeCADGui.addCommand('EllipsoidCommand',EllispoidFeature())

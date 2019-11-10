@@ -38,7 +38,7 @@ import GDMLCommands, GDMLResources
 def processDefault(doc) :
     from importGDML import processGDML
     processGDML(doc,FreeCAD.getResourceDir() + \
-                "Mod/GDML/Resources/Default.gdml")
+                "Mod/GDML/Resources/Default.gdml",False)
 
 class GDML_Workbench ( Workbench ):
 
@@ -49,7 +49,7 @@ class GDML_Workbench ( Workbench ):
        def slotCreatedDocument(self, doc):
            from importGDML import processGDML
            processGDML(doc,FreeCAD.getResourceDir() + \
-                "Mod/GDML/Resources/Default.gdml")
+                "Mod/GDML/Resources/Default.gdml",False)
     
     "GDML workbench object"
     def __init__(self):
@@ -62,12 +62,14 @@ class GDML_Workbench ( Workbench ):
             return text
         
         #import GDMLCommands, GDMLResources
-        commands=['CycleCommand','BoxCommand','ConeCommand','ElTubeCommand', \
+        commands=['CycleCommand','ExpandCommand', \
+                 'BoxCommand','ConeCommand','ElTubeCommand', \
                   'EllipsoidCommand','SphereCommand', \
-                  'TrapCommand','TubeCommand']
-        toolbarcommands=['CycleCommand','BoxCommand','ConeCommand', \
-                         'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
-                         'TrapCommand','TubeCommand']
+                  'TrapCommand','TubeCommand','AddCompound']
+        toolbarcommands=['CycleCommand','ExpandCommand', \
+                         'BoxCommand','ConeCommand', \
+                  'ElTubeCommand', 'EllipsoidCommand','SphereCommand', \
+                  'TrapCommand','TubeCommand','AddCompound']
 
         parttoolbarcommands = ['Part_Cut','Part_Fuse','Part_Common']
 
@@ -90,10 +92,14 @@ class GDML_Workbench ( Workbench ):
         App.addDocumentObserver(self.obs)
         doc = FreeCAD.activeDocument()
         if doc != None :
-           if doc.Objects[0].Name != "Constants" : 
-              #self.processDefault(doc)
-              #processDefault(doc)
-              self.MyObserver.slotCreatedDocument(self,doc)
+           #print(dir(doc)) 
+           if len(doc.Objects) > 0 :
+              if doc.Objects[0].Name != "Constants" : 
+                 #self.processDefault(doc)
+                 #processDefault(doc)
+                 self.MyObserver.slotCreatedDocument(self,doc)
+           else :
+              self.MyObserver.slotCreatedDocument(self,doc) 
         return
 
     def Deactivated(self):

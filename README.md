@@ -152,7 +152,6 @@ Unexpanded Volumes can be expanded by:
 2. Selecting a volume in the **_labels & attributes_** window
 3. Clicking on the experimental Expand Volume icon **'E'**
 
-
 On opening of a GDML file the appropriate FreeCAD implemented python Object is created for each solid
 
 ## Viewing Volumes
@@ -219,9 +218,6 @@ There is now an option to toggle `Printverbose` flag to reduce printing to the p
 ## New facility compound
 
 ### Use of `compound` to facilitate preperation for FEM analysis
-
-* A new experimental icon/command called **compound** is added to the GDML workbench (currently an 'X')  
-* Thermal parameters have been added to the `GDMLmaterial` object
 
 #### Usage
 
@@ -290,6 +286,57 @@ For NIST Materials database see http://physics.nist.gov/PhysRefData
 
 * OpenCascade Forum members:
   *  Sergey Slyadnev
+    
+## Future Development Road Map
+
+  * Workbench Dialog for initial GDML Object values(?)
+  * Handle different Positioning between GDML & FreeCAD
+  * Add support for quantity
+  * Add further GDML Objects
+  * Add facility to add Volume
+  * Add facility to edit Materials
+  * Add facility to edit Isotopes
+  * Add facility to edit Elements 
+
+* Workbench
+
+  * Analize FreeCAD file for direct conversion of object to GDML solid
+  * Display mesh for objects that will not directly convert
+  * Provide options to control meshing objects that will be Tessellated
+  * Icons to Analize and Export
+* Tidy softLink script
+* Make FreeCAD an installable workbench 
+* Documentation
+* Investigate handling of Materials
+
+## For NIST Materials database see http://physics.nist.gov/PhysRefData
+
+## Need to sort out AIR definition
+
+## Graphic Icons 
+
+GDML Shapes designed by Jim Austin jmaustpc
+Cycle icon by Flaticon see www.flaticon.com
+
+Thanks to
+
+* Wouter Deconnick
+* Hilden Timo
+
+and the following FreeCAD forum members
+
+* wmayer
+* Joel_graff
+* chrisb
+* DeepSOIC
+* ickby
+* looooo
+* easyw-fc
+* bernd
+
+OpenCascade Forum members
+
+* Sergey Slyadnev
 
 ## Feedback
 
