@@ -277,6 +277,8 @@ For NIST Materials database see http://physics.nist.gov/PhysRefData
 **Thank you also to:** 
   * Wouter Deconnick
   * Hilden Timo
+  * Agata Walukiewicz
+  * Elena Volkova
 
 * FreeCAD forum members:
 
