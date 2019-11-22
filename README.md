@@ -48,7 +48,7 @@ GDML in the windows FreeCAD Mod directory this should include the sub directory 
 
   * Install pip
   * From the FreeCAD bin directory i.e. C:\Program Files\FreeCAD 0.18\bin
-  * Run the command pip install lxml --user <username>
+  * Run the command pip install lxml --user [username]
   * Start or Restart FreeCAD
 
 ## Details of GDML
