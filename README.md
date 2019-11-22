@@ -18,13 +18,13 @@ development branch `<workbench>` has now been merged with the master branch
 
 ## Installation 
 
+### Linux and MacOS
+
 As stated above, this WB requires `python3-lxml`  
 For example on Ubuntu or Debian derivatives you can install via:  
 ```bash
 apt-get install python3-lxml
 ```
-
-### Linux and MacOS
 
 * Invoke the following in the CLI
 ```bash
@@ -42,9 +42,14 @@ sudo ./softLinks
 ### Windows
 
 * Contents of Mod directory should be copied to a sub directory named
-GDML in the windows FreeCAD Mod directory  
-* A correct version of `python3-lxml` for your version of windows should be downloaded and installed.
-* Start or Restart FreeCAD
+GDML in the windows FreeCAD Mod directory this should include the sub directory Resources
+
+* To instal lxml under Windows
+
+  * Install pip
+  * From the FreeCAD bin directory i.e. C:\Program Files\FreeCAD 0.18\bin
+  * Run the command pip install lxml --user <username>
+  * Start or Restart FreeCAD
 
 ## Details of GDML
 
