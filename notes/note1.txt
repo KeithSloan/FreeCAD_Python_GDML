@@ -1,0 +1,57 @@
+ GDML NodeIDMap exceeds largest available size limit
+Geometry, Fields and Transportation
+swissco67
+6d
+
+I am using FastRad to export the model geometry as GDML.
+I load the model geometry in GEANT4 using parser.Read(gdml_file_name).
+
+I am getting the error below that I can resolve by removing a large number of smaller size
+objects (screws, washers, etc.) in the model and slimming the file size down.
+
+I’m concerned to remove too many objects and am getting less shielding than expected.
+Is there any option to increase this max. size limitation?
+
+G4GDML: VALIDATION ERROR! NodeIDMap exceeds largest available size at line: 1968809
+Segmentation fault (core dumped)
+
+    created
+    6d
+    last reply
+    5d
+    3
+    replies
+    26
+    views
+    2
+    users
+
+evc
+6d
+
+To fix the issue it is required to modify one line of code in the official XercesC DOM parser to extend the size of the attributes table which is used for loading the structure.
+
+In the file:
+
+xerces-c/src/xercesc/dom/impl/DOMNodeIDMap.cpp
+
+replace line #33 with this:
+
+static const XMLSize_t gPrimes[] = {997, 9973, 99991, 999983, 9999991, 99999989, 0 }; // To do - add a few more.
+
+Then re-compile and re-install XercesC in your system.
+swissco67
+5d
+
+I tried this and it helped somewhat.
+I created slimmed down versions of my model in 5 stages.
+The default xerces compile only worked with the smallest (most objects removed) version 5.
+The updated xerces compile worked with version 5 and 4 but when trying with version 3, the run started ok and didn’t report the VALIDATION ERROR but then after a short time the run just stopped with the following message
+... G4GDML: Reading definitions... G4GDML: Reading definitions... Killed
+
+no idea if that is another problem - maybe running out of memory on my virtual machine?
+evc
+5d
+
+No idea, never seen it before… possibly it is corrupted gdml structure.
+
