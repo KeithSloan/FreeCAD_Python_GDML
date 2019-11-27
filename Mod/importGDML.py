@@ -886,20 +886,24 @@ def processGDML(doc,filename,prompt):
     root = etree.parse(filename, parser=parser)
 
     setup     = root.find('setup')
-    print("Call set Define")
-    GDMLShared.setDefine(root.find('define'))
+    define    = root.find('define')
+    if define != None :
+       print("Call set Define")
+       GDMLShared.setDefine(root.find('define'))
+       GDMLShared.processConstants(doc)
+       GDMLShared.trace(setup.attrib)
+
     materials = root.find('materials')
+    if materials != None :
+       processIsotopes(doc)
+       processElements(doc)
+       processMaterials(doc)
+
     solids    = root.find('solids')
     structure = root.find('structure')
 
     # volDict dictionary of volume names and associated FreeCAD part
     volDict = {}
-
-    GDMLShared.processConstants(doc)
-    GDMLShared.trace(setup.attrib)
-    processIsotopes(doc)
-    processElements(doc)
-    processMaterials(doc)
 
     part =doc.addObject("App::Part","Volumes")
     world = GDMLShared.getRef(setup,"world")
