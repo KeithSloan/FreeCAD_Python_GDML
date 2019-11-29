@@ -452,6 +452,46 @@ def createTube(part,solid,material,px,py,pz,rot,displayMode) :
     setDisplayMode(mytube,displayMode)
     return mytube
 
+def createCutTube(part,solid,material,px,py,pz,rot,displayMode) :
+    from GDMLObjects import GDMLcutTube, ViewProvider
+    GDMLShared.trace("CreateCutTube : ")
+    GDMLShared.trace(solid.attrib)
+    rmin = GDMLShared.getVal(solid,'rmin')
+    rmax = GDMLShared.getVal(solid,'rmax')
+    z = GDMLShared.getVal(solid,'z')
+    startphi = GDMLShared.getVal(solid,'startphi')
+    deltaphi = GDMLShared.getVal(solid,'deltaphi')
+    aunit = getText(solid,'aunit','rad')
+    print("aunit : "+aunit)
+    lowX = GDMLShared.getVal(solid,'lowX')
+    lowY = GDMLShared.getVal(solid,'lowY')
+    lowZ = GDMLShared.getVal(solid,'lowZ')
+    highX = GDMLShared.getVal(solid,'highX')
+    highY = GDMLShared.getVal(solid,'highY')
+    highZ = GDMLShared.getVal(solid,'highZ')
+    lunit = getText(solid,'lunit',"mm")
+    GDMLShared.trace(rmin)
+    GDMLShared.trace(rmax)
+    GDMLShared.trace(z)
+    GDMLShared.trace(lowX)
+    GDMLShared.trace(lowY)
+    GDMLShared.trace(lowZ)
+    GDMLShared.trace(highX)
+    GDMLShared.trace(highY)
+    GDMLShared.trace(highZ)
+    mycuttube=part.newObject("Part::FeaturePython","GDMLcutTube:"+getName(solid))
+    GDMLcutTube(mycuttube,rmin,rmax,z,startphi,deltaphi,aunit, \
+                lowX, lowY, lowZ, highX, highY, highZ, lunit, material)
+    GDMLShared.trace("Position : "+str(px)+','+str(py)+','+str(pz))
+    #base = FreeCAD.Vector(0,0,0)
+    base = FreeCAD.Vector(px,py,pz)
+    mycuttube.Placement = GDMLShared.processPlacement(base,rot)
+    GDMLShared.trace(mycuttube.Placement.Rotation)
+    # set ViewProvider before setDisplay
+    ViewProvider(mycuttube.ViewObject)
+    setDisplayMode(mycuttube,displayMode)
+    return mycuttube
+
 def createTessellated(part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLTessellated, GDMLTriangular, \
             GDMLQuadrangular,  ViewProvider, ViewProviderExtension
@@ -568,6 +608,10 @@ def createSolid(part,solid,material,px,py,pz,rot,displayMode) :
 
         if case('tube'):
            return(createTube(part,solid,material,px,py,pz,rot,displayMode)) 
+           break
+
+        if case('cutTube'):
+           return(createCutTube(part,solid,material,px,py,pz,rot,displayMode)) 
            break
 
         if case('tessellated'):
