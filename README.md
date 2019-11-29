@@ -2,6 +2,8 @@
 
 FreeCAD's python Importer & Exporter for GDML files.
 
+New experimental branch **lunit** Attempt at adding handling of different lunit values - Needs more testing
+
 The experimental branches **compound** and **scan** have now been merged into master  
 
 **Note:** Sister project development https://github.com/KeithSloan/FreeCAD_Geant4
