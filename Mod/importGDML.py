@@ -133,6 +133,7 @@ def setDisplayMode(obj,mode):
 def createBox(part,solid,material,px,py,pz,rot,displayMode) :
     from GDMLObjects import GDMLBox, ViewProvider
     GDMLShared.trace("CreateBox : ")
+    #GDMLShared.trace("material : "+material)
     GDMLShared.trace(solid.attrib)
     mycube=part.newObject("Part::FeaturePython","GDMLBox:"+getName(solid))
     x = GDMLShared.getVal(solid,'x')
@@ -714,6 +715,8 @@ def expandVolume(parent,name,px,py,pz,rot,phylvl,displayMode) :
           #material = GDMLShared.getRef(vol,"materialref")
           material = GDMLShared.getRef(vol,"materialref")
           #createSolid(part,solid,material,px,py,pz,rot,displayMode)
+          #print('solid : '+solid.tag)
+          #print('material :'+material)
           obj = createSolid(parent,solid,material,px,py,pz,rot,displayMode)
        # Volume may or maynot contain physvol's
        displayMode = 1

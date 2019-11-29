@@ -105,11 +105,12 @@ def angleSectionSolid(fp, rmax, z, shape) :
        return(shape.cut(solid))
 
 def setMaterial(obj, m) :
+    #print('setMaterial')
     obj.material = MaterialsList
     obj.material = 0
     if len(MaterialsList) > 0 :
        if not ( m == 0 or m == None ) : 
-          obj.material = MaterialsList.index(material)
+          obj.material = MaterialsList.index(m)
 
 class GDMLcommon :
    def __init__(self, obj):
@@ -130,6 +131,7 @@ class GDMLBox(GDMLcommon) :
    def __init__(self, obj, x, y, z, lunit, material):
       '''Add some custom properties to our Box feature'''
       GDMLShared.trace("GDMLBox init")
+      #GDMLShared.trace("material : "+material)
       obj.addProperty("App::PropertyLength","x","GDMLBox","Length x").x=x
       obj.addProperty("App::PropertyLength","y","GDMLBox","Length y").y=y
       obj.addProperty("App::PropertyLength","z","GDMLBox","Length z").z=z
