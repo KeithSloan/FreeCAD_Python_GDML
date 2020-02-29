@@ -2,6 +2,10 @@
 
 FreeCAD's python Importer & Exporter for GDML files.
 
+**A GDML new structure workbench is available as https://github.com/KeithSloan/GDML and is installable via FreeCAD's AddonManager.**
+
+New experimental branch **lunit** Attempt at adding handling of different lunit values - Needs more testing
+
 The experimental branches **compound** and **scan** have now been merged into master  
 
 **Note:** Sister project development https://github.com/KeithSloan/FreeCAD_Geant4
