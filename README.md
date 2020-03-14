@@ -11,10 +11,6 @@ FreeCAD's python Importer & Exporter for GDML files.
 To upgrade to new structure workbench you will need to either do a fresh install of FreeCAD or
 delete the /Mod/GDML directory of your current installation.
 
-New experimental branch **lunit** Attempt at adding handling of different lunit values - Needs more testing
-
-The experimental branches **compound** and **scan** have now been merged into master  
-
 **Note:** Sister project development https://github.com/KeithSloan/FreeCAD_Geant4
 
 ## Prerequisites
