@@ -6,6 +6,7 @@ FreeCAD's python Importer & Exporter for GDML files.
 
 # Found it difficult to keep two repositories upto date. 
 # So people are advised to switch to the new repository.
+# https://github.com/KeithSloan/GDML
 
 New experimental branch **lunit** Attempt at adding handling of different lunit values - Needs more testing
 
